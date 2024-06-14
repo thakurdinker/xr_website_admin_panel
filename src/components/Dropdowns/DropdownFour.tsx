@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const DropdownFour = () => {
+const DropdownFour = ({ userID }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
+  const navigate = useNavigate();
 
   // close on click outside
   useEffect(() => {
@@ -18,8 +20,8 @@ const DropdownFour = () => {
         return;
       setDropdownOpen(false);
     };
-    document.addEventListener('click', clickHandler);
-    return () => document.removeEventListener('click', clickHandler);
+    document.addEventListener("click", clickHandler);
+    return () => document.removeEventListener("click", clickHandler);
   });
 
   // close if the esc key is pressed
@@ -28,14 +30,14 @@ const DropdownFour = () => {
       if (!dropdownOpen || keyCode !== 27) return;
       setDropdownOpen(false);
     };
-    document.addEventListener('keydown', keyHandler);
-    return () => document.removeEventListener('keydown', keyHandler);
+    document.addEventListener("keydown", keyHandler);
+    return () => document.removeEventListener("keydown", keyHandler);
   });
 
   return (
     <div className="relative h-full">
       <button
-        className="shadow-11 float-right inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-black hover:text-primary dark:bg-meta-4 dark:text-white dark:shadow-none"
+        className="float-right inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-black shadow-11 hover:text-primary dark:bg-meta-4 dark:text-white dark:shadow-none"
         ref={trigger}
         onClick={() => setDropdownOpen(!dropdownOpen)}
       >
@@ -58,11 +60,17 @@ const DropdownFour = () => {
         ref={dropdown}
         onFocus={() => setDropdownOpen(true)}
         onBlur={() => setDropdownOpen(false)}
-        className={`max-w-39.5 shadow-12 absolute right-0 top-full z-1 mt-1 w-full rounded-[5px] bg-white py-2.5 dark:bg-boxdark ${
-          dropdownOpen === true ? 'block' : 'hidden'
+        className={`absolute right-0 top-full z-1 mt-1 w-full max-w-39.5 rounded-[5px] bg-white py-2.5 shadow-12 dark:bg-boxdark ${
+          dropdownOpen === true ? "block" : "hidden"
         }`}
       >
-        <button className="flex w-full px-4 py-2 text-sm hover:bg-whiter hover:text-primary dark:hover:bg-meta-4">
+        <button
+          className="flex w-full px-4 py-2 text-sm hover:bg-whiter hover:text-primary dark:hover:bg-meta-4"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate("/manage-users/edit", { state: { userID: userID } });
+          }}
+        >
           Edit
         </button>
         <button className="flex w-full px-4 py-2 text-sm hover:bg-whiter hover:text-primary dark:hover:bg-meta-4">

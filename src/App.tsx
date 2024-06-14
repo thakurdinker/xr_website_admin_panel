@@ -1,65 +1,66 @@
-import { useEffect, useState } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { Route, Routes, useLocation } from "react-router-dom";
 
-import ECommerce from './pages/Dashboard/ECommerce';
-import Analytics from './pages/Dashboard/Analytics';
-import Marketing from './pages/Dashboard/Marketing';
-import CRM from './pages/Dashboard/CRM';
-import Stocks from './pages/Dashboard/Stocks';
-import Calendar from './pages/Calendar';
-import Profile from './pages/Profile';
-import TaskKanban from './pages/Task/TaskKanban';
-import TaskList from './pages/Task/TaskList';
-import FormElements from './pages/Form/FormElements';
-import FormLayout from './pages/Form/FormLayout';
-import Tables from './pages/Tables/Tables';
-import Settings from './pages/Pages/Settings';
-import FileManager from './pages/Pages/FileManager';
-import DataTables from './pages/Pages/DataTables';
-import PricingTables from './pages/Pages/PricingTables';
-import ErrorPage from './pages/Pages/ErrorPage';
-import MailSuccess from './pages/Pages/MailSuccess';
-import Messages from './pages/Messages';
-import Inbox from './pages/Inbox';
-import Invoice from './pages/Invoice';
-import BasicChart from './pages/Chart/BasicChart';
-import AdvancedChart from './pages/Chart/AdvancedChart';
-import Alerts from './pages/UiElements/Alerts';
-import Buttons from './pages/UiElements/Buttons';
-import ButtonsGroup from './pages/UiElements/ButtonsGroup';
-import Badge from './pages/UiElements/Badge';
-import Breadcrumbs from './pages/UiElements/Breadcrumbs';
-import Cards from './pages/UiElements/Cards';
-import Dropdowns from './pages/UiElements/Dropdowns';
-import Modals from './pages/UiElements/Modals';
-import Tabs from './pages/UiElements/Tabs';
-import Tooltips from './pages/UiElements/Tooltips';
-import Popovers from './pages/UiElements/Popovers';
-import Accordion from './pages/UiElements/Accordion';
-import Notifications from './pages/UiElements/Notifications';
-import Pagination from './pages/UiElements/Pagination';
-import Progress from './pages/UiElements/Progress';
-import Carousel from './pages/UiElements/Carousel';
-import Images from './pages/UiElements/Images';
-import Videos from './pages/UiElements/Videos';
-import ResetPassword from './pages/Authentication/ResetPassword';
-import SignIn from './pages/Authentication/SignIn';
-import SignUp from './pages/Authentication/SignUp';
-import Loader from './common/Loader';
-import PageTitle from './components/PageTitle';
-import ProFormElements from './pages/Form/ProFormElements';
-import ProFormLayout from './pages/Form/ProFormLayout';
-import ProTables from './pages/Tables/ProTables';
-import TermsConditions from './pages/Pages/TermsConditions';
-import Faq from './pages/Pages/Faq';
-import Teams from './pages/Pages/Teams';
-import Avatars from './pages/UiElements/Avatars';
-import List from './pages/UiElements/List';
-import Spinners from './pages/UiElements/Spinners';
-import ComingSoon from './pages/Authentication/ComingSoon';
-import TwoStepVerification from './pages/Authentication/TwoStepVerification';
-import UnderMaintenance from './pages/Authentication/UnderMaintenance';
-
+import Dashboard from "./pages/Dashboard/Dashboard";
+import Analytics from "./pages/Dashboard/Analytics";
+import Marketing from "./pages/Dashboard/Marketing";
+import CRM from "./pages/Dashboard/CRM";
+import Stocks from "./pages/Dashboard/Stocks";
+import Calendar from "./pages/Calendar";
+import Profile from "./pages/Profile";
+import TaskKanban from "./pages/Task/TaskKanban";
+import TaskList from "./pages/Task/TaskList";
+import FormElements from "./pages/Form/FormElements";
+import FormLayout from "./pages/Form/FormLayout";
+import Tables from "./pages/Tables/Tables";
+import Settings from "./pages/Pages/Settings";
+import FileManager from "./pages/Pages/FileManager";
+import DataTables from "./pages/Pages/DataTables";
+import PricingTables from "./pages/Pages/PricingTables";
+import ErrorPage from "./pages/Pages/ErrorPage";
+import MailSuccess from "./pages/Pages/MailSuccess";
+import Messages from "./pages/Messages";
+import Inbox from "./pages/Inbox";
+import Invoice from "./pages/Invoice";
+import BasicChart from "./pages/Chart/BasicChart";
+import AdvancedChart from "./pages/Chart/AdvancedChart";
+import Alerts from "./pages/UiElements/Alerts";
+import Buttons from "./pages/UiElements/Buttons";
+import ButtonsGroup from "./pages/UiElements/ButtonsGroup";
+import Badge from "./pages/UiElements/Badge";
+import Breadcrumbs from "./pages/UiElements/Breadcrumbs";
+import Cards from "./pages/UiElements/Cards";
+import Dropdowns from "./pages/UiElements/Dropdowns";
+import Modals from "./pages/UiElements/Modals";
+import Tabs from "./pages/UiElements/Tabs";
+import Tooltips from "./pages/UiElements/Tooltips";
+import Popovers from "./pages/UiElements/Popovers";
+import Accordion from "./pages/UiElements/Accordion";
+import Notifications from "./pages/UiElements/Notifications";
+import Pagination from "./pages/UiElements/Pagination";
+import Progress from "./pages/UiElements/Progress";
+import Carousel from "./pages/UiElements/Carousel";
+import Images from "./pages/UiElements/Images";
+import Videos from "./pages/UiElements/Videos";
+import ResetPassword from "./pages/Authentication/ResetPassword";
+import SignIn from "./pages/Authentication/SignIn";
+import SignUp from "./pages/Authentication/SignUp";
+import Loader from "./common/Loader";
+import PageTitle from "./components/PageTitle";
+import ProFormElements from "./pages/Form/ProFormElements";
+import ProFormLayout from "./pages/Form/ProFormLayout";
+import ProTables from "./pages/Tables/ProTables";
+import TermsConditions from "./pages/Pages/TermsConditions";
+import Faq from "./pages/Pages/Faq";
+import Teams from "./pages/Pages/Teams";
+import Avatars from "./pages/UiElements/Avatars";
+import List from "./pages/UiElements/List";
+import Spinners from "./pages/UiElements/Spinners";
+import ComingSoon from "./pages/Authentication/ComingSoon";
+import TwoStepVerification from "./pages/Authentication/TwoStepVerification";
+import UnderMaintenance from "./pages/Authentication/UnderMaintenance";
+import UsersList from "./pages/Users";
+import EditUser from "./pages/Users/EditUser";
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -82,11 +83,30 @@ function App() {
           index
           element={
             <>
-              <PageTitle title="eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <ECommerce />
+              <PageTitle title="Dashboard" />
+              <Dashboard />
             </>
           }
         />
+        <Route
+          path="/manage-users/edit"
+          element={
+            <>
+              <PageTitle title="Edit User" />
+              <EditUser />
+            </>
+          }
+        />
+        <Route
+          path="/manage-users"
+          element={
+            <>
+              <PageTitle title="Manage Users" />
+              <UsersList />
+            </>
+          }
+        />
+
         <Route
           path="/dashboard/analytics"
           element={
