@@ -76,8 +76,6 @@ const ProFormLayout = () => {
     [userData]
   );
 
-  console.log(userData);
-
   return (
     <>
       {/* <Breadcrumb pageName="Pro Form Layout" /> */}

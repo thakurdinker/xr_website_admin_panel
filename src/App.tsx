@@ -61,6 +61,7 @@ import TwoStepVerification from "./pages/Authentication/TwoStepVerification";
 import UnderMaintenance from "./pages/Authentication/UnderMaintenance";
 import UsersList from "./pages/Users";
 import EditUser from "./pages/Users/EditUser";
+import ManageProperties from "./pages/ManageProperties/ManageProperties.jsx";
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -103,6 +104,16 @@ function App() {
             <>
               <PageTitle title="Manage Users" />
               <UsersList />
+            </>
+          }
+        />
+
+        <Route
+          path="/manage-properties"
+          element={
+            <>
+              <PageTitle title="Manage Properties" />
+              <ManageProperties />
             </>
           }
         />
