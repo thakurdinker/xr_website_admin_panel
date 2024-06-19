@@ -2,60 +2,53 @@ import React, { useEffect, useState } from "react";
 import DefaultLayout from "../../layout/DefaultLayout";
 import { FETCH_ALL_PROPERTIES } from "../../api/constants";
 import axios from "axios";
+import { Link } from 'react-router-dom';
 
-const users = [
+const propertiesDummyData = [
   {
-    name: "Musharof Chowdhury",
-    title: "Multidisciplinary Web Entrepreneur",
-    email: "musharof@example.com",
-    role: "Owner",
+    name: "Property One",
+    createdAt: "2023-01-01",
+    updatedAt: "2023-02-01",
   },
   {
-    name: "Naimur Rahman",
-    title: "Website Front-end Developer",
-    email: "naimurrahman@example.com",
-    role: "Member",
+    name: "Property Two",
+    createdAt: "2023-01-05",
+    updatedAt: "2023-02-05",
   },
   {
-    name: "Shafiq Hammad",
-    title: "Regional Paradigm Technician",
-    email: "shafiq.hd@example.com",
-    role: "Moderator",
+    name: "Property Three",
+    createdAt: "2023-01-10",
+    updatedAt: "2023-02-10",
   },
   {
-    name: "Alex Semuyel",
-    title: "Applications Engineer",
-    email: "alex.semuel@example.com",
-    role: "Admin",
+    name: "Property Four",
+    createdAt: "2023-01-15",
+    updatedAt: "2023-02-15",
   },
   {
-    name: "Sulium Keliym",
-    title: "Lead Implementation Liaison",
-    email: "suliym.info@example.com",
-    role: "Member",
+    name: "Property Five",
+    createdAt: "2023-01-20",
+    updatedAt: "2023-02-20",
   },
   {
-    name: "Jhon Smith",
-    title: "Regional Paradigm Technician",
-    email: "jhon.smith@example.com",
-    role: "Admin",
+    name: "Property Six",
+    createdAt: "2023-01-25",
+    updatedAt: "2023-02-25",
   },
   {
-    name: "Jenifer Lofess",
-    title: "Multidisciplinary Web Entrepreneur",
-    email: "loffes.cooper@example.com",
-    role: "Member",
+    name: "Property Seven",
+    createdAt: "2023-01-30",
+    updatedAt: "2023-02-30",
   },
   {
-    name: "Devid Deekook",
-    title: "Central Security Manager",
-    email: "devid.decok@example.com",
-    role: "Moderator",
+    name: "Property Eight",
+    createdAt: "2023-02-01",
+    updatedAt: "2023-03-01",
   },
 ];
 
 const ManageProperties = () => {
-  const [properties, setProperties] = useState([]);
+  const [properties, setProperties] = useState(propertiesDummyData);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -84,66 +77,63 @@ const ManageProperties = () => {
         <div className="max-w-full overflow-x-auto">
           <div className="min-w-[1170px]">
             {/* table header start */}
-            <div className="grid grid-cols-12 bg-[#F9FAFB] px-5 py-4 dark:bg-meta-4 lg:px-7.5 2xl:px-11">
-              <div className="col-span-3">
+            <div className="grid grid-cols-10 bg-[#F9FAFB] px-5 py-4 dark:bg-meta-4 lg:px-7.5 2xl:px-11">
+              <div className="col-span-4 flex items-center">
                 <h5 className="font-medium text-[#637381] dark:text-bodydark">
                   NAME
                 </h5>
               </div>
 
-              <div className="col-span-3">
+              <div className="col-span-2 flex items-center">
                 <h5 className="font-medium text-[#637381] dark:text-bodydark">
-                  TITLE
+                  CREATED AT
                 </h5>
               </div>
 
-              <div className="col-span-3">
+              <div className="col-span-2 flex items-center">
                 <h5 className="font-medium text-[#637381] dark:text-bodydark">
-                  EMAIL
+                  UPDATED AT
                 </h5>
               </div>
 
-              <div className="col-span-2">
-                <h5 className="font-medium text-[#637381] dark:text-bodydark">
-                  ROLE
-                </h5>
+              <div className="col-span-2 flex items-center justify-end">
+                <Link
+                  to="/forms/pro-form-layout"
+                  className="inline-flex items-center justify-center rounded-md border border-black px-10 py-2 text-center font-medium text-black hover:bg-opacity-90 lg:px-8 xl:px-6 hover:text-white hover:bg-black dark:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
+                >
+                  ADD PROPERTY
+                </Link>
               </div>
             </div>
             {/* table header end */}
 
             {/* table body start */}
             <div className="bg-white dark:bg-boxdark">
-              {users.map((user, index) => (
+              {properties.map((property, index) => (
                 <div
                   key={index}
-                  className="grid grid-cols-12 border-t border-[#EEEEEE] px-5 py-4 dark:border-strokedark lg:px-7.5 2xl:px-11"
+                  className="grid grid-cols-10 border-t border-[#EEEEEE] px-5 py-4 dark:border-strokedark lg:px-7.5 2xl:px-11"
                 >
-                  <div className="col-span-3">
+                  <div className="col-span-4 flex items-center">
                     <p className="text-[#637381] dark:text-bodydark">
-                      {user.name}
+                      {property.name}
                     </p>
                   </div>
 
-                  <div className="col-span-3">
+                  <div className="col-span-2 flex items-center">
                     <p className="text-[#637381] dark:text-bodydark">
-                      {user.title}
+                      {property.createdAt}
                     </p>
                   </div>
 
-                  <div className="col-span-3">
+                  <div className="col-span-2 flex items-center">
                     <p className="text-[#637381] dark:text-bodydark">
-                      {user.email}
+                      {property.updatedAt}
                     </p>
                   </div>
 
-                  <div className="col-span-2">
-                    <p className="text-[#637381] dark:text-bodydark">
-                      {user.role}
-                    </p>
-                  </div>
-
-                  <div className="col-span-1">
-                    <button className="float-right text-primary">Edit</button>
+                  <div className="col-span-2 flex items-center justify-end">
+                    <button className="text-primary">Edit</button>
                   </div>
                 </div>
               ))}
