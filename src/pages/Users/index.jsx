@@ -4,7 +4,7 @@ import DefaultLayout from "../../layout/DefaultLayout";
 import axios from "axios";
 import { GET_ALL_USERS } from "../../api/constants";
 import { Link } from "react-router-dom";
-import ProFormLayout from "../Form/ProFormLayout";
+import AddProperty from "../Form/AddProperty";
 
 const UsersList = () => {
   const [allUsers, setAllUsers] = useState([]);
@@ -46,7 +46,7 @@ const UsersList = () => {
         </div>
       )}
 
-      {addUser && <ProFormLayout />}
+      {addUser && <AddProperty />}
     </DefaultLayout>
   );
 };

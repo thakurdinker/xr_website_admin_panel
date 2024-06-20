@@ -2,55 +2,15 @@ import React, { useEffect, useState } from "react";
 import DefaultLayout from "../../layout/DefaultLayout";
 import { FETCH_ALL_PROPERTIES } from "../../api/constants";
 import axios from "axios";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-const propertiesDummyData = [
-  {
-    name: "Property One",
-    createdAt: "2023-01-01",
-    updatedAt: "2023-02-01",
-  },
-  {
-    name: "Property Two",
-    createdAt: "2023-01-05",
-    updatedAt: "2023-02-05",
-  },
-  {
-    name: "Property Three",
-    createdAt: "2023-01-10",
-    updatedAt: "2023-02-10",
-  },
-  {
-    name: "Property Four",
-    createdAt: "2023-01-15",
-    updatedAt: "2023-02-15",
-  },
-  {
-    name: "Property Five",
-    createdAt: "2023-01-20",
-    updatedAt: "2023-02-20",
-  },
-  {
-    name: "Property Six",
-    createdAt: "2023-01-25",
-    updatedAt: "2023-02-25",
-  },
-  {
-    name: "Property Seven",
-    createdAt: "2023-01-30",
-    updatedAt: "2023-02-30",
-  },
-  {
-    name: "Property Eight",
-    createdAt: "2023-02-01",
-    updatedAt: "2023-03-01",
-  },
-];
 
 const ManageProperties = () => {
-  const [properties, setProperties] = useState(propertiesDummyData);
+  const [properties, setProperties] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -62,6 +22,7 @@ const ManageProperties = () => {
         if (response.data.success) {
           setProperties(response.data.properties);
           setTotalPages(response.data.totalPages);
+          console.log(response.data);
         }
       } catch (error) {
         console.error("Error fetching properties:", error);
@@ -70,6 +31,11 @@ const ManageProperties = () => {
 
     fetchProperties();
   }, [currentPage]);
+
+  const handleEditClick = (propertyId) => {
+    // Redirect to the AddProperty component in edit mode with the propertyId
+    navigate(`/forms/add-property/${propertyId}`);
+  };
 
   return (
     <DefaultLayout>
@@ -98,7 +64,7 @@ const ManageProperties = () => {
 
               <div className="col-span-2 flex items-center justify-end">
                 <Link
-                  to="/forms/pro-form-layout"
+                  to="/forms/add-property"
                   className="inline-flex items-center justify-center rounded-md border border-black px-10 py-2 text-center font-medium text-black hover:bg-opacity-90 lg:px-8 xl:px-6 hover:text-white hover:bg-black dark:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
                 >
                   ADD PROPERTY
@@ -116,7 +82,7 @@ const ManageProperties = () => {
                 >
                   <div className="col-span-4 flex items-center">
                     <p className="text-[#637381] dark:text-bodydark">
-                      {property.name}
+                      {property.community_name}
                     </p>
                   </div>
 
@@ -133,7 +99,7 @@ const ManageProperties = () => {
                   </div>
 
                   <div className="col-span-2 flex items-center justify-end">
-                    <button className="text-primary">Edit</button>
+                    <button className="text-primary" onClick={() => handleEditClick(property.id)}>Edit</button>
                   </div>
                 </div>
               ))}

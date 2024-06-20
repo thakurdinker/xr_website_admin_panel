@@ -38,11 +38,16 @@ const UploadWidget = ({ isGallery, onImagesChange }) => {
     onImagesChange(updatedImages); // Update parent component's state
   };
 
+  const handleUploadClick = (event) => {
+    event.preventDefault(); // Prevent form submission
+    widgetRef.current.open();
+  };
+
   return (
     <div>
       <button
         className="inline-flex w-[100%] items-center justify-center rounded-md border border-black px-10 py-2 text-center font-medium text-black hover:bg-black hover:bg-opacity-90 hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-black lg:px-8 xl:px-6"
-        onClick={() => widgetRef.current.open()}
+        onClick={handleUploadClick}
       >
         Upload
       </button>
@@ -64,7 +69,7 @@ const UploadWidget = ({ isGallery, onImagesChange }) => {
             
             <button
               onClick={() => handleDelete(index)}
-              className="absolute right-0 top-0  text-2xl text-black"
+              className="absolute right-0 top-0  text-2xl text-black dark:text-white"
             >
               &times;
             </button>

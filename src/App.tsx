@@ -48,7 +48,7 @@ import SignUp from "./pages/Authentication/SignUp";
 import Loader from "./common/Loader";
 import PageTitle from "./components/PageTitle";
 import ProFormElements from "./pages/Form/ProFormElements";
-import ProFormLayout from "./pages/Form/ProFormLayout";
+import AddProperty from "./pages/Form/AddProperty.jsx";
 import ProTables from "./pages/Tables/ProTables";
 import TermsConditions from "./pages/Pages/TermsConditions";
 import Faq from "./pages/Pages/Faq";
@@ -218,11 +218,20 @@ function App() {
           }
         />
         <Route
-          path="/forms/pro-form-layout"
+          path="/forms/add-property/:id"
           element={
             <>
               <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <ProFormLayout />
+              <AddProperty />
+            </>
+          }
+        />
+        <Route
+          path="/forms/add-property"
+          element={
+            <>
+              <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <AddProperty />
             </>
           }
         />
