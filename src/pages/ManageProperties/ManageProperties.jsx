@@ -3,7 +3,8 @@ import DefaultLayout from "../../layout/DefaultLayout";
 import { FETCH_ALL_PROPERTIES } from "../../api/constants";
 import axios from "axios";
 import { Link, useNavigate } from 'react-router-dom';
-
+import { MdDeleteForever } from "react-icons/md";
+import { MdEditDocument } from "react-icons/md";
 
 const ManageProperties = () => {
   const [properties, setProperties] = useState([]);
@@ -36,6 +37,20 @@ const ManageProperties = () => {
     // Redirect to the AddProperty component in edit mode with the propertyId
     navigate(`/forms/add-property/${propertyId}`);
   };
+
+  const handleDeleteClick = async (id) => {
+    try {
+      const response = await axios.delete(`http://localhost:3333/properties/${id}`);
+      if (response.data.success) {
+        setProperties(properties.filter(property => property.id !== id));
+      } else {
+        console.error("Error deleting property:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting property:", error);
+    }
+  };
+
 
   return (
     <DefaultLayout>
@@ -82,7 +97,7 @@ const ManageProperties = () => {
                 >
                   <div className="col-span-4 flex items-center">
                     <p className="text-[#637381] dark:text-bodydark">
-                      {property.community_name}
+                      {property.property_name}
                     </p>
                   </div>
 
@@ -98,8 +113,9 @@ const ManageProperties = () => {
                     </p>
                   </div>
 
-                  <div className="col-span-2 flex items-center justify-end">
-                    <button className="text-primary" onClick={() => handleEditClick(property.id)}>Edit</button>
+                  <div className="col-span-2 flex items-center justify-end space-x-2">
+                    <button className="text-primary" onClick={() => handleEditClick(property.id)}><MdEditDocument className="h-6 w-6"/></button>
+                    <button className="text-red" onClick={() => handleDeleteClick(property.id)}><MdDeleteForever className="h-7 w-7"/></button>
                   </div>
                 </div>
               ))}

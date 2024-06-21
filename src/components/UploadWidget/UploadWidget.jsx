@@ -22,11 +22,11 @@ const UploadWidget = ({ isGallery, onImagesChange }) => {
         }
       }
     );
-  }, [onImagesChange]);
-
+  }, [onImagesChange,images]);
+  
   const handleDescriptionChange = (index, event) => {
     const updatedImages = images.map((image, i) =>
-      i === index ? { ...image, description: event.target.value } : image
+      i === index ? { ...image, description: event.target.value || "" } : image
     );
     setImages(updatedImages);
     onImagesChange(updatedImages); // Update parent component's state

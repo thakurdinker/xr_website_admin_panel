@@ -101,18 +101,18 @@ const AddProperty = () => {
     }));
 
     setPropertyData((prev) => ({
-      // ...prev,
+      ...prev,
       images: imagesToSend,
     }));
   };
 
   const handleGalleryChange = (updatedGallery) => {
-    const imagesToSend = updatedImages.map((image) => ({
+    const imagesToSend = updatedGallery.map((image) => ({
       url: image.url,
-      description: image.description || "", // Add this line to handle missing description
+      description: "null", // Add this line to handle missing description
     }));
     setPropertyData((prev) => ({
-      // ...prev,
+      ...prev,
       gallery: imagesToSend,
     }));
   };
