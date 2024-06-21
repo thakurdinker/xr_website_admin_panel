@@ -5,6 +5,7 @@ import axios from "axios";
 import { Link, useNavigate } from 'react-router-dom';
 import { MdDeleteForever } from "react-icons/md";
 import { MdEditDocument } from "react-icons/md";
+import { IoAddCircle } from "react-icons/io5";
 
 const ManageProperties = () => {
   const [properties, setProperties] = useState([]);
@@ -60,23 +61,23 @@ const ManageProperties = () => {
     <DefaultLayout>
       <div className="overflow-hidden rounded-[10px]">
         <div className="max-w-full overflow-x-auto">
-          <div className="min-w-[1170px]">
+          <div>
             {/* table header start */}
             <div className="grid grid-cols-10 bg-[#F9FAFB] px-5 py-4 dark:bg-meta-4 lg:px-7.5 2xl:px-11">
-              <div className="col-span-4 flex items-center">
-                <h5 className="font-medium text-[#637381] dark:text-bodydark">
+              <div className="col-span-2 flex items-center">
+                <h5 className="text-xs md:text-base font-medium text-[#637381] dark:text-bodydark">
                   NAME
                 </h5>
               </div>
 
-              <div className="col-span-2 flex items-center">
-                <h5 className="font-medium text-[#637381] dark:text-bodydark">
+              <div className="col-span-3 flex items-center">
+                <h5 className="text-xs md:text-base font-medium text-[#637381] dark:text-bodydark">
                   CREATED AT
                 </h5>
               </div>
 
-              <div className="col-span-2 flex items-center">
-                <h5 className="font-medium text-[#637381] dark:text-bodydark">
+              <div className="col-span-3 flex items-center">
+                <h5 className="text-xs md:text-base font-medium text-[#637381] dark:text-bodydark">
                   UPDATED AT
                 </h5>
               </div>
@@ -84,9 +85,9 @@ const ManageProperties = () => {
               <div className="col-span-2 flex items-center justify-end">
                 <Link
                   to="/forms/add-property"
-                  className="inline-flex items-center justify-center rounded-md border border-black px-10 py-2 text-center font-medium text-black hover:bg-opacity-90 lg:px-8 xl:px-6 hover:text-white hover:bg-black dark:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
+                  className="text-xl md:text-2xl"
                 >
-                  ADD PROPERTY
+                  <IoAddCircle />
                 </Link>
               </div>
             </div>
@@ -99,27 +100,27 @@ const ManageProperties = () => {
                   key={index}
                   className="grid grid-cols-10 border-t border-[#EEEEEE] px-5 py-4 dark:border-strokedark lg:px-7.5 2xl:px-11"
                 >
-                  <div className="col-span-4 flex items-center">
-                    <p className="text-[#637381] dark:text-bodydark">
+                  <div className="col-span-2 flex items-center">
+                    <p className="text-[#637381] dark:text-bodydark text-xs md:text-base">
                       {property.property_name}
                     </p>
                   </div>
 
-                  <div className="col-span-2 flex items-center">
-                    <p className="text-[#637381] dark:text-bodydark">
+                  <div className="col-span-3 flex items-center">
+                    <p className="text-[#637381] dark:text-bodydark text-xs md:text-base">
                     {formatDate(property.createdAt)}
                     </p>
                   </div>
 
-                  <div className="col-span-2 flex items-center">
-                    <p className="text-[#637381] dark:text-bodydark">
+                  <div className="col-span-3 flex items-center">
+                    <p className="text-[#637381] dark:text-bodydark text-xs md:text-base">
                     {formatDate(property.updatedAt)}
                     </p>
                   </div>
 
                   <div className="col-span-2 flex items-center justify-end space-x-2">
-                    <button className="text-white" onClick={() => handleEditClick(property.id)}><MdEditDocument className="h-6 w-6"/></button>
-                    <button className="text-red" onClick={() => handleDeleteClick(property.id)}><MdDeleteForever className="h-8 w-8"/></button>
+                    <button className="text-black dark:text-white" onClick={() => handleEditClick(property.id)}><MdEditDocument className="h-4 w-4 md:h-6 md:w-6"/></button>
+                    <button className="text-red" onClick={() => handleDeleteClick(property.id)}><MdDeleteForever className="h-6 w-6 md:h-8 md:w-8"/></button>
                   </div>
                 </div>
               ))}
