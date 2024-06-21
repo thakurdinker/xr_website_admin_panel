@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
-const UploadWidget = ({ isGallery, onImagesChange }) => {
+const UploadWidget = ({ isGallery, onImagesChange, initialImages = [] }) => {
   const widgetRef = useRef();
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState(initialImages);
 
   useEffect(() => {
     widgetRef.current = window.cloudinary.createUploadWidget(
@@ -22,8 +22,18 @@ const UploadWidget = ({ isGallery, onImagesChange }) => {
         }
       }
     );
-  }, [onImagesChange,images]);
-  
+  }, [onImagesChange]);
+
+  useEffect(() => {
+    // Update images when initialImages prop changes
+    setImages(initialImages);
+  }, [initialImages]);
+
+  useEffect(() => {
+    // Notify parent component of initial images
+    onImagesChange(images);
+  }, []);
+
   const handleDescriptionChange = (index, event) => {
     const updatedImages = images.map((image, i) =>
       i === index ? { ...image, description: event.target.value || "" } : image

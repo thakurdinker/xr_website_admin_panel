@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const initialPropertyData = {
   property_name: "",
+  property_name_slug: "",
   description: "",
   price: "",
   type: [],
@@ -127,6 +128,7 @@ const AddProperty = () => {
       },
     }));
   };
+
   const handleDoubleNestedChange = (e, parentKey, childKey, subChildKey) => {
     const { name, value } = e.target;
     setPropertyData((prev) => ({
@@ -140,6 +142,7 @@ const AddProperty = () => {
       },
     }));
   };
+
   const convertStringToArray = (field, delimiter = ",") => {
     if (typeof field === "string") {
       return field.split(delimiter).map((item) => item.trim());
@@ -149,14 +152,20 @@ const AddProperty = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Convert string fields to arrays
     propertyData.type = convertStringToArray(propertyData.type);
     propertyData.status = convertStringToArray(propertyData.status);
-    propertyData.features.amenities = convertStringToArray(propertyData.features.amenities);
-    propertyData.community_features.nearby_facilities = convertStringToArray(propertyData.community_features.nearby_facilities);
-    propertyData.community_features.transportation = convertStringToArray(propertyData.community_features.transportation);
-  
+    propertyData.features.amenities = convertStringToArray(
+      propertyData.features.amenities
+    );
+    propertyData.community_features.nearby_facilities = convertStringToArray(
+      propertyData.community_features.nearby_facilities
+    );
+    propertyData.community_features.transportation = convertStringToArray(
+      propertyData.community_features.transportation
+    );
+
     // Make API request using axios
     try {
       if (id) {
@@ -175,8 +184,7 @@ const AddProperty = () => {
         console.log(propertyData, "no id");
         console.log(response.data, "no id");
       }
-      // Reset form after successful submission
-      // setPropertyData(initialPropertyData);
+      navigate("/manage-properties");
     } catch (error) {
       console.error("Error adding/updating property:", error);
     }
@@ -192,7 +200,7 @@ const AddProperty = () => {
               className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 md:grid-cols-12"
             >
               {/* Property Name */}
-              <div className="mb-5 md:col-span-4">
+              <div className="mb-5 md:col-span-3">
                 <label className="mb-2 block text-sm font-medium text-black dark:text-white">
                   Property Name
                 </label>
@@ -205,9 +213,24 @@ const AddProperty = () => {
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                 />
               </div>
+              
+              {/* Property Name  Slug*/}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-2 block text-sm font-medium text-black dark:text-white">
+                  Property Name Slug
+                </label>
+                <input
+                  type="text"
+                  name="property_name_slug"
+                  value={propertyData?.property_name_slug}
+                  onChange={handleChange}
+                  placeholder="Enter property name slug"
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                />
+              </div>
 
               {/* Status */}
-              <div className="mb-5 md:col-span-4">
+              <div className="mb-5 md:col-span-3">
                 <label className="mb-2 block text-sm font-medium text-black dark:text-white">
                   Status
                 </label>
@@ -222,7 +245,7 @@ const AddProperty = () => {
               </div>
 
               {/* Type */}
-              <div className="mb-5 md:col-span-4">
+              <div className="mb-5 md:col-span-3">
                 <label className="mb-2 block text-sm font-medium text-black dark:text-white">
                   Type
                 </label>
@@ -462,6 +485,7 @@ const AddProperty = () => {
                 <UploadWidget
                   isGallery={false}
                   onImagesChange={handleImagesChange}
+                  initialImages={propertyData?.images || []}
                 />
               </div>
 
@@ -474,6 +498,7 @@ const AddProperty = () => {
                 <UploadWidget
                   isGallery={true}
                   onImagesChange={handleGalleryChange}
+                  initialImages={propertyData?.gallery || []}
                 />
               </div>
 
@@ -490,8 +515,8 @@ const AddProperty = () => {
                   placeholder="Enter community name"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                 />
-              </div> 
-              
+              </div>
+
               {/* Community Name Slug*/}
               <div className="mb-5 md:col-span-3">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">

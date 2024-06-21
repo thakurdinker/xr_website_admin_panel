@@ -51,6 +51,10 @@ const ManageProperties = () => {
     }
   };
 
+  const formatDate = (isoDate) => {
+    const dateObject = new Date(isoDate);
+    return dateObject.toLocaleString();
+  };
 
   return (
     <DefaultLayout>
@@ -103,19 +107,19 @@ const ManageProperties = () => {
 
                   <div className="col-span-2 flex items-center">
                     <p className="text-[#637381] dark:text-bodydark">
-                      {property.createdAt}
+                    {formatDate(property.createdAt)}
                     </p>
                   </div>
 
                   <div className="col-span-2 flex items-center">
                     <p className="text-[#637381] dark:text-bodydark">
-                      {property.updatedAt}
+                    {formatDate(property.updatedAt)}
                     </p>
                   </div>
 
                   <div className="col-span-2 flex items-center justify-end space-x-2">
-                    <button className="text-primary" onClick={() => handleEditClick(property.id)}><MdEditDocument className="h-6 w-6"/></button>
-                    <button className="text-red" onClick={() => handleDeleteClick(property.id)}><MdDeleteForever className="h-7 w-7"/></button>
+                    <button className="text-white" onClick={() => handleEditClick(property.id)}><MdEditDocument className="h-6 w-6"/></button>
+                    <button className="text-red" onClick={() => handleDeleteClick(property.id)}><MdDeleteForever className="h-8 w-8"/></button>
                   </div>
                 </div>
               ))}
