@@ -3,6 +3,7 @@ import axios from "axios";
 import DefaultLayout from "../../layout/DefaultLayout";
 import UploadWidget from "../../components/UploadWidget/UploadWidget";
 import { useNavigate, useParams } from "react-router-dom";
+import { FETCH_ALL_AGENTS, FETCH_ALL_PROPERTIES } from "../../api/constants";
 
 const initialPropertyData = {
   property_name: "",
@@ -71,7 +72,7 @@ const AddProperty = () => {
     const fetchPropertyData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3333/properties/${id}`
+          FETCH_ALL_AGENTS+`/${id}`
         );
         setPropertyData((prev) =>
           updatePropertyData(prev, response.data.property)
@@ -171,18 +172,16 @@ const AddProperty = () => {
       if (id) {
         // Update existing property
         const response = await axios.put(
-          `http://localhost:3333/properties/${id}`,
+          FETCH_ALL_PROPERTIES+`/${id}`,
           propertyData
         );
-        console.log(response.data, "id");
       } else {
         // Create new property
         const response = await axios.post(
-          "http://localhost:3333/properties",
+          FETCH_ALL_PROPERTIES,
           propertyData
         );
-        console.log(propertyData, "no id");
-        console.log(response.data, "no id");
+        
       }
       navigate("/manage-properties");
     } catch (error) {
@@ -343,7 +342,6 @@ const AddProperty = () => {
                   name="lat"
                   value={propertyData?.location?.coordinates?.lat}
                   onChange={(e) => {
-                    console.log(e.target.value);
                     handleDoubleNestedChange(
                       e,
                       "location",

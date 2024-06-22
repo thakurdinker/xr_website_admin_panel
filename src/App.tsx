@@ -49,6 +49,8 @@ import Loader from "./common/Loader";
 import PageTitle from "./components/PageTitle";
 import ProFormElements from "./pages/Form/ProFormElements";
 import AddProperty from "./pages/Form/AddProperty.jsx";
+import AddPost from "./pages/Form/AddPost.jsx";
+import AddAgent from "./pages/Form/AddAgent.jsx";
 import ProTables from "./pages/Tables/ProTables";
 import TermsConditions from "./pages/Pages/TermsConditions";
 import Faq from "./pages/Pages/Faq";
@@ -62,6 +64,8 @@ import UnderMaintenance from "./pages/Authentication/UnderMaintenance";
 import UsersList from "./pages/Users";
 import EditUser from "./pages/Users/EditUser";
 import ManageProperties from "./pages/ManageProperties/ManageProperties.jsx";
+import ManagePosts from "./pages/ManagePosts/ManagePosts.jsx";
+import ManageAgents from "./pages/ManageAgents/ManageAgents.jsx";
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -116,6 +120,15 @@ function App() {
               <ManageProperties />
             </>
           }
+
+        /><Route
+          path="/manage-agents"
+          element={
+            <>
+              <PageTitle title="Manage Agents" />
+              <ManageAgents />
+            </>
+          }
         />
 
         <Route
@@ -164,11 +177,11 @@ function App() {
           }
         />
         <Route
-          path="/profile"
+          path="/manage-posts"
           element={
             <>
               <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Profile />
+              <ManagePosts />
             </>
           }
         />
@@ -227,11 +240,47 @@ function App() {
           }
         />
         <Route
+          path="/forms/add-agent/:id"
+          element={
+            <>
+              <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <AddAgent />
+            </>
+          }
+        />
+        <Route
+          path="/forms/add-post/:id"
+          element={
+            <>
+              <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <AddPost />
+            </>
+          }
+        />
+        <Route
           path="/forms/add-property"
           element={
             <>
               <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <AddProperty />
+            </>
+          }
+        /> 
+        <Route
+          path="/forms/add-post"
+          element={
+            <>
+              <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <AddPost/>
+            </>
+          }
+        />
+        <Route
+          path="/forms/add-agent"
+          element={
+            <>
+              <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <AddAgent/>
             </>
           }
         />

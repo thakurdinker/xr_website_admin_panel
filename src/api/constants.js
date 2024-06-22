@@ -4,3 +4,5 @@ export const REGISTER_USER = BASE_URL + "register";
 export const UPDATE_USER = BASE_URL + "getUsers";
 export const GET_ALL_ROLES = BASE_URL + "roles";
 export const FETCH_ALL_PROPERTIES = BASE_URL + "properties";
+export const FETCH_ALL_POSTS = BASE_URL + "content";
+export const FETCH_ALL_AGENTS = BASE_URL + "agents";
