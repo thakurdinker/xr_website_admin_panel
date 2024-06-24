@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
-const UploadWidget = ({ isGallery, onImagesChange, initialImages = [] }) => {
+const UploadWidget = ({
+  isGallery,
+  onImagesChange,
+  initialImages = [],
+  isProfilePic,
+}) => {
   const widgetRef = useRef();
   const [images, setImages] = useState(initialImages);
 
@@ -17,8 +22,13 @@ const UploadWidget = ({ isGallery, onImagesChange, initialImages = [] }) => {
             url: result.info.secure_url,
             description: "",
           };
-          setImages((prevImages) => [...prevImages, uploadedImage]);
-          onImagesChange([...images, uploadedImage]); // Update parent component's state
+          if (isProfilePic) {
+            setImages([uploadedImage]);
+            onImagesChange([uploadedImage]);
+          } else {
+            setImages((prevImages) => [...prevImages, uploadedImage]);
+            onImagesChange([...images, uploadedImage]);
+          }
         }
       }
     );
@@ -61,31 +71,36 @@ const UploadWidget = ({ isGallery, onImagesChange, initialImages = [] }) => {
       >
         Upload
       </button>
-      <div className="mt-4 grid grid-cols-1">
-        {images.map((image, index) => (
-          <div key={index} className="relative mb-4">
-            <img 
-              src={image.url}
-              alt={`Uploaded ${index + 1}`}
-              className="mb-2 h-20 w-20"
-            />
-            {!isGallery &&(<textarea
-              name="description"
-              value={image.description}
-              onChange={(event) => handleDescriptionChange(index, event)}
-              placeholder="Enter image description"
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            ></textarea>)}
-            
-            <button
-              onClick={() => handleDelete(index)}
-              className="absolute right-0 top-0  text-2xl text-black dark:text-white"
-            >
-              &times;
-            </button>
-          </div>
-        ))}
-      </div>
+      {!isProfilePic && (
+        <div className="mt-4 grid grid-cols-1">
+          {images.map((image, index) => (
+            <div key={index} className="relative mb-4">
+              <img
+                src={image.url}
+                alt={`Uploaded ${index + 1}`}
+                className="mb-2 h-20 w-20"
+              />
+              {!isGallery && (
+                <textarea
+                  name="description"
+                  value={image.description}
+                  onChange={(event) => handleDescriptionChange(index, event)}
+                  placeholder="Enter image description"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                ></textarea>
+              )}
+
+              <button
+                onClick={() => handleDelete(index)}
+                className="absolute right-0 top-0  text-2xl text-black dark:text-white"
+              >
+                &times;
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
     </div>
   );
 };

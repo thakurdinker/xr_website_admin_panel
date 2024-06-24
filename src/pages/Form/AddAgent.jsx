@@ -3,10 +3,10 @@ import DefaultLayout from "../../layout/DefaultLayout";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { FETCH_ALL_AGENTS } from "../../api/constants";
+import UploadWidget from "../../components/UploadWidget/UploadWidget";
 
 const ProfileForm = () => {
   const { id } = useParams();
-
   const [formData, setFormData] = useState({
     name: "",
     name_slug: "",
@@ -43,7 +43,6 @@ const ProfileForm = () => {
       try {
         const response = await axios.get(FETCH_ALL_AGENTS + `/${id}`);
         setFormData(response.data.agent);
-        console.log(response.data.agent, "999999990000");
       } catch (error) {
         console.error("Error fetching property data:", error);
       }
@@ -65,6 +64,13 @@ const ProfileForm = () => {
       ...prevData,
       [parentKey]: { ...prevData[parentKey], [childKey]: value },
     }));
+  };
+
+  const handleImagesChange = (images) => {
+    if (images.length > 0) {
+      const imageUrl = images[images.length - 1].url;
+      setFormData(prevData => ({ ...prevData, profile_picture: imageUrl }));
+    }
   };
 
   const handleArrayChange = (e, index, arrayName) => {
@@ -100,11 +106,9 @@ const ProfileForm = () => {
       if (id) {
         // Update existing property
         const response = await axios.put(FETCH_ALL_AGENTS + `/${id}`, formData);
-        console.log(response.data, "0000000");
       } else {
         // Create new property
         const response = await axios.post(FETCH_ALL_AGENTS, formData);
-        console.log(response.data, "1110000");
       }
       navigate("/manage-agents"); 
     } catch (error) {
@@ -175,15 +179,21 @@ const ProfileForm = () => {
 
               {/* Profile Picture */}
               <div className="mb-5 md:col-span-12">
-                <label className="block">Profile Picture</label>
-                <input
-                  type="text"
-                  name="profile_picture"
-                  value={formData.profile_picture}
-                  onChange={handleChange}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Profile Picture
+                </label>
+                {/* Cloudinary Upload Widget */}
+                <UploadWidget
+                  isProfilePic="true"
+                  onImagesChange={handleImagesChange}
+                  initialImages={formData.profile_picture ? [{ url: formData.profile_picture }] : []}
                   required
                 />
+                {formData.profile_picture && (
+                  <div className="mt-2">
+                    <img src={formData.profile_picture} alt="Profile" className="h-20 w-20 object-cover" />
+                  </div>
+                )}
               </div>
 
               {/* Bio */}
@@ -206,6 +216,7 @@ const ProfileForm = () => {
                   value={formData.personal_info}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  required
                 />
               </div>
 
@@ -246,6 +257,7 @@ const ProfileForm = () => {
                   value={formData.specialties}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  required
                 />
               </div>
 
@@ -272,6 +284,7 @@ const ProfileForm = () => {
                     handleNestedChange(e, "social_links", "linkedin")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  required
                 />
               </div>
               <div className="mb-5 md:col-span-4">
@@ -284,6 +297,7 @@ const ProfileForm = () => {
                     handleNestedChange(e, "social_links", "twitter")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  required
                 />
               </div>
               <div className="mb-5 md:col-span-4">
@@ -296,6 +310,7 @@ const ProfileForm = () => {
                     handleNestedChange(e, "social_links", "facebook")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  required
                 />
               </div>
 
@@ -308,6 +323,7 @@ const ProfileForm = () => {
                   value={formData.video_links}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  required
                 />
               </div>
 
@@ -320,6 +336,7 @@ const ProfileForm = () => {
                   value={formData.seo.meta_title}
                   onChange={(e) => handleNestedChange(e, "seo", "meta_title")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  required
                 />
               </div>
               <div className="mb-5 md:col-span-4">
@@ -332,6 +349,7 @@ const ProfileForm = () => {
                     handleNestedChange(e, "seo", "meta_description")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  required
                 />
               </div>
               <div className="mb-5 md:col-span-4">
@@ -342,11 +360,23 @@ const ProfileForm = () => {
                   value={formData.seo.keywords}
                   onChange={(e) => handleNestedChange(e, "seo", "keywords")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  required
                 />
               </div>
 
               {/* Schema Properties */}
-              <div className="mb-5 md:col-span-12">
+              <div className="mb-5 md:col-span-4">
+                <label className="block">Schema Type</label>
+                <textarea
+                  name="schema_org.type"
+                  value={JSON.stringify(formData.schema_org.type)}
+                  onChange={handleChange}
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  required
+                />
+              </div>
+
+              <div className="mb-5 md:col-span-8">
                 <label className="block">Schema Properties (JSON format)</label>
                 <textarea
                   name="schema_org.properties"
@@ -366,6 +396,7 @@ const ProfileForm = () => {
                   value={formData.open_graph.title}
                   onChange={(e) => handleNestedChange(e, "open_graph", "title")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  required
                 />
               </div>
 
@@ -377,6 +408,7 @@ const ProfileForm = () => {
                   value={formData.open_graph.image}
                   onChange={(e) => handleNestedChange(e, "open_graph", "image")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  required
                 />
               </div>
 
@@ -390,6 +422,7 @@ const ProfileForm = () => {
                     handleNestedChange(e, "open_graph", "description")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  required
                 />
               </div>
 
