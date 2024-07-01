@@ -7,7 +7,6 @@ import Marketing from "./pages/Dashboard/Marketing";
 import CRM from "./pages/Dashboard/CRM";
 import Stocks from "./pages/Dashboard/Stocks";
 import Calendar from "./pages/Calendar";
-import Profile from "./pages/Profile";
 import TaskKanban from "./pages/Task/TaskKanban";
 import TaskList from "./pages/Task/TaskList";
 import FormElements from "./pages/Form/FormElements";
@@ -66,6 +65,7 @@ import EditUser from "./pages/Users/EditUser";
 import ManageProperties from "./pages/ManageProperties/ManageProperties.jsx";
 import ManagePosts from "./pages/ManagePosts/ManagePosts.jsx";
 import ManageAgents from "./pages/ManageAgents/ManageAgents.jsx";
+import AddHomePageVideo from "./pages/Form/AddHomePageVideo.jsx";
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -677,6 +677,15 @@ function App() {
             <>
               <PageTitle title="Under Maintenance | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <UnderMaintenance />
+            </>
+          }
+        />
+        <Route
+          path="/homepageVideo"
+          element={
+            <>
+              <PageTitle title="Under Maintenance | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <AddHomePageVideo />
             </>
           }
         />

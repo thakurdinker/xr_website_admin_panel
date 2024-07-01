@@ -61,7 +61,7 @@ const ManageProperties = () => {
         <div className="max-w-full overflow-x-auto">
           <div>
             {/* table header start */}
-            <div className="grid grid-cols-10 bg-[#F9FAFB] px-5 py-4 dark:bg-meta-4 lg:px-7.5 2xl:px-11">
+            <div className="grid grid-cols-10 bg-[#F9FAFB] px-5 py-4 dark:bg-meta-4 lg:px-7.5 2xl:px-11 ">
               <div className="col-span-2 flex items-center">
                 <h5 className="text-xs md:text-base font-medium text-[#637381] dark:text-bodydark">
                   NAME

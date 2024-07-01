@@ -4,6 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { FETCH_ALL_AGENTS } from "../../api/constants";
 import UploadWidget from "../../components/UploadWidget/UploadWidget";
+import "react-phone-number-input/style.css";
+import PhoneInput from "react-phone-number-input";
 
 const ProfileForm = () => {
   const { id } = useParams();
@@ -167,13 +169,11 @@ const ProfileForm = () => {
               {/* Phone */}
               <div className="mb-5 md:col-span-3">
                 <label className="block">Phone</label>
-                <input
-                  type="text"
-                  name="phone"
+                <PhoneInput
+                  placeholder="Enter phone number"
                   value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  onChange={(phone) => setFormData((prevData) => ({ ...prevData, phone }))}
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-black dark:focus:border-white"
                 />
               </div>
 
@@ -186,12 +186,20 @@ const ProfileForm = () => {
                 <UploadWidget
                   isProfilePic="true"
                   onImagesChange={handleImagesChange}
-                  initialImages={formData.profile_picture ? [{ url: formData.profile_picture }] : []}
+                  initialImages={
+                    formData.profile_picture
+                      ? [{ url: formData.profile_picture }] 
+                      : []
+                  }
                   required
                 />
                 {formData.profile_picture && (
                   <div className="mt-2">
-                    <img src={formData.profile_picture} alt="Profile" className="h-20 w-20 object-cover" />
+                    <img
+                      src={formData.profile_picture}
+                      alt="Profile"
+                      className="h-20 w-20 object-cover"
+                    />
                   </div>
                 )}
               </div>

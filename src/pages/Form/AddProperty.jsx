@@ -108,18 +108,18 @@ const AddProperty = () => {
   };
 
   const handleGalleryChange = (updatedGallery) => {
-    const imagesToSend = updatedGallery.map((image) => ({
+    const imagesToSend = updatedGallery.map((image) => ({ 
       url: image.url,
       description: "null", // Add this line to handle missing description
     }));
     setPropertyData((prev) => ({
-      ...prev,  
+      ...prev,
       gallery: imagesToSend,
     }));
   };
 
   const handleNestedChange = (e, parentKey, childKey) => {
-  const { name, value } = e.target;
+    const { name, value } = e.target;
     setPropertyData((prev) => ({
       ...prev,
       [parentKey]: {
@@ -209,6 +209,7 @@ const AddProperty = () => {
                   onChange={handleChange}
                   placeholder="Enter property name"
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
                 />
               </div>
               
