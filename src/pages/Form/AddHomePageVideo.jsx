@@ -24,7 +24,7 @@ const HomePageVideoForm = () => {
         console.log(response.data.homePageVideos);
         setId(response.data.homePageVideos._id)
         const { mainVideo, videos } = response.data.homePageVideos;
-
+        
         setFormData({
           mainVideo: {
             url: mainVideo.url,
@@ -77,7 +77,7 @@ const HomePageVideoForm = () => {
           mainVideoAgentId: mainVideo.agent,
           additionalVideos: videos.map((video) => ({
             url: video.url,
-            agentId: video.agent._id,
+            agentId: video.agent,
           })),
         }
       );
