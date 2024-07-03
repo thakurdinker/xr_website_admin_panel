@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import DefaultLayout from "../../layout/DefaultLayout";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const HomePageVideoForm = () => {
   const [id, setId] = useState();
@@ -99,8 +101,11 @@ const HomePageVideoForm = () => {
         response = await axios.post("http://localhost:3333/homePageVideo", payload);
       }
       console.log("Form data submitted:", response.data);
+      if(response.data.success) toast.success("Form data submitted successfully!");
+      else if (!response.data.success) toast.error("Error submitting form. Please try again.");
     } catch (error) {
       console.error("Error submitting form:", error);
+      toast.error("Error submitting form. Please try again.");
     }
   };
 
@@ -193,6 +198,7 @@ const HomePageVideoForm = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </DefaultLayout>
   );
 };
