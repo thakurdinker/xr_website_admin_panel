@@ -50,6 +50,7 @@ import ProFormElements from "./pages/Form/ProFormElements";
 import AddProperty from "./pages/Form/AddProperty.jsx";
 import AddPost from "./pages/Form/AddPost.jsx";
 import AddAgent from "./pages/Form/AddAgent.jsx";
+import AddCommunity from "./pages/Form/AddCommunity.jsx";
 import ProTables from "./pages/Tables/ProTables";
 import TermsConditions from "./pages/Pages/TermsConditions";
 import Faq from "./pages/Pages/Faq";
@@ -65,6 +66,7 @@ import EditUser from "./pages/Users/EditUser";
 import ManageProperties from "./pages/ManageProperties/ManageProperties.jsx";
 import ManagePosts from "./pages/ManagePosts/ManagePosts.jsx";
 import ManageAgents from "./pages/ManageAgents/ManageAgents.jsx";
+import ManageCommunities from "./pages/ManageCommunities/ManageCommunities.jsx";
 import AddHomePageVideo from "./pages/Form/AddHomePageVideo.jsx";
 
 function App() {
@@ -121,12 +123,22 @@ function App() {
             </>
           }
 
-        /><Route
+        />
+        <Route
           path="/manage-agents"
           element={
             <>
               <PageTitle title="Manage Agents" />
               <ManageAgents />
+            </>
+          }
+        />
+        <Route
+          path="/manage-communities"
+          element={
+            <>
+              <PageTitle title="Manage Communities" />
+              <ManageCommunities />
             </>
           }
         />
@@ -281,6 +293,24 @@ function App() {
             <>
               <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <AddAgent/>
+            </>
+          }
+        />
+        <Route
+          path="/forms/add-community"
+          element={
+            <>
+              <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <AddCommunity/>
+            </>
+          }
+        />
+        <Route
+          path="/forms/add-community/:id"
+          element={
+            <>
+              <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <AddCommunity />
             </>
           }
         />
@@ -689,6 +719,7 @@ function App() {
             </>
           }
         />
+        
       </Routes>
     </>
   );

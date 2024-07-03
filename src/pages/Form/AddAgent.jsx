@@ -372,7 +372,7 @@ const ProfileForm = () => {
                 />
               </div>
 
-              {/* Schema Properties */}
+              {/* Schema */}
               <div className="mb-5 md:col-span-4">
                 <label className="block">Schema Type</label>
                 <textarea

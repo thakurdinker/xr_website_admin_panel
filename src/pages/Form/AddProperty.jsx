@@ -7,6 +7,7 @@ import {
   FETCH_ALL_AGENTS,
   FETCH_ALL_PROPERTIES,
   FETCH_ALL_PROPERTY_TYPES,
+  FETCH_ALL_COMMUNITIES,
 } from "../../api/constants";
 
 const initialPropertyData = {
@@ -74,9 +75,9 @@ const AddProperty = () => {
     // Fetch property data based on the ID from your API
     const fetchPropertyData = async () => {
       try {
-        const response1 = await axios.get(FETCH_ALL_PROPERTIES + `/${id}`);
+        const response = await axios.get(FETCH_ALL_PROPERTIES + `/${id}`);
         setPropertyData((prev) =>
-          updatePropertyData(prev, response1.data.property)
+          updatePropertyData(prev, response.data.property)
         );
       } catch (error) {
         console.error("Error fetching property data:", error);
@@ -90,30 +91,40 @@ const AddProperty = () => {
 
   useEffect(() => {
     const fetchPropertyTypes = async () => {
-      const response2 = await axios.get(FETCH_ALL_PROPERTY_TYPES);
-      setPropertyType(response2.data.propertyTypes);
-      console.log(response2.data.propertyTypes);
+      const response = await axios.get(FETCH_ALL_PROPERTY_TYPES);
+      console.log(response, "9999999999");
+      setPropertyType(response.data.propertyTypes);
     };
     fetchPropertyTypes();
   }, []);
 
   useEffect(() => {
-    const fetchAgents = async () => {
-      const response3 = await axios.get(FETCH_ALL_AGENTS);
-      setAgents(response3.data.agents);
-      console.log(response3.data.agents);
+    const fetchAllCommunities = async () => {
+      const response = await axios.get(FETCH_ALL_COMMUNITIES);
+      setCommunity(response.data.communities);
+      console.log(response.data.communities);
     };
-    fetchAgents();
+    fetchAllCommunities();
   }, []);
 
   const [propertyData, setPropertyData] = useState(initialPropertyData);
   const [propertyType, setPropertyType] = useState("");
-  const [agents, setAgents] = useState([]);
+  const [community, setCommunity] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setPropertyData((prev) => ({ ...prev, [name]: value }));
+    let community_slug = "";
+    for (let i = 0; i < community.length; i++) {
+      if (community[i].slug === value) {
+        community_slug = value;
+      }
+    }
+    setPropertyData((prev) => ({
+      ...prev,
+      [name]: value,
+      community_name_slug: community_slug,
+    }));
   };
 
   const handleImagesChange = (updatedImages) => {
@@ -196,7 +207,7 @@ const AddProperty = () => {
           FETCH_ALL_PROPERTIES + `/${id}`,
           propertyData
         );
-        console.log(response,"&&&&&&&&&&&");
+        console.log(response, "&&&&&&&&&&&");
       } else {
         // Create new property
         const response = await axios.post(FETCH_ALL_PROPERTIES, propertyData);
@@ -271,7 +282,7 @@ const AddProperty = () => {
                 </label>
                 <select
                   name="type"
-                  value={propertyData?.type}
+                  value={propertyData?.type || ""}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
@@ -281,7 +292,7 @@ const AddProperty = () => {
                   </option>
                   {Array.isArray(propertyType) &&
                     propertyType.map((type) => (
-                      <option key={type.id} value={type.name_slug}>
+                      <option key={type.name_slug} value={type.name_slug}>
                         {type.name}
                       </option>
                     ))}
@@ -547,15 +558,23 @@ const AddProperty = () => {
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Community Name
                 </label>
-                <input
-                  type="text"
+                <select
                   name="community_name"
                   value={propertyData?.community_name}
                   onChange={handleChange}
-                  placeholder="Enter community name"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
-                />
+                >
+                  <option value="" disabled>
+                    Select community
+                  </option>
+                  {Array.isArray(community) &&
+                    community.map((comm) => (
+                      <option key={comm.id} value={comm.slug}>
+                        {comm.name}
+                      </option>
+                    ))}
+                </select>
               </div>
 
               {/* Community Name Slug*/}
@@ -564,6 +583,7 @@ const AddProperty = () => {
                   Community Name Slug
                 </label>
                 <input
+                    disabled
                   type="text"
                   name="community_name_slug"
                   value={propertyData?.community_name_slug}

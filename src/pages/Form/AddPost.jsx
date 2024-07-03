@@ -258,6 +258,7 @@ const ContentForm = () => {
                   />
                 </div>
 
+                {/* FAQs */}
                 <div className="mb-5 md:col-span-12">
                   <h3 className="mb-2">FAQs</h3>
                   {formData.faqs.map((faq, index) => (
@@ -294,6 +295,7 @@ const ContentForm = () => {
                     Add FAQ
                   </button>
                 </div>
+
                 {/* Meta Title */}
                 <div className="mb-5 md:col-span-3">
                   <label className="block">Meta Title</label>
