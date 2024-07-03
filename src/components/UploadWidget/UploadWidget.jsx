@@ -67,7 +67,7 @@ const UploadWidget = ({ isGallery, onImagesChange, initialImages = [], isProfile
             <img 
               src={image.url}
               alt={`Uploaded ${index + 1}`}
-              className="mb-2 h-20 w-20"
+              className="mb-2 h-20 w-20 object-cover"
             />
             {!isGallery &&(<textarea
               name="description"

@@ -3,7 +3,11 @@ import axios from "axios";
 import DefaultLayout from "../../layout/DefaultLayout";
 import UploadWidget from "../../components/UploadWidget/UploadWidget";
 import { useNavigate, useParams } from "react-router-dom";
-import { FETCH_ALL_AGENTS, FETCH_ALL_PROPERTIES } from "../../api/constants";
+import {
+  FETCH_ALL_AGENTS,
+  FETCH_ALL_PROPERTIES,
+  FETCH_ALL_PROPERTY_TYPES,
+} from "../../api/constants";
 
 const initialPropertyData = {
   property_name: "",
@@ -70,11 +74,9 @@ const AddProperty = () => {
     // Fetch property data based on the ID from your API
     const fetchPropertyData = async () => {
       try {
-        const response = await axios.get(
-          FETCH_ALL_PROPERTIES+`/${id}`
-        );
+        const response1 = await axios.get(FETCH_ALL_PROPERTIES + `/${id}`);
         setPropertyData((prev) =>
-          updatePropertyData(prev, response.data.property)
+          updatePropertyData(prev, response1.data.property)
         );
       } catch (error) {
         console.error("Error fetching property data:", error);
@@ -86,7 +88,27 @@ const AddProperty = () => {
     }
   }, [id]);
 
+  useEffect(() => {
+    const fetchPropertyTypes = async () => {
+      const response2 = await axios.get(FETCH_ALL_PROPERTY_TYPES);
+      setPropertyType(response2.data.propertyTypes);
+      console.log(response2.data.propertyTypes);
+    };
+    fetchPropertyTypes();
+  }, []);
+
+  useEffect(() => {
+    const fetchAgents = async () => {
+      const response3 = await axios.get(FETCH_ALL_AGENTS);
+      setAgents(response3.data.agents);
+      console.log(response3.data.agents);
+    };
+    fetchAgents();
+  }, []);
+
   const [propertyData, setPropertyData] = useState(initialPropertyData);
+  const [propertyType, setPropertyType] = useState("");
+  const [agents, setAgents] = useState([]);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -108,7 +130,7 @@ const AddProperty = () => {
   };
 
   const handleGalleryChange = (updatedGallery) => {
-    const imagesToSend = updatedGallery.map((image) => ({ 
+    const imagesToSend = updatedGallery.map((image) => ({
       url: image.url,
       description: "null", // Add this line to handle missing description
     }));
@@ -171,16 +193,13 @@ const AddProperty = () => {
       if (id) {
         // Update existing property
         const response = await axios.put(
-          FETCH_ALL_PROPERTIES+`/${id}`,
+          FETCH_ALL_PROPERTIES + `/${id}`,
           propertyData
         );
+        console.log(response,"&&&&&&&&&&&");
       } else {
         // Create new property
-        const response = await axios.post(
-          FETCH_ALL_PROPERTIES,
-          propertyData
-        );
-        
+        const response = await axios.post(FETCH_ALL_PROPERTIES, propertyData);
       }
       navigate("/manage-properties");
     } catch (error) {
@@ -212,7 +231,7 @@ const AddProperty = () => {
                   required
                 />
               </div>
-              
+
               {/* Property Name  Slug*/}
               <div className="mb-5 md:col-span-3">
                 <label className="mb-2 block text-sm font-medium text-black dark:text-white">
@@ -250,15 +269,23 @@ const AddProperty = () => {
                 <label className="mb-2 block text-sm font-medium text-black dark:text-white">
                   Type
                 </label>
-                <input
-                  type="text"
+                <select
                   name="type"
                   value={propertyData?.type}
                   onChange={handleChange}
-                  placeholder="Enter property type"
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
-                />
+                >
+                  <option value="" disabled>
+                    Select type
+                  </option>
+                  {Array.isArray(propertyType) &&
+                    propertyType.map((type) => (
+                      <option key={type.id} value={type.name_slug}>
+                        {type.name}
+                      </option>
+                    ))}
+                </select>
               </div>
 
               {/* Description */}
@@ -500,7 +527,6 @@ const AddProperty = () => {
                   onImagesChange={handleImagesChange}
                   initialImages={propertyData?.images || []}
                 />
-                
               </div>
 
               {/* Gallery */}

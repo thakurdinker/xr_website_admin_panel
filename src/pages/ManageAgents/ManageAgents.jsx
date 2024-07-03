@@ -20,7 +20,6 @@ function ManageAgents() {
         const response = await axios.get(
           FETCH_ALL_AGENTS + `?page=${currentPage}`
         );
-        console.log(response.data.agents, "------");
         if (response.data.success) {
           setProperties(response.data.agents);
           setTotalPages(response.data.totalPages);
@@ -102,7 +101,7 @@ function ManageAgents() {
                 >
                   <div className="col-span-2 flex items-center">
                     <p className="text-xs text-[#637381] dark:text-bodydark md:text-base">
-                      <img className="w-35 h-20 object-cover rounded-lg" src={property.profile_picture} alt="profile picture" />
+                      <img className="w-30 h-35 object-cover object-top rounded-lg" src={property.profile_picture} alt="profile picture" />
                     </p>
                   </div>
 
