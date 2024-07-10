@@ -38,7 +38,6 @@ function ManageAgents() {
   };
 
   const handleDeleteClick = async (id) => {
-    console.log(id,"----");
     try {
       const response = await axios.delete(FETCH_ALL_AGENTS + `/${id}`);
       if (response.data.success) {

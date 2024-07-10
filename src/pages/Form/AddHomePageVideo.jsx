@@ -3,6 +3,7 @@ import DefaultLayout from "../../layout/DefaultLayout";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { FETCH_ALL_AGENTS, HOME_PAGE_VIDEOS } from "../../api/constants";
 
 const HomePageVideoForm = () => {
   const [id, setId] = useState();
@@ -23,7 +24,7 @@ const HomePageVideoForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3333/homePageVideo");
+        const response = await axios.get(HOME_PAGE_VIDEOS);
         if (response.data.homePageVideos) {
           setId(response.data.homePageVideos._id);
           const { mainVideo, videos } = response.data.homePageVideos;
@@ -48,7 +49,7 @@ const HomePageVideoForm = () => {
 
     const fetchAgents = async () => {
       try {
-        const response = await axios.get("http://localhost:3333/agents");
+        const response = await axios.get(FETCH_ALL_AGENTS);
         setAgents(response.data.agents);
       } catch (error) {
         console.error("Error fetching agents:", error);
@@ -96,11 +97,10 @@ const HomePageVideoForm = () => {
 
       let response;
       if (id) {
-        response = await axios.put(`http://localhost:3333/homePageVideo/${id}`, payload);
+        response = await axios.put(HOME_PAGE_VIDEOS+`/${id}`, payload);
       } else {
-        response = await axios.post("http://localhost:3333/homePageVideo", payload);
+        response = await axios.post(HOME_PAGE_VIDEOS, payload);
       }
-      console.log("Form data submitted:", response.data);
       if(response.data.success) toast.success("Form data submitted successfully!");
       else if (!response.data.success) toast.error("Error submitting form. Please try again.");
     } catch (error) {

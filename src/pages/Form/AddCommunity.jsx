@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import DefaultLayout from "../../layout/DefaultLayout";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import UploadWidget from "../../components/UploadWidget/UploadWidget";
+import UploadImages from "../../components/UploadWidget/UploadImages";
 import "react-phone-number-input/style.css";
 import { FETCH_ALL_AGENTS, FETCH_ALL_COMMUNITIES } from "../../api/constants";
 
@@ -52,12 +52,10 @@ const CommunityForm = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(id,"-=-=-=---=-=--=-=0=9-99089");
     const fetchFormData = async () => {
       try {
         const response = await axios.get(FETCH_ALL_COMMUNITIES + `/${id}`);
         setFormData(response.data.community);
-        console.log(response.data.community);
       } catch (error) {
         console.error("Error fetching community data:", error);
       }
@@ -162,7 +160,6 @@ const CommunityForm = () => {
       } else {
         // Create new property
         const response = await axios.post(FETCH_ALL_COMMUNITIES, formData);
-        console.log(response.data, "-=--=-=-=-=-=-=-=---=-=");
       }
       navigate("/manage-communities");
     } catch (error) {
@@ -411,7 +408,7 @@ const CommunityForm = () => {
                   Images
                 </label>
                 {/* Cloudinary Upload Widget */}
-                <UploadWidget
+                <UploadImages
                   isGallery={false}
                   onImagesChange={handleImagesChange}
                   initialImages={formData?.images || []}

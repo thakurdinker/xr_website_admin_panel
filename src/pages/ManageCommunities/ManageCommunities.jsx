@@ -21,7 +21,6 @@ function ManageCommunities() {
           );
   
           if (response.data.success) {
-            console.log(response.data.communities,"----------");
             setCommunities(response.data.communities);
           }
         } catch (error) {

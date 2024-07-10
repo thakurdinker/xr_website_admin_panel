@@ -3,7 +3,7 @@ import DefaultLayout from "../../layout/DefaultLayout";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { FETCH_ALL_AGENTS } from "../../api/constants";
-import UploadWidget from "../../components/UploadWidget/UploadWidget";
+import UploadWidget from "../../components/UploadWidget/UploadImages";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 

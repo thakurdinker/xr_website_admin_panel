@@ -3,7 +3,7 @@ import DefaultLayout from "../../layout/DefaultLayout";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { FETCH_ALL_POSTS } from "../../api/constants";
-import UploadWidget from "../../components/UploadWidget/UploadWidget";
+import UploadImages from "../../components/UploadWidget/UploadImages";
 
 const ContentForm = () => {
   const { id } = useParams();
@@ -21,7 +21,8 @@ const ContentForm = () => {
     faqs: [{ question: "", answer: "" }],
     meta_title: "",
     meta_description: "",
-    keywords: [""],
+    keywords: [],
+    seo: { meta_title: "", meta_description: "", keywords: "" },
     schema_org: {
       type: "Article",
       properties: {
@@ -74,6 +75,13 @@ const ContentForm = () => {
     setFormData((prevData) => ({ ...prevData, [arrayName]: updatedArray }));
   };
 
+  const convertStringToArray = (field, delimiter = ",") => {
+    if (typeof field === "string") {
+      return field.split(delimiter).map((item) => item.trim());
+    }
+    return field;
+  };
+
   const handleImagesChange = (newImages) => {
     // Create a new array with only the url and description properties
     const imagesToSend = newImages.map((image) => ({
@@ -92,11 +100,11 @@ const ContentForm = () => {
       ...prevData,
       faqs: [...prevData.faqs, { question: "", answer: "" }],
     }));
-  };  
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    formData.seo.keywords = convertStringToArray(formData.seo.keywords);
     // Make API request using axios
     try {
       if (id) {
@@ -245,18 +253,16 @@ const ContentForm = () => {
                   </select>
                 </div>
 
-                <div className="mb-5 md:col-span-12">
+                {/* <div className="mb-5 md:col-span-12">
                   <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                     Images
                   </label>
-                  {/* Cloudinary Upload Widget */}
-                  <UploadWidget
-                    isGallery={false}
+                  <UploadImages
                     onImagesChange={handleImagesChange}
                     initialImages={formData?.images || []}
                     required
                   />
-                </div>
+                </div> */}
 
                 {/* FAQs */}
                 <div className="mb-5 md:col-span-12">
@@ -302,7 +308,7 @@ const ContentForm = () => {
                   <input
                     type="text"
                     name="meta_title"
-                    value={formData.meta_title}
+                    value={formData.seo.meta_title}
                     onChange={handleChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                     required
@@ -315,8 +321,8 @@ const ContentForm = () => {
                   <input
                     type="text"
                     name="meta_description"
-                    value={formData.meta_description}
-                    onChange={handleChange}
+                    value={formData.seo.meta_description}
+                    onChange={handleNestedChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                     required
                   />
@@ -324,17 +330,12 @@ const ContentForm = () => {
 
                 {/* Keywords */}
                 <div className="mb-5 md:col-span-3">
-                  <label className="block">Keywords</label>
+                  <label className="block">SEO Keywords </label>
                   <input
                     type="text"
                     name="keywords"
-                    value={formData.keywords.join(", ")}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        keywords: e.target.value.split(", "),
-                      })
-                    }
+                    value={formData.seo.keywords}
+                    onChange={(e) => handleNestedChange(e, "seo", "keywords")}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                     required
                   />

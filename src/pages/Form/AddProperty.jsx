@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import axios from "axios";
 import DefaultLayout from "../../layout/DefaultLayout";
-import UploadWidget from "../../components/UploadWidget/UploadWidget";
+import UploadGallery from "../../components/UploadWidget/UploadGallery";
+import UploadImages from "../../components/UploadWidget/UploadImages";
+import UploadAmenity from "../../components/UploadWidget/UploadAmenity";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   FETCH_ALL_AGENTS,
@@ -15,6 +17,8 @@ const initialPropertyData = {
   property_name_slug: "",
   description: "",
   price: "",
+  developer: "",
+  developer_name_slug: "",
   type: [],
   location: {
     address: "",
@@ -31,9 +35,12 @@ const initialPropertyData = {
     bathrooms: "",
     area: "",
     year_built: "",
-    amenities: "",
   },
   images: [],
+  gallery_title_1: "",
+  gallery_title_2: "",
+  gallery_description_1: "",
+  gallery_description_2: "",
   gallery: [],
   status: [],
   community_name: "",
@@ -45,6 +52,38 @@ const initialPropertyData = {
   },
   show_property: false,
   featured: false,
+  section_1: {
+    heading: "",
+    title: "",
+    description: "",
+  },
+  about_project: {
+    heading: "",
+    title: "",
+    description: "",
+  },
+  amenities: {
+    description: "",
+    icons: [
+      {
+        icon_url: "",
+        icon_text: "",
+      },
+    ],
+  },
+  faqs: [{ question: "", answer: "" }],
+  seo: { meta_title: "", meta_description: "", keywords: "" },
+  schema_org: {
+    type: "Person",
+    properties: {
+      context: "https://json-ld.org/contexts/person.jsonld",
+      id: "http://dbpedia.org/resource/John_Lennon",
+      name: "John Lennon",
+      born: "1940-10-09",
+      spouse: "http://dbpedia.org/resource/Cynthia_Lennon",
+    },
+  },
+  open_graph: { title: "", description: "", image: "", type: "" },
 };
 
 const AddProperty = () => {
@@ -76,9 +115,10 @@ const AddProperty = () => {
     const fetchPropertyData = async () => {
       try {
         const response = await axios.get(FETCH_ALL_PROPERTIES + `/${id}`);
-        setPropertyData((prev) =>
-          updatePropertyData(prev, response.data.property)
-        );
+        setPropertyData((prev) => ({
+          ...prev,
+          ...response.data.property,
+        }));
       } catch (error) {
         console.error("Error fetching property data:", error);
       }
@@ -92,8 +132,7 @@ const AddProperty = () => {
   useEffect(() => {
     const fetchPropertyTypes = async () => {
       const response = await axios.get(FETCH_ALL_PROPERTY_TYPES);
-      console.log(response, "9999999999");
-      setPropertyType(response.data.propertyTypes);
+      setPropertyType(response?.data?.propertyTypes);
     };
     fetchPropertyTypes();
   }, []);
@@ -101,8 +140,7 @@ const AddProperty = () => {
   useEffect(() => {
     const fetchAllCommunities = async () => {
       const response = await axios.get(FETCH_ALL_COMMUNITIES);
-      setCommunity(response.data.communities);
-      console.log(response.data.communities);
+      setCommunity(response?.data?.communities);
     };
     fetchAllCommunities();
   }, []);
@@ -118,6 +156,7 @@ const AddProperty = () => {
     for (let i = 0; i < community.length; i++) {
       if (community[i].slug === value) {
         community_slug = value;
+        break;
       }
     }
     setPropertyData((prev) => ({
@@ -132,6 +171,7 @@ const AddProperty = () => {
     const imagesToSend = updatedImages.map((image) => ({
       url: image.url,
       description: image.description || "", // Add this line to handle missing description
+      heading: "null",
     }));
 
     setPropertyData((prev) => ({
@@ -139,15 +179,27 @@ const AddProperty = () => {
       images: imagesToSend,
     }));
   };
-
-  const handleGalleryChange = (updatedGallery) => {
-    const imagesToSend = updatedGallery.map((image) => ({
-      url: image.url,
-      description: "null", // Add this line to handle missing description
-    }));
+  const handleAmenitiesChange = (updatedAmenities) => {
     setPropertyData((prev) => ({
       ...prev,
-      gallery: imagesToSend,
+      amenities: {
+        ...prev.amenities,
+        icons: updatedAmenities,
+      },
+    }));
+  };
+
+  const handleGalleryChange = (updatedGallery) => {
+    // Store full objects in state
+    setPropertyData((prev) => ({
+      ...prev,
+      gallery: updatedGallery,
+    }));
+
+    // Extract URLs to send to the server
+    setPropertyData((prev) => ({
+      ...prev,
+      gallery: updatedGallery,
     }));
   };
 
@@ -183,6 +235,21 @@ const AddProperty = () => {
     return field;
   };
 
+  const handleArrayChange = (e, index, arrayName, fieldName) => {
+    const { value } = e.target;
+    const updatedArray = propertyData[arrayName].map((item, idx) =>
+      idx === index ? { ...item, [fieldName]: value } : item
+    );
+    setPropertyData((prevData) => ({ ...prevData, [arrayName]: updatedArray }));
+  };
+
+  const addFaq = () => {
+    setPropertyData((prevData) => ({
+      ...prevData,
+      faqs: [...prevData.faqs, { question: "", answer: "" }],
+    }));
+  }; 
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -201,13 +268,16 @@ const AddProperty = () => {
 
     // Make API request using axios
     try {
+      const payload = {
+        ...propertyData,
+        gallery: propertyData.galleryToSend, // Ensure only URLs are sent
+      };
       if (id) {
         // Update existing property
         const response = await axios.put(
           FETCH_ALL_PROPERTIES + `/${id}`,
           propertyData
         );
-        console.log(response, "&&&&&&&&&&&");
       } else {
         // Create new property
         const response = await axios.post(FETCH_ALL_PROPERTIES, propertyData);
@@ -229,7 +299,7 @@ const AddProperty = () => {
             >
               {/* Property Name */}
               <div className="mb-5 md:col-span-3">
-                <label className="mb-2 block text-sm font-medium text-black dark:text-white">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Property Name
                 </label>
                 <input
@@ -238,14 +308,14 @@ const AddProperty = () => {
                   value={propertyData?.property_name}
                   onChange={handleChange}
                   placeholder="Enter property name"
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
                 />
               </div>
 
               {/* Property Name  Slug*/}
               <div className="mb-5 md:col-span-3">
-                <label className="mb-2 block text-sm font-medium text-black dark:text-white">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Property Name Slug
                 </label>
                 <input
@@ -254,14 +324,30 @@ const AddProperty = () => {
                   value={propertyData?.property_name_slug}
                   onChange={handleChange}
                   placeholder="Enter property name slug"
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* Price */}
+              <div className="mb-5 md:col-span-4 lg:col-span-2">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Price
+                </label>
+                <input
+                  type="text"
+                  name="price"
+                  value={propertyData?.price}
+                  onChange={handleChange}
+                  placeholder="Enter property price"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
                 />
               </div>
 
               {/* Status */}
               <div className="mb-5 md:col-span-3">
-                <label className="mb-2 block text-sm font-medium text-black dark:text-white">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Status
                 </label>
                 <input
@@ -270,21 +356,68 @@ const AddProperty = () => {
                   value={propertyData?.status}
                   onChange={handleChange}
                   placeholder="Enter status"
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* Description */}
+              <div className="mb-5 md:col-span-12">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  value={propertyData?.description}
+                  onChange={handleChange}
+                  placeholder="Enter property description"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                ></textarea>
+              </div>
+
+              {/* Developer */}
+              <div className="mb-5 md:col-span-6">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Developer
+                </label>
+                <input
+                  type="text"
+                  name="developer"
+                  value={propertyData.developer}
+                  onChange={handleChange}
+                  placeholder="Enter developer name"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* Developer Name Slug */}
+              <div className="mb-5 md:col-span-6">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Developer Name Slug
+                </label>
+                <input
+                  type="text"
+                  name="developer_name_slug"
+                  value={propertyData.developer_name_slug}
+                  onChange={handleChange}
+                  placeholder="Enter developer name slug"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
                 />
               </div>
 
               {/* Type */}
               <div className="mb-5 md:col-span-3">
-                <label className="mb-2 block text-sm font-medium text-black dark:text-white">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Type
                 </label>
                 <select
                   name="type"
                   value={propertyData?.type || ""}
                   onChange={handleChange}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
                 >
                   <option value="" disabled>
@@ -297,21 +430,6 @@ const AddProperty = () => {
                       </option>
                     ))}
                 </select>
-              </div>
-
-              {/* Description */}
-              <div className="mb-5 md:col-span-12">
-                <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  value={propertyData?.description}
-                  onChange={handleChange}
-                  placeholder="Enter property description"
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
-                ></textarea>
               </div>
 
               {/* Address */}
@@ -460,22 +578,6 @@ const AddProperty = () => {
                 />
               </div>
 
-              {/* Price */}
-              <div className="mb-5 md:col-span-4 lg:col-span-2">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Price
-                </label>
-                <input
-                  type="text"
-                  name="price"
-                  value={propertyData?.price}
-                  onChange={handleChange}
-                  placeholder="Enter property price"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
-                />
-              </div>
-
               {/* Year Built */}
               <div className="mb-5 md:col-span-4 lg:col-span-2">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -510,7 +612,7 @@ const AddProperty = () => {
               </div>
 
               {/* Amenities */}
-              <div className="mb-5 md:col-span-4 lg:col-span-2">
+              {/* <div className="mb-5 md:col-span-4 lg:col-span-2">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Amenities
                 </label>
@@ -525,7 +627,7 @@ const AddProperty = () => {
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
                 />
-              </div>
+              </div> */}
 
               {/* Images */}
               <div className="mb-5 md:col-span-6">
@@ -533,7 +635,7 @@ const AddProperty = () => {
                   Images
                 </label>
                 {/* Cloudinary Upload Widget */}
-                <UploadWidget
+                <UploadImages
                   isGallery={false}
                   onImagesChange={handleImagesChange}
                   initialImages={propertyData?.images || []}
@@ -546,10 +648,96 @@ const AddProperty = () => {
                   Gallery
                 </label>
                 {/* Cloudinary Upload Widget */}
-                <UploadWidget
-                  isGallery={true}
+                <UploadGallery
                   onImagesChange={handleGalleryChange}
-                  initialImages={propertyData?.gallery || []}
+                  initialImages={propertyData.gallery || []}
+                />
+              </div>
+
+              {/* Gallery Title 1 */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Gallery Title 1
+                </label>
+                <input
+                  type="text"
+                  name="gallery_title_1"
+                  value={propertyData?.gallery_title_1}
+                  onChange={handleChange}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* Gallery Title 2 */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Gallery Title 2
+                </label>
+                <input
+                  type="text"
+                  name="gallery_title_2"
+                  value={propertyData?.gallery_title_2}
+                  onChange={handleChange}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* Gallery Description 1 */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Gallery Description 1
+                </label>
+                <input
+                  type="text"
+                  name="gallery_description_1"
+                  value={propertyData?.gallery_description_1}
+                  onChange={handleChange}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* Gallery Description 2 */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Gallery Description 2
+                </label>
+                <input
+                  type="text"
+                  name="gallery_description_2"
+                  value={propertyData?.gallery_description_2}
+                  onChange={handleChange}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* Amenity Description */}
+              <div className="mb-5 md:col-span-6">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Amenity Description
+                </label>
+                <input
+                  type="text"
+                  name="meta_title"
+                  value={propertyData?.amenities?.description}
+                  onChange={(e) => handleNestedChange(e, "amenities", "description")}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* Amenity Icon */}
+              <div className="mb-5 md:col-span-6">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Amenity Icon
+                </label>
+                {/* Cloudinary Upload Widget */}
+                <UploadAmenity
+                  onImagesChange={handleAmenitiesChange}
+                  initialImages={propertyData.amenities.icons || []}
                 />
               </div>
 
@@ -583,7 +771,7 @@ const AddProperty = () => {
                   Community Name Slug
                 </label>
                 <input
-                    disabled
+                  disabled
                   type="text"
                   name="community_name_slug"
                   value={propertyData?.community_name_slug}
@@ -660,7 +848,7 @@ const AddProperty = () => {
 
               {/* Show Property */}
               <div className="mb-5 md:col-span-6">
-                <label className="mb-2 block text-sm font-medium text-black dark:text-white">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Show property
                 </label>
                 <select
@@ -677,7 +865,7 @@ const AddProperty = () => {
 
               {/* Featured */}
               <div className="mb-5 md:col-span-6">
-                <label className="mb-2 block text-sm font-medium text-black dark:text-white">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Featured
                 </label>
                 <select
@@ -691,6 +879,259 @@ const AddProperty = () => {
                   <option value="false">false</option>
                 </select>
               </div>
+
+              {/* Section 1 Heading */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Section 1 Heading
+                </label>
+                <input
+                  type="text"
+                  name="heading"
+                  value={propertyData?.section_1?.heading}
+                  onChange={(e) =>
+                    handleNestedChange(e, "section_1", "heading")
+                  }
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* Section 1 Title */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Section 1 Title
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  value={propertyData?.section_1?.title}
+                  onChange={(e) => handleNestedChange(e, "section_1", "title")}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* Section 1 Description */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Section 1 Description
+                </label>
+                <input
+                  type="text"
+                  name="description"
+                  value={propertyData?.section_1?.description}
+                  onChange={(e) =>
+                    handleNestedChange(e, "section_1", "description")
+                  }
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* About Project Heading */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  About Project Heading
+                </label>
+                <input
+                  type="text"
+                  name="heading"
+                  value={propertyData?.about_project?.heading}
+                  onChange={(e) =>
+                    handleNestedChange(e, "about_project", "heading")
+                  }
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* About Project Title */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  About Project Title
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  value={propertyData?.about_project?.title}
+                  onChange={(e) =>
+                    handleNestedChange(e, "about_project", "title")
+                  }
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* About Project Description */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  About Project Description
+                </label>
+                <input
+                  type="text"
+                  name="description"
+                  value={propertyData?.about_project?.description}
+                  onChange={(e) =>
+                    handleNestedChange(e, "about_project", "description")
+                  }
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              
+
+              {/* SEO */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Meta Title
+                </label>
+                <input
+                  type="text"
+                  name="meta_title"
+                  value={propertyData?.seo?.meta_title}
+                  onChange={(e) => handleNestedChange(e, "seo", "meta_title")}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Meta Description
+                </label>
+                <input
+                  type="text"
+                  name="meta_description"
+                  value={propertyData?.seo?.meta_description}
+                  onChange={(e) =>
+                    handleNestedChange(e, "seo", "meta_description")
+                  }
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+              <div className="mb-5 md:col-span-6">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  SEO Keywords{" "}
+                </label>
+                <input
+                  type="text"
+                  name="keywords"
+                  value={propertyData?.seo?.keywords}
+                  onChange={(e) => handleNestedChange(e, "seo", "keywords")}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* Schema */}
+              <div className="mb-5 md:col-span-6">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Schema Type
+                </label>
+                <input
+                  name="schema_org.type"
+                  value={JSON.stringify(propertyData.schema_org.type)}
+                  onChange={handleChange}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              <div className="mb-5 md:col-span-12">
+                <label className="block">Schema Properties (JSON format)</label>
+                <textarea
+                  name="schema_org.properties"
+                  value={JSON.stringify(propertyData.schema_org.properties)}
+                  onChange={handleChange}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* Open Graph */}
+              <div className="mb-5 md:col-span-4">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Open Graph Title
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  value={propertyData.open_graph.title}
+                  onChange={(e) => handleNestedChange(e, "open_graph", "title")}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              <div className="mb-5 md:col-span-4">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Open Graph Image
+                </label>
+                <input
+                  type="text"
+                  name="image"
+                  value={propertyData.open_graph.image}
+                  onChange={(e) => handleNestedChange(e, "open_graph", "image")}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              <div className="mb-5 md:col-span-4">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Open Graph Description
+                </label>
+                <input
+                  type="text"
+                  name="description"
+                  value={propertyData.open_graph.description}
+                  onChange={(e) =>
+                    handleNestedChange(e, "open_graph", "description")
+                  }
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+                 {/* FAQs */}
+                 <div className="mb-5 md:col-span-12">
+                  <h3 className="mb-2">FAQs</h3>
+                  {propertyData.faqs.map((faq, index) => (
+                    <div key={index} className="mb-2">
+                      <label className="block">Question {index + 1}</label>
+                      <input
+                        type="text"
+                        name={`faqs[${index}].question`}
+                        value={faq.question}
+                        onChange={(e) =>
+                          handleArrayChange(e, index, "faqs", "question")
+                        }
+                        className="mb-2 w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                        required
+                      />
+                      <label className="block">Answer {index + 1}</label>
+                      <textarea
+                        name={`faqs[${index}].answer`}
+                        value={faq.answer}
+                        onChange={(e) =>
+                          handleArrayChange(e, index, "faqs", "answer")
+                        }
+                        className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                        required
+                      />
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addFaq}
+                    className="bg-gray-200 hover:bg-gray-300 mt-2 rounded border border-stroke px-4 py-2 text-black transition dark:border-form-strokedark dark:bg-form-input dark:text-white dark:hover:bg-form-input"
+                    required
+                  >
+                    Add FAQ
+                  </button>
+                </div>
 
               {/* Buttons */}
               <div className="flex justify-end gap-4 md:col-span-12">
