@@ -37,6 +37,7 @@ const UploadGallery = ({ onImagesChange, initialImages = [] }) => {
       <button
         onClick={handleUploadClick}
         className="inline-flex w-[100%] items-center justify-center rounded-md border border-black px-10 py-2 text-center font-medium text-black hover:bg-black hover:bg-opacity-90 hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-black lg:px-8 xl:px-6"
+        required
       >
         Upload
       </button>

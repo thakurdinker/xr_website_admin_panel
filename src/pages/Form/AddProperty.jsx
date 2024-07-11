@@ -152,26 +152,34 @@ const AddProperty = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    let community_slug = "";
-    for (let i = 0; i < community.length; i++) {
-      if (community[i].slug === value) {
-        community_slug = value;
-        break;
+    if (name === "community_name") {
+      let community_slug = "";
+      for (let i = 0; i < community.length; i++) {
+        if (community[i].slug === value) {
+          community_slug = value;
+          break;
+        }
       }
+      setPropertyData((prev) => ({ 
+        ...prev,
+        [name]: value,
+        community_name_slug: community_slug,
+      }));
+    } else {
+      setPropertyData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
     }
-    setPropertyData((prev) => ({
-      ...prev,
-      [name]: value,
-      community_name_slug: community_slug,
-    }));
   };
+  
 
   const handleImagesChange = (updatedImages) => {
     // Create a new array with only the url and description properties
     const imagesToSend = updatedImages.map((image) => ({
       url: image.url,
       description: image.description || "", // Add this line to handle missing description
-      heading: "null",
+      heading: image.heading || "",
     }));
 
     setPropertyData((prev) => ({
@@ -592,6 +600,7 @@ const AddProperty = () => {
                   }
                   placeholder="Enter year built"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
                 />
               </div>
 
@@ -778,6 +787,7 @@ const AddProperty = () => {
                   onChange={handleChange}
                   placeholder="Enter community name slug"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
                 />
               </div>
 
