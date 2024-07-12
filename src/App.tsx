@@ -122,7 +122,6 @@ function App() {
               <ManageProperties />
             </>
           }
-
         />
         <Route
           path="/manage-agents"
@@ -277,13 +276,13 @@ function App() {
               <AddProperty />
             </>
           }
-        /> 
+        />
         <Route
           path="/forms/add-post"
           element={
             <>
               <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <AddPost/>
+              <AddPost />
             </>
           }
         />
@@ -292,7 +291,7 @@ function App() {
           element={
             <>
               <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <AddAgent/>
+              <AddAgent />
             </>
           }
         />
@@ -301,7 +300,7 @@ function App() {
           element={
             <>
               <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <AddCommunity/>
+              <AddCommunity />
             </>
           }
         />
@@ -719,7 +718,6 @@ function App() {
             </>
           }
         />
-        
       </Routes>
     </>
   );

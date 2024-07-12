@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { GET_ALL_ROLES, UPDATE_USER } from "../../api/constants";
 import axios from "axios";
 import NotificationsOne from "../../components/Notifications/NotificationsOne";
+import SelectGroupThree from "../../components/Forms/SelectGroup/SelectGroupThree";
 
 export default function EditUser({}) {
   const location = useLocation();
@@ -251,33 +252,13 @@ export default function EditUser({}) {
                     />
                   </div>
 
-                  <div className="mb-5.5">
-                    <label
-                      className="mb-3 block text-sm font-medium text-black dark:text-white"
-                      htmlFor="role"
-                    >
-                      Role
-                    </label>
-
-                    <select
-                      name="roleId"
-                      id="roleId"
-                      value={formData.roleId}
-                      onChange={handleChange}
-                    >
-                      {roles?.map((role) => {
-                        return (
-                          <option
-                            defaultChecked={formData.roleId === role._id}
-                            key={role._id}
-                            value={role._id}
-                          >
-                            {role.role_name}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </div>
+                  <SelectGroupThree
+                    label={"Role"}
+                    placeholder={"Select Role"}
+                    roles={roles}
+                    roleId={formData.roleId}
+                    handleChange={handleChange}
+                  />
 
                   <div className="flex justify-end gap-4.5">
                     <button
