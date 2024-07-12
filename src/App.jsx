@@ -194,6 +194,18 @@ function App() {
           />
 
           <Route
+            exact
+            path="/forms/add-property"
+            element={
+              <>
+                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <AddProperty />
+              </>
+            }
+          />
+
+          <Route
+            exact
             path="/forms/add-property/:id"
             element={
               <>
@@ -202,9 +214,65 @@ function App() {
               </>
             }
           />
+
+          <Route
+            exact
+            path="/forms/add-agent"
+            element={
+              <>
+                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <AddAgent />
+              </>
+            }
+          />
+
+          <Route
+            exact
+            path="/forms/add-agent/:id"
+            element={
+              <>
+                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <AddAgent />
+              </>
+            }
+          />
+
+          <Route
+            exact
+            path="/forms/add-post"
+            element={
+              <>
+                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <AddPost />
+              </>
+            }
+          />
+
+          <Route
+            exact
+            path="/forms/add-post/:id"
+            element={
+              <>
+                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <AddPost />
+              </>
+            }
+          />
+
+          <Route
+            exact
+            path="/forms/add-community/:id"
+            element={
+              <>
+                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <AddCommunity />
+              </>
+            }
+          />
         </Route>
 
         <Route
+          exact
           path="/dashboard/analytics"
           element={
             <>
@@ -214,6 +282,7 @@ function App() {
           }
         />
         <Route
+          exact
           path="/dashboard/marketing"
           element={
             <>
@@ -223,6 +292,7 @@ function App() {
           }
         />
         <Route
+          exact
           path="/dashboard/crm"
           element={
             <>
@@ -232,6 +302,7 @@ function App() {
           }
         />
         <Route
+          exact
           path="/dashboard/stocks"
           element={
             <>
@@ -241,6 +312,7 @@ function App() {
           }
         />
         <Route
+          exact
           path="/calendar"
           element={
             <>
@@ -251,6 +323,7 @@ function App() {
         />
 
         <Route
+          exact
           path="/tasks/task-list"
           element={
             <>
@@ -260,6 +333,7 @@ function App() {
           }
         />
         <Route
+          exact
           path="/tasks/task-kanban"
           element={
             <>
@@ -269,6 +343,7 @@ function App() {
           }
         />
         <Route
+          exact
           path="/forms/form-elements"
           element={
             <>
@@ -297,51 +372,6 @@ function App() {
         />
 
         <Route
-          path="/forms/add-agent/:id"
-          element={
-            <>
-              <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <AddAgent />
-            </>
-          }
-        />
-        <Route
-          path="/forms/add-post/:id"
-          element={
-            <>
-              <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <AddPost />
-            </>
-          }
-        />
-        <Route
-          path="/forms/add-property"
-          element={
-            <>
-              <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <AddProperty />
-            </>
-          }
-        />
-        <Route
-          path="/forms/add-post"
-          element={
-            <>
-              <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <AddPost />
-            </>
-          }
-        />
-        <Route
-          path="/forms/add-agent"
-          element={
-            <>
-              <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <AddAgent />
-            </>
-          }
-        />
-        <Route
           path="/forms/add-community"
           element={
             <>
@@ -350,15 +380,7 @@ function App() {
             </>
           }
         />
-        <Route
-          path="/forms/add-community/:id"
-          element={
-            <>
-              <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <AddCommunity />
-            </>
-          }
-        />
+
         <Route
           path="/tables/tables"
           element={

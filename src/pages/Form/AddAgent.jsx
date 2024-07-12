@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DefaultLayout from "../../layout/DefaultLayout";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { FETCH_ALL_AGENTS } from "../../api/constants";
 import UploadWidget from "../../components/UploadWidget/UploadImages";
@@ -9,6 +9,7 @@ import PhoneInput from "react-phone-number-input";
 
 const ProfileForm = () => {
   const { id } = useParams();
+
   const [formData, setFormData] = useState({
     name: "",
     name_slug: "",
@@ -43,7 +44,9 @@ const ProfileForm = () => {
     // Fetch property data based on the ID from your API
     const fetchFormData = async () => {
       try {
-        const response = await axios.get(FETCH_ALL_AGENTS + `/${id}`);
+        const response = await axios.get(FETCH_ALL_AGENTS + `/${id}`, {
+          withCredentials: true,
+        });
         setFormData(response.data.agent);
       } catch (error) {
         console.error("Error fetching property data:", error);
@@ -71,7 +74,7 @@ const ProfileForm = () => {
   const handleImagesChange = (images) => {
     if (images.length > 0) {
       const imageUrl = images[images.length - 1].url;
-      setFormData(prevData => ({ ...prevData, profile_picture: imageUrl }));
+      setFormData((prevData) => ({ ...prevData, profile_picture: imageUrl }));
     }
   };
 
@@ -107,12 +110,18 @@ const ProfileForm = () => {
     try {
       if (id) {
         // Update existing property
-        const response = await axios.put(FETCH_ALL_AGENTS + `/${id}`, formData);
+        const response = await axios.put(
+          FETCH_ALL_AGENTS + `/${id}`,
+          formData,
+          { withCredentials: true }
+        );
       } else {
         // Create new property
-        const response = await axios.post(FETCH_ALL_AGENTS, formData);
+        const response = await axios.post(FETCH_ALL_AGENTS, formData, {
+          withCredentials: true,
+        });
       }
-      navigate("/manage-agents"); 
+      navigate("/manage-agents");
     } catch (error) {
       console.error("Error adding/updating property:", error);
     }
@@ -172,7 +181,9 @@ const ProfileForm = () => {
                 <PhoneInput
                   placeholder="Enter phone number"
                   value={formData.phone}
-                  onChange={(phone) => setFormData((prevData) => ({ ...prevData, phone }))}
+                  onChange={(phone) =>
+                    setFormData((prevData) => ({ ...prevData, phone }))
+                  }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-black dark:focus:border-white"
                 />
               </div>
@@ -183,12 +194,13 @@ const ProfileForm = () => {
                   Profile Picture
                 </label>
                 {/* Cloudinary Upload Widget */}
+
                 <UploadWidget
                   isProfilePic="true"
                   onImagesChange={handleImagesChange}
                   initialImages={
                     formData.profile_picture
-                      ? [{ url: formData.profile_picture }] 
+                      ? [{ url: formData.profile_picture }]
                       : []
                   }
                   required

@@ -54,7 +54,9 @@ const CommunityForm = () => {
   useEffect(() => {
     const fetchFormData = async () => {
       try {
-        const response = await axios.get(FETCH_ALL_COMMUNITIES + `/${id}`);
+        const response = await axios.get(FETCH_ALL_COMMUNITIES + `/${id}`, {
+          withCredentials: true,
+        });
         setFormData(response.data.community);
       } catch (error) {
         console.error("Error fetching community data:", error);
@@ -113,7 +115,6 @@ const CommunityForm = () => {
     }));
   };
 
-
   const handleArrayChange = (e, index, arrayName, fieldName) => {
     const { value } = e.target;
     const updatedArray = formData[arrayName].map((item, idx) =>
@@ -155,11 +156,14 @@ const CommunityForm = () => {
         // Update existing property
         const response = await axios.put(
           FETCH_ALL_COMMUNITIES + `/${id}`,
-          formData
+          formData,
+          { withCredentials: true }
         );
       } else {
         // Create new property
-        const response = await axios.post(FETCH_ALL_COMMUNITIES, formData);
+        const response = await axios.post(FETCH_ALL_COMMUNITIES, formData, {
+          withCredentials: true,
+        });
       }
       navigate("/manage-communities");
     } catch (error) {

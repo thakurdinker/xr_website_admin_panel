@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import DefaultLayout from "../../layout/DefaultLayout";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 import { FETCH_ALL_AGENTS, HOME_PAGE_VIDEOS } from "../../api/constants";
 
 const HomePageVideoForm = () => {
@@ -14,15 +14,15 @@ const HomePageVideoForm = () => {
       title: "",
       agent: "",
     },
-    videos: [
-    ],
+    videos: [],
   });
-  
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(HOME_PAGE_VIDEOS);
+        const response = await axios.get(HOME_PAGE_VIDEOS, {
+          withCredentials: true,
+        });
         if (response.data.homePageVideos) {
           setId(response.data.homePageVideos._id);
           const { mainVideo, videos } = response.data.homePageVideos;
@@ -49,7 +49,9 @@ const HomePageVideoForm = () => {
 
     const fetchAgents = async () => {
       try {
-        const response = await axios.get(FETCH_ALL_AGENTS);
+        const response = await axios.get(FETCH_ALL_AGENTS, {
+          withCredentials: true,
+        });
         setAgents(response.data.agents);
       } catch (error) {
         console.error("Error fetching agents:", error);
@@ -113,12 +115,18 @@ const HomePageVideoForm = () => {
 
       let response;
       if (id) {
-        response = await axios.put(HOME_PAGE_VIDEOS + `/${id}`, payload);
+        response = await axios.put(HOME_PAGE_VIDEOS + `/${id}`, payload, {
+          withCredentials: true,
+        });
       } else {
-        response = await axios.post(HOME_PAGE_VIDEOS, payload);
+        response = await axios.post(HOME_PAGE_VIDEOS, payload, {
+          withCredentials: true,
+        });
       }
-      if (response.data.success) toast.success("Form data submitted successfully!");
-      else if (!response.data.success) toast.error("Error submitting form. Please try again.");
+      if (response.data.success)
+        toast.success("Form data submitted successfully!");
+      else if (!response.data.success)
+        toast.error("Error submitting form. Please try again.");
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Error submitting form. Please try again.");
@@ -170,9 +178,13 @@ const HomePageVideoForm = () => {
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                     required
                   >
-                    <option value="" disabled>Select Agent</option>
-                    {agents.map(agent => (
-                      <option key={agent._id} value={agent._id}>{agent.name}</option>
+                    <option value="" disabled>
+                      Select Agent
+                    </option>
+                    {agents.map((agent) => (
+                      <option key={agent._id} value={agent._id}>
+                        {agent.name}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -184,7 +196,9 @@ const HomePageVideoForm = () => {
                     className="mb-5 grid grid-cols-1 gap-6 md:col-span-6"
                   >
                     <div>
-                      <label className="block">{`Video URL ${index + 1}`}</label>
+                      <label className="block">{`Video URL ${
+                        index + 1
+                      }`}</label>
                       <input
                         type="text"
                         name={`videos.${index}.url`}
@@ -195,7 +209,9 @@ const HomePageVideoForm = () => {
                       />
                     </div>
                     <div>
-                      <label className="block">{`Video Title ${index + 1}`}</label>
+                      <label className="block">{`Video Title ${
+                        index + 1
+                      }`}</label>
                       <input
                         type="text"
                         name={`videos.${index}.title`}
@@ -205,7 +221,9 @@ const HomePageVideoForm = () => {
                       />
                     </div>
                     <div>
-                      <label className="block">{`Video Agent ${index + 1}`}</label>
+                      <label className="block">{`Video Agent ${
+                        index + 1
+                      }`}</label>
                       <select
                         name={`videos.${index}.agent`}
                         value={video.agent}
@@ -213,9 +231,13 @@ const HomePageVideoForm = () => {
                         className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                         required
                       >
-                        <option value="" disabled>Select Agent</option>
-                        {agents.map(agent => (
-                          <option key={agent._id} value={agent._id}>{agent.name}</option>
+                        <option value="" disabled>
+                          Select Agent
+                        </option>
+                        {agents.map((agent) => (
+                          <option key={agent._id} value={agent._id}>
+                            {agent.name}
+                          </option>
                         ))}
                       </select>
                     </div>

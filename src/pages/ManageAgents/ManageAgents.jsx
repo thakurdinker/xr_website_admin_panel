@@ -18,7 +18,8 @@ function ManageAgents() {
     const fetchProperties = async () => {
       try {
         const response = await axios.get(
-          FETCH_ALL_AGENTS + `?page=${currentPage}`
+          FETCH_ALL_AGENTS + `?page=${currentPage}`,
+          { withCredentials: true }
         );
         if (response.data.success) {
           setProperties(response.data.agents);
@@ -39,7 +40,9 @@ function ManageAgents() {
 
   const handleDeleteClick = async (id) => {
     try {
-      const response = await axios.delete(FETCH_ALL_AGENTS + `/${id}`);
+      const response = await axios.delete(FETCH_ALL_AGENTS + `/${id}`, {
+        withCredentials: true,
+      });
       if (response.data.success) {
         setProperties(properties.filter((property) => property.id !== id));
       } else {
@@ -100,7 +103,11 @@ function ManageAgents() {
                 >
                   <div className="col-span-2 flex items-center">
                     <p className="text-xs text-[#637381] dark:text-bodydark md:text-base">
-                      <img className="w-30 h-35 object-cover object-top rounded-lg" src={property.profile_picture} alt="profile picture" />
+                      <img
+                        className="h-35 w-30 rounded-lg object-cover object-top"
+                        src={property.profile_picture}
+                        alt="profile picture"
+                      />
                     </p>
                   </div>
 

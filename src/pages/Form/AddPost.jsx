@@ -42,7 +42,9 @@ const ContentForm = () => {
     // Fetch property data based on the ID from your API
     const fetchFormData = async () => {
       try {
-        const response = await axios.get(FETCH_ALL_POSTS + `/${id}`);
+        const response = await axios.get(FETCH_ALL_POSTS + `/${id}`, {
+          withCredentials: true,
+        });
         setFormData(response.data.content);
       } catch (error) {
         console.error("Error fetching property data:", error);
@@ -53,6 +55,14 @@ const ContentForm = () => {
       fetchFormData();
     }
   }, [id]);
+
+  function formatDateToYYYYMMDD(dateString) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based, so add 1 and pad with 0
+    const day = String(date.getDate()).padStart(2, "0"); // Pad with 0 if necessary
+    return `${year}-${month}-${day}`;
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -109,10 +119,14 @@ const ContentForm = () => {
     try {
       if (id) {
         // Update existing property
-        const response = await axios.put(FETCH_ALL_POSTS + `/${id}`, formData);
+        const response = await axios.put(FETCH_ALL_POSTS + `/${id}`, formData, {
+          withCredentials: true,
+        });
       } else {
         // Create new property
-        const response = await axios.post(FETCH_ALL_POSTS, formData);
+        const response = await axios.post(FETCH_ALL_POSTS, formData, {
+          withCredentials: true,
+        });
       }
       navigate("/manage-posts");
     } catch (error) {
@@ -225,13 +239,13 @@ const ContentForm = () => {
                   />
                 </div>
 
-                {/* Publish Date */}
+                {/* Published Date */}
                 <div className="mb-5 md:col-span-3">
-                  <label className="block">Publish Date</label>
+                  <label className="block">Published Date</label>
                   <input
                     type="date"
                     name="publish_date"
-                    value={formData.publish_date}
+                    value={formatDateToYYYYMMDD(formData.publish_date)}
                     onChange={handleChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                     required
