@@ -259,6 +259,19 @@ const AddProperty = () => {
     }));
   }; 
 
+  const handleCheckboxChange = (e) => {
+    const { name, value, checked } = e.target;
+    setPropertyData((prev) => {
+      const newTypes = checked
+        ? [...prev.type, value]
+        : prev.type.filter((type) => type !== value);
+      return {
+        ...prev,
+        type: newTypes,
+      };
+    });
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -417,8 +430,8 @@ const AddProperty = () => {
                 />
               </div>
 
-               {/* Section 1 Heading */}
-               <div className="mb-5 md:col-span-3">
+              {/* Section 1 Heading */}
+              <div className="mb-5 md:col-span-3">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Section 1 Heading
                 </label>
@@ -475,16 +488,14 @@ const AddProperty = () => {
                   type="text"
                   name="description"
                   value={propertyData?.section_1?.image}
-                  onChange={(e) =>
-                    handleNestedChange(e, "section_1", "image")
-                  }
+                  onChange={(e) => handleNestedChange(e, "section_1", "image")}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
                 />
               </div>
 
               {/* Type */}
-              <div className="mb-5 md:col-span-3">
+              {/* <div className="mb-5 md:col-span-3">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Type
                 </label>
@@ -505,6 +516,30 @@ const AddProperty = () => {
                       </option>
                     ))}
                 </select>
+              </div> */}
+
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Type
+                </label>
+                <div>
+                  {Array.isArray(propertyType) &&
+                    propertyType.map((type) => (
+                      <div key={type.name_slug}>
+                        <label className="inline-flex items-center">
+                          <input
+                            type="checkbox"
+                            name="type"
+                            value={type.name_slug}
+                            checked={propertyData.type.includes(type.name_slug)}
+                            onChange={handleCheckboxChange}
+                            className="form-checkbox"
+                          />
+                          <span className="ml-2">{type.name}</span>
+                        </label>
+                      </div>
+                    ))}
+                </div>
               </div>
 
               {/* Address */}
@@ -940,9 +975,6 @@ const AddProperty = () => {
                   <option value="false">false</option>
                 </select>
               </div>
-
-             
-              
 
               {/* About Project Heading */}
               <div className="mb-5 md:col-span-4">
