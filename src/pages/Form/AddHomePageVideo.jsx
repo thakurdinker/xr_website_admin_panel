@@ -11,15 +11,13 @@ const HomePageVideoForm = () => {
   const [formData, setFormData] = useState({
     mainVideo: {
       url: "",
+      title: "",
       agent: "",
     },
     videos: [
-      { url: "", agent: "" },
-      { url: "", agent: "" },
-      { url: "", agent: "" },
-      { url: "", agent: "" },
     ],
   });
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,10 +30,12 @@ const HomePageVideoForm = () => {
           setFormData({
             mainVideo: {
               url: mainVideo.url,
+              title: mainVideo.title,
               agent: mainVideo.agent._id,
             },
             videos: videos.map((video) => ({
               url: video.url,
+              title: video.title,
               agent: video.agent._id,
             })),
           });
@@ -82,26 +82,42 @@ const HomePageVideoForm = () => {
     }
   };
 
+  const handleAddVideo = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      videos: [...prevData.videos, { url: "", title: "", agent: "" }],
+    }));
+  };
+
+  const handleRemoveVideo = (index) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      videos: prevData.videos.filter((_, i) => i !== index),
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const { mainVideo, videos } = formData;
       const payload = {
         mainVideoUrl: mainVideo.url,
+        mainVideoTitle: mainVideo.title,
         mainVideoAgentId: mainVideo.agent,
         additionalVideos: videos.map((video) => ({
           url: video.url,
+          title: video.title,
           agentId: video.agent,
         })),
       };
 
       let response;
       if (id) {
-        response = await axios.put(HOME_PAGE_VIDEOS+`/${id}`, payload);
+        response = await axios.put(HOME_PAGE_VIDEOS + `/${id}`, payload);
       } else {
         response = await axios.post(HOME_PAGE_VIDEOS, payload);
       }
-      if(response.data.success) toast.success("Form data submitted successfully!");
+      if (response.data.success) toast.success("Form data submitted successfully!");
       else if (!response.data.success) toast.error("Error submitting form. Please try again.");
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -120,7 +136,7 @@ const HomePageVideoForm = () => {
                 className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 md:grid-cols-12"
               >
                 {/* Main Video URL */}
-                <div className="mb-5 md:col-span-6">
+                <div className="mb-5 md:col-span-4">
                   <label className="block">Main Video URL</label>
                   <input
                     type="text"
@@ -132,8 +148,20 @@ const HomePageVideoForm = () => {
                   />
                 </div>
 
+                {/* Main Video Title */}
+                <div className="mb-5 md:col-span-4">
+                  <label className="block">Main Video Title</label>
+                  <input
+                    type="text"
+                    name="mainVideo.title"
+                    value={formData.mainVideo.title}
+                    onChange={handleChange}
+                    className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  />
+                </div>
+
                 {/* Main Video Agent */}
-                <div className="mb-5 md:col-span-6">
+                <div className="mb-5 md:col-span-4">
                   <label className="block">Main Video Agent Id</label>
                   <select
                     name="mainVideo.agent"
@@ -167,6 +195,16 @@ const HomePageVideoForm = () => {
                       />
                     </div>
                     <div>
+                      <label className="block">{`Video Title ${index + 1}`}</label>
+                      <input
+                        type="text"
+                        name={`videos.${index}.title`}
+                        value={video.title}
+                        onChange={handleChange}
+                        className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                      />
+                    </div>
+                    <div>
                       <label className="block">{`Video Agent ${index + 1}`}</label>
                       <select
                         name={`videos.${index}.agent`}
@@ -181,8 +219,26 @@ const HomePageVideoForm = () => {
                         ))}
                       </select>
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveVideo(index)}
+                      className="inline-flex items-center justify-center rounded-md bg-black  px-5 py-3 font-medium text-white transition hover:bg-blue-600"
+                    >
+                      Remove Video
+                    </button>
                   </div>
                 ))}
+
+                {/* Add Video Button */}
+                <div className="flex justify-center md:col-span-12">
+                  <button
+                    type="button"
+                    onClick={handleAddVideo}
+                    className="inline-flex items-center justify-center rounded-md bg-black px-5 py-3 font-medium text-white transition hover:bg-blue-600"
+                  >
+                    Add Video
+                  </button>
+                </div>
 
                 {/* Buttons */}
                 <div className="flex justify-end gap-4 md:col-span-12">
