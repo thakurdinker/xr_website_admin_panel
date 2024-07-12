@@ -27,7 +27,7 @@ export default function EditUser({}) {
   useEffect(() => {
     // Get user data
     axios
-      .get(UPDATE_USER + `/${userID}`)
+      .get(UPDATE_USER + `/${userID}`, { withCredentials: true })
       .then(function (response) {
         // handle success
 
@@ -58,7 +58,7 @@ export default function EditUser({}) {
 
     // Get all the roles
     axios
-      .get(GET_ALL_ROLES)
+      .get(GET_ALL_ROLES, { withCredentials: true })
       .then(function (response) {
         // handle success
 
@@ -83,6 +83,7 @@ export default function EditUser({}) {
           last_name: formData.last_name,
           roleId: formData.roleId,
         },
+        withCredentials: true,
       })
         .then((response) => {
           if (response.data.success) {

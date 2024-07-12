@@ -192,6 +192,16 @@ function App() {
               </>
             }
           />
+
+          <Route
+            path="/forms/add-property/:id"
+            element={
+              <>
+                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <AddProperty />
+              </>
+            }
+          />
         </Route>
 
         <Route
@@ -285,15 +295,7 @@ function App() {
             </>
           }
         />
-        <Route
-          path="/forms/add-property/:id"
-          element={
-            <>
-              <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <AddProperty />
-            </>
-          }
-        />
+
         <Route
           path="/forms/add-agent/:id"
           element={

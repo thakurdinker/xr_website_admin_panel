@@ -19,7 +19,7 @@ const AddUser = ({ setAddUser }) => {
   useEffect(() => {
     // Get all the roles
     axios
-      .get(GET_ALL_ROLES)
+      .get(GET_ALL_ROLES, { withCredentials: true })
       .then(function (response) {
         // handle success
 
@@ -46,6 +46,7 @@ const AddUser = ({ setAddUser }) => {
         method: "post",
         url: REGISTER_USER,
         data: formData,
+        withCredentials: true,
       })
         .then((response) => {
           console.log(response);

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import DefaultLayout from "../../layout/DefaultLayout";
 import { FETCH_ALL_PROPERTIES } from "../../api/constants";
 import axios from "axios";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
 import { MdDeleteForever } from "react-icons/md";
 import { MdEditDocument } from "react-icons/md";
 import { IoAddCircle } from "react-icons/io5";
@@ -18,9 +18,10 @@ const ManageProperties = () => {
     const fetchProperties = async () => {
       try {
         const response = await axios.get(
-          FETCH_ALL_PROPERTIES + `?page=${currentPage}`
+          FETCH_ALL_PROPERTIES + `?page=${currentPage}`,
+          { withCredentials: true }
         );
-        if (response.data.success) {  
+        if (response.data.success) {
           setProperties(response.data.properties);
           setTotalPages(response.data.totalPages);
         }
@@ -39,9 +40,11 @@ const ManageProperties = () => {
 
   const handleDeleteClick = async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:3333/properties/${id}`);
+      const response = await axios.delete(`${FETCH_ALL_PROPERTIES}/${id}`, {
+        withCredentials: true,
+      });
       if (response.data.success) {
-        setProperties(properties.filter(property => property.id !== id));
+        setProperties(properties.filter((property) => property.id !== id));
       } else {
         console.error("Error deleting property:", response.data.message);
       }
@@ -63,28 +66,25 @@ const ManageProperties = () => {
             {/* table header start */}
             <div className="grid grid-cols-10 bg-[#F9FAFB] px-5 py-4 dark:bg-meta-4 lg:px-7.5 2xl:px-11 ">
               <div className="col-span-2 flex items-center">
-                <h5 className="text-xs md:text-base font-medium text-[#637381] dark:text-bodydark">
+                <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
                   NAME
                 </h5>
               </div>
 
               <div className="col-span-3 flex items-center">
-                <h5 className="text-xs md:text-base font-medium text-[#637381] dark:text-bodydark">
+                <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
                   CREATED AT
                 </h5>
               </div>
 
               <div className="col-span-3 flex items-center">
-                <h5 className="text-xs md:text-base font-medium text-[#637381] dark:text-bodydark">
+                <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
                   UPDATED AT
                 </h5>
               </div>
 
               <div className="col-span-2 flex items-center justify-end">
-                <Link
-                  to="/forms/add-property"
-                  className="text-xl md:text-2xl"
-                >
+                <Link to="/forms/add-property" className="text-xl md:text-2xl">
                   <IoAddCircle />
                 </Link>
               </div>
@@ -99,26 +99,36 @@ const ManageProperties = () => {
                   className="grid grid-cols-10 border-t border-[#EEEEEE] px-5 py-4 dark:border-strokedark lg:px-7.5 2xl:px-11"
                 >
                   <div className="col-span-2 flex items-center">
-                    <p className="text-[#637381] dark:text-bodydark text-xs md:text-base">
+                    <p className="text-xs text-[#637381] dark:text-bodydark md:text-base">
                       {property.property_name}
                     </p>
                   </div>
 
                   <div className="col-span-3 flex items-center">
-                    <p className="text-[#637381] dark:text-bodydark text-xs md:text-base">
-                    {formatDate(property.createdAt)}
+                    <p className="text-xs text-[#637381] dark:text-bodydark md:text-base">
+                      {formatDate(property.createdAt)}
                     </p>
                   </div>
 
                   <div className="col-span-3 flex items-center">
-                    <p className="text-[#637381] dark:text-bodydark text-xs md:text-base">
-                    {formatDate(property.updatedAt)}
+                    <p className="text-xs text-[#637381] dark:text-bodydark md:text-base">
+                      {formatDate(property.updatedAt)}
                     </p>
                   </div>
 
                   <div className="col-span-2 flex items-center justify-end space-x-2">
-                    <button className="text-black dark:text-white" onClick={() => handleEditClick(property.id)}><MdEditDocument className="h-4 w-4 md:h-6 md:w-6"/></button>
-                    <button className="text-red" onClick={() => handleDeleteClick(property.id)}><MdDeleteForever className="h-6 w-6 md:h-8 md:w-8"/></button>
+                    <button
+                      className="text-black dark:text-white"
+                      onClick={() => handleEditClick(property.id)}
+                    >
+                      <MdEditDocument className="h-4 w-4 md:h-6 md:w-6" />
+                    </button>
+                    <button
+                      className="text-red"
+                      onClick={() => handleDeleteClick(property.id)}
+                    >
+                      <MdDeleteForever className="h-6 w-6 md:h-8 md:w-8" />
+                    </button>
                   </div>
                 </div>
               ))}

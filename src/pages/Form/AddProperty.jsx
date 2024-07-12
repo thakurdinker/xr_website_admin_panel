@@ -115,7 +115,9 @@ const AddProperty = () => {
     // Fetch property data based on the ID from your API
     const fetchPropertyData = async () => {
       try {
-        const response = await axios.get(FETCH_ALL_PROPERTIES + `/${id}`);
+        const response = await axios.get(FETCH_ALL_PROPERTIES + `/${id}`, {
+          withCredentials: true,
+        });
         setPropertyData((prev) => ({
           ...prev,
           ...response.data.property,
@@ -132,7 +134,9 @@ const AddProperty = () => {
 
   useEffect(() => {
     const fetchPropertyTypes = async () => {
-      const response = await axios.get(FETCH_ALL_PROPERTY_TYPES);
+      const response = await axios.get(FETCH_ALL_PROPERTY_TYPES, {
+        withCredentials: true,
+      });
       setPropertyType(response?.data?.propertyTypes);
     };
     fetchPropertyTypes();
@@ -140,7 +144,9 @@ const AddProperty = () => {
 
   useEffect(() => {
     const fetchAllCommunities = async () => {
-      const response = await axios.get(FETCH_ALL_COMMUNITIES);
+      const response = await axios.get(FETCH_ALL_COMMUNITIES, {
+        withCredentials: true,
+      });
       setCommunity(response?.data?.communities);
     };
     fetchAllCommunities();
@@ -161,7 +167,7 @@ const AddProperty = () => {
           break;
         }
       }
-      setPropertyData((prev) => ({ 
+      setPropertyData((prev) => ({
         ...prev,
         [name]: value,
         community_name_slug: community_slug,
@@ -173,7 +179,6 @@ const AddProperty = () => {
       }));
     }
   };
-  
 
   const handleImagesChange = (updatedImages) => {
     // Create a new array with only the url and description properties
@@ -257,7 +262,7 @@ const AddProperty = () => {
       ...prevData,
       faqs: [...prevData.faqs, { question: "", answer: "" }],
     }));
-  }; 
+  };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -285,11 +290,14 @@ const AddProperty = () => {
         // Update existing property
         const response = await axios.put(
           FETCH_ALL_PROPERTIES + `/${id}`,
-          propertyData
+          propertyData,
+          { withCredentials: true }
         );
       } else {
         // Create new property
-        const response = await axios.post(FETCH_ALL_PROPERTIES, propertyData);
+        const response = await axios.post(FETCH_ALL_PROPERTIES, propertyData, {
+          withCredentials: true,
+        });
       }
       navigate("/manage-properties");
     } catch (error) {
@@ -417,8 +425,8 @@ const AddProperty = () => {
                 />
               </div>
 
-               {/* Section 1 Heading */}
-               <div className="mb-5 md:col-span-3">
+              {/* Section 1 Heading */}
+              <div className="mb-5 md:col-span-3">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Section 1 Heading
                 </label>
@@ -475,9 +483,7 @@ const AddProperty = () => {
                   type="text"
                   name="description"
                   value={propertyData?.section_1?.image}
-                  onChange={(e) =>
-                    handleNestedChange(e, "section_1", "image")
-                  }
+                  onChange={(e) => handleNestedChange(e, "section_1", "image")}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
                 />
@@ -940,9 +946,6 @@ const AddProperty = () => {
                   <option value="false">false</option>
                 </select>
               </div>
-
-             
-              
 
               {/* About Project Heading */}
               <div className="mb-5 md:col-span-4">
