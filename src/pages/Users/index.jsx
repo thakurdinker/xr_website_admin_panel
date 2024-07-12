@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import TableSix from "../../components/Tables/TableSix";
+import { useCallback, useEffect, useState } from "react";
 import DefaultLayout from "../../layout/DefaultLayout";
 import axios from "axios";
-import { GET_ALL_USERS } from "../../api/constants";
+import { GET_ALL_USERS, UPDATE_USER } from "../../api/constants";
 import { Link } from "react-router-dom";
-import AddProperty from "../Form/AddProperty";
+import AddUser from "../../components/AddUser/AddUser";
+import UsersTable from "../../components/UsersTable/UsersTable";
 
 const UsersList = () => {
   const [allUsers, setAllUsers] = useState([]);
@@ -13,7 +13,7 @@ const UsersList = () => {
 
   useEffect(() => {
     axios
-      .get(GET_ALL_USERS)
+      .get(GET_ALL_USERS, { withCredentials: true })
       .then(function (response) {
         // handle success
 
@@ -24,6 +24,20 @@ const UsersList = () => {
         console.log(error);
       });
   }, []);
+
+  const handleDelete = useCallback((userID) => {
+    axios
+      .delete(UPDATE_USER + "/" + userID, { withCredentials: true })
+      .then(function (response) {
+        // handle success
+        console.log(response);
+        if (response.data.success === true) {
+          setAllUsers((prevUser) => {
+            return prevUser.filter((user) => user._id !== userID);
+          });
+        }
+      });
+  });
 
   return (
     <DefaultLayout>
@@ -42,11 +56,11 @@ const UsersList = () => {
 
       {!addUser && (
         <div className="flex flex-col gap-10">
-          <TableSix users={allUsers} />
+          <UsersTable users={allUsers} handleDelete={handleDelete} />
         </div>
       )}
 
-      {addUser && <AddProperty />}
+      {addUser && <AddUser setAddUser={setAddUser} />}
     </DefaultLayout>
   );
 };

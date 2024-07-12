@@ -1,36 +1,9 @@
 import React from "react";
 import DropdownFour from "../Dropdowns/DropdownFour";
 
-const data = [
-  {
-    name: "Musharof Chowdhury",
-    position: "Multidisciplinary Web Entrepreneur",
-    email: "musharof@example.com",
-    role: "Owner",
-  },
-  {
-    name: "Naimur Rahman",
-    position: "Website Front-end Developer",
-    email: "naimurrahman@example.com",
-    role: "Member",
-  },
-  {
-    name: "Shafiq Hammad",
-    position: "Regional Paradigm Technician",
-    email: "shafiq.hd@example.com",
-    role: "Moderator",
-  },
-  {
-    name: "Alex Semuyel",
-    position: "Applications Engineer",
-    email: "alex.semuel@example.com",
-    role: "Admin",
-  },
-];
-
-const TableSix = ({ users, handleDelete }) => {
+const UsersTable = ({ users, handleDelete }) => {
   return (
-    <div className="max-w-full overflow-x-auto">
+    <div className="max-w-full overflow-x-auto pb-20">
       <div className="min-w-[1170px]">
         {/* table header start */}
         <div className="grid grid-cols-12 rounded-t-[10px] bg-primary px-5 py-4 lg:px-7.5 2xl:px-11">
@@ -98,4 +71,4 @@ const TableSix = ({ users, handleDelete }) => {
   );
 };
 
-export default TableSix;
+export default UsersTable;

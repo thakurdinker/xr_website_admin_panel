@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const DropdownsThree: React.FC = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -19,8 +19,8 @@ const DropdownsThree: React.FC = () => {
         return;
       setDropdownOpen(false);
     };
-    document.addEventListener('click', clickHandler);
-    return () => document.removeEventListener('click', clickHandler);
+    document.addEventListener("click", clickHandler);
+    return () => document.removeEventListener("click", clickHandler);
   });
 
   // close if the esc key is pressed
@@ -29,8 +29,8 @@ const DropdownsThree: React.FC = () => {
       if (!dropdownOpen || keyCode !== 27) return;
       setDropdownOpen(false);
     };
-    document.addEventListener('keydown', keyHandler);
-    return () => document.removeEventListener('keydown', keyHandler);
+    document.addEventListener("keydown", keyHandler);
+    return () => document.removeEventListener("keydown", keyHandler);
   });
 
   return (
@@ -47,12 +47,12 @@ const DropdownsThree: React.FC = () => {
             ref={trigger}
             onClick={() => setDropdownOpen(!dropdownOpen)}
             to="#"
-            className="inline-flex items-center gap-2.5 rounded-md bg-primary py-3 px-5.5 font-medium text-white hover:bg-opacity-90"
+            className="inline-flex items-center gap-2.5 rounded-md bg-primary px-5.5 py-3 font-medium text-white hover:bg-opacity-90"
           >
             Dropdown Button
             <svg
               className={`fill-current duration-200 ease-linear ${
-                dropdownOpen && 'rotate-180'
+                dropdownOpen && "rotate-180"
               }`}
               width="12"
               height="7"
@@ -77,14 +77,14 @@ const DropdownsThree: React.FC = () => {
             onFocus={() => setDropdownOpen(true)}
             onBlur={() => setDropdownOpen(false)}
             className={`absolute left-0 top-full z-40 mt-2 w-full rounded-md bg-black py-3 shadow-card ${
-              dropdownOpen === true ? 'block' : 'hidden'
+              dropdownOpen === true ? "block" : "hidden"
             }`}
           >
             <ul className="flex flex-col">
               <li>
                 <Link
                   to="#"
-                  className="flex py-2 px-5 font-medium text-bodydark2 hover:text-white"
+                  className="flex px-5 py-2 font-medium text-bodydark2 hover:text-white"
                 >
                   Dashboard
                 </Link>
@@ -92,7 +92,7 @@ const DropdownsThree: React.FC = () => {
               <li>
                 <Link
                   to="#"
-                  className="flex py-2 px-5 font-medium text-bodydark2 hover:text-white"
+                  className="flex px-5 py-2 font-medium text-bodydark2 hover:text-white"
                 >
                   Settings
                 </Link>
@@ -100,7 +100,7 @@ const DropdownsThree: React.FC = () => {
               <li>
                 <Link
                   to="#"
-                  className="flex py-2 px-5 font-medium text-bodydark2 hover:text-white"
+                  className="flex px-5 py-2 font-medium text-bodydark2 hover:text-white"
                 >
                   Earnings
                 </Link>
@@ -108,7 +108,7 @@ const DropdownsThree: React.FC = () => {
               <li>
                 <Link
                   to="#"
-                  className="flex py-2 px-5 font-medium text-bodydark2 hover:text-white"
+                  className="flex px-5 py-2 font-medium text-bodydark2 hover:text-white"
                 >
                   Logout
                 </Link>
@@ -121,4 +121,4 @@ const DropdownsThree: React.FC = () => {
   );
 };
 
-export default DropdownsThree
+export default DropdownsThree;

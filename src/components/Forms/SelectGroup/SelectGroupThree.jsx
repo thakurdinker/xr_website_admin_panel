@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-const SelectGroupThree: React.FC = () => {
-  const [selectedOption, setSelectedOption] = useState<string>('');
-  const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false);
+const SelectGroupThree = ({
+  label,
+  placeholder,
+  roles,
+  handleChange,
+  roleId,
+}) => {
+  const [selectedOption, setSelectedOption] = useState("");
+  const [isOptionSelected, setIsOptionSelected] = useState(false);
 
   const changeTextColor = () => {
     setIsOptionSelected(true);
@@ -11,39 +17,37 @@ const SelectGroupThree: React.FC = () => {
   return (
     <div className="mb-5.5">
       <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-        {' '}
-        Which option best describes you?{' '}
+        {label}
       </label>
 
       <div className="relative z-20 bg-transparent dark:bg-form-input">
         <select
-          value={selectedOption}
+          name="roleId"
+          id="roleId"
+          value={roleId}
           onChange={(e) => {
             setSelectedOption(e.target.value);
             changeTextColor();
+            handleChange(e);
           }}
           className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent px-5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary ${
-            isOptionSelected ? 'text-black dark:text-white' : ''
+            isOptionSelected ? "text-black dark:text-white" : ""
           }`}
         >
           <option value="" disabled className="text-body dark:text-bodydark">
-            Select your subject
+            {placeholder}
           </option>
-          <option value="Student" className="text-body dark:text-bodydark">
-            Student
-          </option>
-          <option
-            value="UX/UI Designer"
-            className="text-body dark:text-bodydark"
-          >
-            UX/UI Designer
-          </option>
-          <option
-            value="Web Developer"
-            className="text-body dark:text-bodydark"
-          >
-            Web Developer
-          </option>
+          {roles?.map((role) => {
+            return (
+              <option
+                defaultChecked={roleId === role._id}
+                key={role._id}
+                value={role._id}
+              >
+                {role.role_name}
+              </option>
+            );
+          })}
         </select>
 
         <span className="absolute right-4 top-1/2 z-30 -translate-y-1/2">

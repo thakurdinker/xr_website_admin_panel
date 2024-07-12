@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const DropdownFour = ({ userID }) => {
+const DropdownFour = ({ userID, handleDelete }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const trigger = useRef<any>(null);
@@ -73,12 +73,17 @@ const DropdownFour = ({ userID }) => {
         >
           Edit
         </button>
-        <button className="flex w-full px-4 py-2 text-sm hover:bg-whiter hover:text-primary dark:hover:bg-meta-4">
+        <button
+          className="flex w-full px-4 py-2 text-sm hover:bg-whiter hover:text-primary dark:hover:bg-meta-4"
+          onClick={() => {
+            handleDelete(userID);
+          }}
+        >
           Delete
         </button>
-        <button className="flex w-full px-4 py-2 text-sm hover:bg-whiter hover:text-primary dark:hover:bg-meta-4">
+        {/* <button className="flex w-full px-4 py-2 text-sm hover:bg-whiter hover:text-primary dark:hover:bg-meta-4">
           Details
-        </button>
+        </button> */}
       </div>
     </div>
   );
