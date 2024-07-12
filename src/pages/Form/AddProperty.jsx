@@ -56,6 +56,7 @@ const initialPropertyData = {
     heading: "",
     title: "",
     description: "",
+    image: "",
   },
   about_project: {
     heading: "",
@@ -338,7 +339,7 @@ const AddProperty = () => {
               </div>
 
               {/* Price */}
-              <div className="mb-5 md:col-span-4 lg:col-span-2">
+              <div className="mb-5 md:col-span-4 lg:col-span-3">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Price
                 </label>
@@ -411,6 +412,72 @@ const AddProperty = () => {
                   value={propertyData.developer_name_slug}
                   onChange={handleChange}
                   placeholder="Enter developer name slug"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+               {/* Section 1 Heading */}
+               <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Section 1 Heading
+                </label>
+                <input
+                  type="text"
+                  name="heading"
+                  value={propertyData?.section_1?.heading}
+                  onChange={(e) =>
+                    handleNestedChange(e, "section_1", "heading")
+                  }
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* Section 1 Title */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Section 1 Title
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  value={propertyData?.section_1?.title}
+                  onChange={(e) => handleNestedChange(e, "section_1", "title")}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* Section 1 Description */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Section 1 Description
+                </label>
+                <input
+                  type="text"
+                  name="description"
+                  value={propertyData?.section_1?.description}
+                  onChange={(e) =>
+                    handleNestedChange(e, "section_1", "description")
+                  }
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* Section 1 Image */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Section 1 Image
+                </label>
+                <input
+                  type="text"
+                  name="description"
+                  value={propertyData?.section_1?.image}
+                  onChange={(e) =>
+                    handleNestedChange(e, "section_1", "image")
+                  }
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
                 />
@@ -620,24 +687,6 @@ const AddProperty = () => {
                 />
               </div>
 
-              {/* Amenities */}
-              {/* <div className="mb-5 md:col-span-4 lg:col-span-2">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Amenities
-                </label>
-                <input
-                  type="text"
-                  name="amenities"
-                  value={propertyData?.features?.amenities}
-                  onChange={(e) =>
-                    handleNestedChange(e, "features", "amenities")
-                  }
-                  placeholder="Enter amenities"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
-                />
-              </div> */}
-
               {/* Images */}
               <div className="mb-5 md:col-span-6">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -732,7 +781,9 @@ const AddProperty = () => {
                   type="text"
                   name="meta_title"
                   value={propertyData?.amenities?.description}
-                  onChange={(e) => handleNestedChange(e, "amenities", "description")}
+                  onChange={(e) =>
+                    handleNestedChange(e, "amenities", "description")
+                  }
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
                 />
@@ -890,57 +941,11 @@ const AddProperty = () => {
                 </select>
               </div>
 
-              {/* Section 1 Heading */}
-              <div className="mb-5 md:col-span-3">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Section 1 Heading
-                </label>
-                <input
-                  type="text"
-                  name="heading"
-                  value={propertyData?.section_1?.heading}
-                  onChange={(e) =>
-                    handleNestedChange(e, "section_1", "heading")
-                  }
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
-                />
-              </div>
-
-              {/* Section 1 Title */}
-              <div className="mb-5 md:col-span-3">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Section 1 Title
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={propertyData?.section_1?.title}
-                  onChange={(e) => handleNestedChange(e, "section_1", "title")}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
-                />
-              </div>
-
-              {/* Section 1 Description */}
-              <div className="mb-5 md:col-span-3">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Section 1 Description
-                </label>
-                <input
-                  type="text"
-                  name="description"
-                  value={propertyData?.section_1?.description}
-                  onChange={(e) =>
-                    handleNestedChange(e, "section_1", "description")
-                  }
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
-                />
-              </div>
+             
+              
 
               {/* About Project Heading */}
-              <div className="mb-5 md:col-span-3">
+              <div className="mb-5 md:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   About Project Heading
                 </label>
@@ -957,7 +962,7 @@ const AddProperty = () => {
               </div>
 
               {/* About Project Title */}
-              <div className="mb-5 md:col-span-3">
+              <div className="mb-5 md:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   About Project Title
                 </label>
@@ -974,7 +979,7 @@ const AddProperty = () => {
               </div>
 
               {/* About Project Description */}
-              <div className="mb-5 md:col-span-3">
+              <div className="mb-5 md:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   About Project Description
                 </label>
@@ -989,8 +994,6 @@ const AddProperty = () => {
                   required
                 />
               </div>
-
-              
 
               {/* SEO */}
               <div className="mb-5 md:col-span-3">
@@ -1021,7 +1024,7 @@ const AddProperty = () => {
                   required
                 />
               </div>
-              <div className="mb-5 md:col-span-6">
+              <div className="mb-5 md:col-span-3">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   SEO Keywords{" "}
                 </label>
@@ -1036,7 +1039,7 @@ const AddProperty = () => {
               </div>
 
               {/* Schema */}
-              <div className="mb-5 md:col-span-6">
+              <div className="mb-5 md:col-span-3">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Schema Type
                 </label>
@@ -1105,43 +1108,43 @@ const AddProperty = () => {
                 />
               </div>
 
-                 {/* FAQs */}
-                 <div className="mb-5 md:col-span-12">
-                  <h3 className="mb-2">FAQs</h3>
-                  {propertyData.faqs.map((faq, index) => (
-                    <div key={index} className="mb-2">
-                      <label className="block">Question {index + 1}</label>
-                      <input
-                        type="text"
-                        name={`faqs[${index}].question`}
-                        value={faq.question}
-                        onChange={(e) =>
-                          handleArrayChange(e, index, "faqs", "question")
-                        }
-                        className="mb-2 w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                        required
-                      />
-                      <label className="block">Answer {index + 1}</label>
-                      <textarea
-                        name={`faqs[${index}].answer`}
-                        value={faq.answer}
-                        onChange={(e) =>
-                          handleArrayChange(e, index, "faqs", "answer")
-                        }
-                        className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                        required
-                      />
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={addFaq}
-                    className="bg-gray-200 hover:bg-gray-300 mt-2 rounded border border-stroke px-4 py-2 text-black transition dark:border-form-strokedark dark:bg-form-input dark:text-white dark:hover:bg-form-input"
-                    required
-                  >
-                    Add FAQ
-                  </button>
-                </div>
+              {/* FAQs */}
+              <div className="mb-5 md:col-span-12">
+                <h3 className="mb-2">FAQs</h3>
+                {propertyData.faqs.map((faq, index) => (
+                  <div key={index} className="mb-2">
+                    <label className="block">Question {index + 1}</label>
+                    <input
+                      type="text"
+                      name={`faqs[${index}].question`}
+                      value={faq.question}
+                      onChange={(e) =>
+                        handleArrayChange(e, index, "faqs", "question")
+                      }
+                      className="mb-2 w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                      required
+                    />
+                    <label className="block">Answer {index + 1}</label>
+                    <textarea
+                      name={`faqs[${index}].answer`}
+                      value={faq.answer}
+                      onChange={(e) =>
+                        handleArrayChange(e, index, "faqs", "answer")
+                      }
+                      className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                      required
+                    />
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addFaq}
+                  className="bg-gray-200 hover:bg-gray-300 mt-2 rounded border border-stroke px-4 py-2 text-black transition dark:border-form-strokedark dark:bg-form-input dark:text-white dark:hover:bg-form-input"
+                  required
+                >
+                  Add FAQ
+                </button>
+              </div>
 
               {/* Buttons */}
               <div className="flex justify-end gap-4 md:col-span-12">
