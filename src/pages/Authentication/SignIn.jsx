@@ -1,10 +1,33 @@
-import React from "react";
-import { Link } from "react-router-dom";
-
-import LogoDark from "../../images/logo/logo-dark.svg";
-import Logo from "../../images/logo/logo.svg";
+import axios from "axios";
+import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { LOGIN } from "../../api/constants";
+import { UserContext } from "../../context/UserContext";
 
 const SignIn = () => {
+  const navigate = useNavigate();
+  const { currentUser, setCurrentUser } = useContext(UserContext);
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    axios({
+      method: "post",
+      url: LOGIN,
+      data: {
+        username: e.target[0].value,
+        password: e.target[1].value,
+      },
+      withCredentials: true,
+    })
+      .then((response) => {
+        if (response.data.success === true) {
+          setCurrentUser({ isLoggedIn: true });
+          navigate("/");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   return (
     <div className="flex  h-[100vh] w-[100vw] items-center justify-center">
       <div className="mx-auto w-4/5 ">
@@ -144,15 +167,16 @@ const SignIn = () => {
                   Sign In to Xperience Realty
                 </h2>
 
-                <form>
+                <form onSubmit={handleFormSubmit}>
                   <div className="mb-4">
                     <label className="mb-2.5 block font-medium text-black dark:text-white">
-                      Email
+                      Username / Email
                     </label>
                     <div className="relative">
                       <input
                         type="email"
-                        placeholder="Enter your email"
+                        name="username"
+                        placeholder="Enter your username or email"
                         className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
 
@@ -183,6 +207,7 @@ const SignIn = () => {
                     <div className="relative">
                       <input
                         type="password"
+                        name="password"
                         placeholder="password"
                         className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />

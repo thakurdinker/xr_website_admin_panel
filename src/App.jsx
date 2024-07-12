@@ -71,8 +71,20 @@ import AddHomePageVideo from "./pages/Form/AddHomePageVideo.jsx";
 import { UserContextProvider } from "./context/UserContext.jsx";
 import ProtectedRoute from "./route/ProtectedRoute.jsx";
 
+function WithUserContext() {
+  return (
+    <>
+      <UserContextProvider>
+        <ProtectedRoute>
+          <Outlet />
+        </ProtectedRoute>
+      </UserContextProvider>
+    </>
+  );
+}
+
 function App() {
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -83,26 +95,25 @@ function App() {
     setTimeout(() => setLoading(false), 1000);
   }, []);
 
-  function WithUserContext() {
-    return (
-      <>
-        <UserContextProvider>
-          <ProtectedRoute>
-            <Outlet />
-          </ProtectedRoute>
-        </UserContextProvider>
-      </>
-    );
-  }
-
   return loading ? (
     <Loader />
   ) : (
     <>
       <Routes>
-        <Route path="/" element={<WithUserContext />}>
+        <Route
+          path="/auth/signin"
+          exact
+          element={
+            <UserContextProvider>
+              <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <SignIn />
+            </UserContextProvider>
+          }
+        />
+        <Route element={<WithUserContext />}>
           <Route
-            index
+            exact
+            path="/"
             element={
               <>
                 <PageTitle title="Dashboard" />
@@ -111,6 +122,7 @@ function App() {
             }
           />
           <Route
+            exact
             path="/manage-users/edit"
             element={
               <>
@@ -120,6 +132,7 @@ function App() {
             }
           />
           <Route
+            exact
             path="/manage-users"
             element={
               <>
@@ -130,6 +143,7 @@ function App() {
           />
 
           <Route
+            exact
             path="/manage-properties"
             element={
               <>
@@ -139,6 +153,7 @@ function App() {
             }
           />
           <Route
+            exact
             path="/manage-agents"
             element={
               <>
@@ -148,6 +163,7 @@ function App() {
             }
           />
           <Route
+            exact
             path="/manage-communities"
             element={
               <>
@@ -157,6 +173,7 @@ function App() {
             }
           />
           <Route
+            exact
             path="/manage-posts"
             element={
               <>
@@ -166,6 +183,7 @@ function App() {
             }
           />
           <Route
+            exact
             path="/homepageVideo"
             element={
               <>
@@ -684,10 +702,10 @@ function App() {
         <Route
           path="/auth/signin"
           element={
-            <>
+            <UserContextProvider>
               <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <SignIn />
-            </>
+            </UserContextProvider>
           }
         />
         <Route

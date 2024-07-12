@@ -4,24 +4,28 @@ import { CURRENT_USER } from "../api/constants";
 
 export const UserContext = createContext();
 
+export const INITIAL_STATE = {
+  isLoggedIn: false,
+  user: null,
+  isUpdated: false,
+};
+
 export function UserContextProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState({
-    isLoggedIn: false,
-  });
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     axios
-      .get(CURRENT_USER)
+      .get(CURRENT_USER, { withCredentials: true })
       .then(function (response) {
         // handle success
         if (response.data.success === true) {
-          setCurrentUser(response.data.data);
+          setCurrentUser(response.data.user);
         }
       })
       .catch(function (error) {
         // handle error
         console.log(error);
-        setCurrentUser({ isLoggedIn: false });
+        setCurrentUser(INITIAL_STATE);
       });
   }, []);
 
