@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Outlet, Route, Routes, useLocation } from "react-router-dom";
 
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Analytics from "./pages/Dashboard/Analytics";
@@ -68,6 +68,8 @@ import ManagePosts from "./pages/ManagePosts/ManagePosts.jsx";
 import ManageAgents from "./pages/ManageAgents/ManageAgents.jsx";
 import ManageCommunities from "./pages/ManageCommunities/ManageCommunities.jsx";
 import AddHomePageVideo from "./pages/Form/AddHomePageVideo.jsx";
+import { UserContextProvider } from "./context/UserContext.jsx";
+import ProtectedRoute from "./route/ProtectedRoute.jsx";
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -81,66 +83,98 @@ function App() {
     setTimeout(() => setLoading(false), 1000);
   }, []);
 
+  function WithUserContext() {
+    return (
+      <>
+        <UserContextProvider>
+          <ProtectedRoute>
+            <Outlet />
+          </ProtectedRoute>
+        </UserContextProvider>
+      </>
+    );
+  }
+
   return loading ? (
     <Loader />
   ) : (
     <>
       <Routes>
-        <Route
-          index
-          element={
-            <>
-              <PageTitle title="Dashboard" />
-              <Dashboard />
-            </>
-          }
-        />
-        <Route
-          path="/manage-users/edit"
-          element={
-            <>
-              <PageTitle title="Edit User" />
-              <EditUser />
-            </>
-          }
-        />
-        <Route
-          path="/manage-users"
-          element={
-            <>
-              <PageTitle title="Manage Users" />
-              <UsersList />
-            </>
-          }
-        />
+        <Route path="/" element={<WithUserContext />}>
+          <Route
+            index
+            element={
+              <>
+                <PageTitle title="Dashboard" />
+                <Dashboard />
+              </>
+            }
+          />
+          <Route
+            path="/manage-users/edit"
+            element={
+              <>
+                <PageTitle title="Edit User" />
+                <EditUser />
+              </>
+            }
+          />
+          <Route
+            path="/manage-users"
+            element={
+              <>
+                <PageTitle title="Manage Users" />
+                <UsersList />
+              </>
+            }
+          />
 
-        <Route
-          path="/manage-properties"
-          element={
-            <>
-              <PageTitle title="Manage Properties" />
-              <ManageProperties />
-            </>
-          }
-        />
-        <Route
-          path="/manage-agents"
-          element={
-            <>
-              <PageTitle title="Manage Agents" />
-              <ManageAgents />
-            </>
-          }
-        />
-        <Route
-          path="/manage-communities"
-          element={
-            <>
-              <PageTitle title="Manage Communities" />
-              <ManageCommunities />
-            </>
-          }
-        />
+          <Route
+            path="/manage-properties"
+            element={
+              <>
+                <PageTitle title="Manage Properties" />
+                <ManageProperties />
+              </>
+            }
+          />
+          <Route
+            path="/manage-agents"
+            element={
+              <>
+                <PageTitle title="Manage Agents" />
+                <ManageAgents />
+              </>
+            }
+          />
+          <Route
+            path="/manage-communities"
+            element={
+              <>
+                <PageTitle title="Manage Communities" />
+                <ManageCommunities />
+              </>
+            }
+          />
+          <Route
+            path="/manage-posts"
+            element={
+              <>
+                <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <ManagePosts />
+              </>
+            }
+          />
+          <Route
+            path="/homepageVideo"
+            element={
+              <>
+                <PageTitle title="Under Maintenance | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <AddHomePageVideo />
+              </>
+            }
+          />
+        </Route>
 
         <Route
           path="/dashboard/analytics"
@@ -187,15 +221,7 @@ function App() {
             </>
           }
         />
-        <Route
-          path="/manage-posts"
-          element={
-            <>
-              <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <ManagePosts />
-            </>
-          }
-        />
+
         <Route
           path="/tasks/task-list"
           element={
@@ -706,15 +732,6 @@ function App() {
             <>
               <PageTitle title="Under Maintenance | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <UnderMaintenance />
-            </>
-          }
-        />
-        <Route
-          path="/homepageVideo"
-          element={
-            <>
-              <PageTitle title="Under Maintenance | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <AddHomePageVideo />
             </>
           }
         />
