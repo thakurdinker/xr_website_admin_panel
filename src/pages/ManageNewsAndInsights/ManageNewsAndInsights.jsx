@@ -8,7 +8,7 @@ import { MdEditDocument } from "react-icons/md";
 import { IoAddCircle } from "react-icons/io5";
 
 
-function ManageCommunities() {
+function ManageNewsAndInsights() {
     const [communities, setCommunities] = useState([]);
   
     const navigate = useNavigate();
@@ -17,10 +17,9 @@ function ManageCommunities() {
       const fetchCommunities = async () => {
         try {
           const response = await axios.get(
-            FETCH_ALL_COMMUNITIES, { withCredentials: true }
+            FETCH_ALL_COMMUNITIES
           );
   
-          console.log(response.data.communities,"--------");
           if (response.data.success) {
             setCommunities(response.data.communities);
           }
@@ -39,7 +38,7 @@ function ManageCommunities() {
   
     const handleDeleteClick = async (id) => {
       try {
-        const response = await axios.delete(FETCH_ALL_COMMUNITIES+`/${id}`, { withCredentials: true });
+        const response = await axios.delete(FETCH_ALL_COMMUNITIES+`/${id}`);
         if (response.data.success) {
           setCommunities(communities.filter(community => community.id !== id));
         } else {
@@ -131,4 +130,4 @@ function ManageCommunities() {
     );
   };
 
-export default ManageCommunities
+export default ManageNewsAndInsights

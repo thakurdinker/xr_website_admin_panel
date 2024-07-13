@@ -70,6 +70,7 @@ import ManageCommunities from "./pages/ManageCommunities/ManageCommunities.jsx";
 import AddHomePageVideo from "./pages/Form/AddHomePageVideo.jsx";
 import { UserContextProvider } from "./context/UserContext.jsx";
 import ProtectedRoute from "./route/ProtectedRoute.jsx";
+import ManageNewsAndInsights from "./pages/ManageNewsAndInsights/ManageNewsAndInsights.jsx";
 
 function WithUserContext() {
   return (
@@ -149,6 +150,16 @@ function App() {
               <>
                 <PageTitle title="Manage Properties" />
                 <ManageProperties />
+              </>
+            }
+          />
+          <Route
+            exact
+            path="/manage-news-and-insights"
+            element={
+              <>
+                <PageTitle title="Manage News And Insights" />
+                <ManageNewsAndInsights />
               </>
             }
           />
