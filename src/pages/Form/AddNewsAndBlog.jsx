@@ -3,12 +3,13 @@ import DefaultLayout from "../../layout/DefaultLayout";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import UploadWidget from "../../components/UploadWidget/UploadImages"; // Assuming this is a component for image upload
-import { NEWS } from "../../api/constants";
+import { NEWS, NEWS_AND_INSIGHTS } from "../../api/constants";
 import UploadImages from "../../components/UploadWidget/UploadImages";
 
 const HomePageVideoForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [categories, setCategories] = useState();
   const [formData, setFormData] = useState({
     author: {
       name: "",
@@ -50,7 +51,6 @@ const HomePageVideoForm = () => {
           withCredentials: true,
         });
         setFormData(response.data.content);
-        console.log(response.data.content);
       } catch (error) {
         console.error("Error fetching form data:", error);
       }
@@ -60,6 +60,23 @@ const HomePageVideoForm = () => {
       fetchFormData();
     }
   }, [id]);
+
+  useEffect(() => {
+    const fetchFormData = async () => {
+      try {
+        const response = await axios.get(NEWS_AND_INSIGHTS);
+        console.log(response.data.categories);
+        setCategories(response.data.categories);
+        // setFormData(response.data);
+      } catch (error) {
+        console.error("Error fetching form data:", error);
+      }
+    };
+
+    if (id) {
+      fetchFormData();
+    }
+  }, []);
 
   const addFaq = () => {
     setFormData((prevData) => ({
@@ -127,13 +144,6 @@ const HomePageVideoForm = () => {
     }));
   };
 
-  // const handleImagesChange = (images) => {
-  //   if (images.length > 0) {
-  //     const imageUrl = images[images.length - 1].url;
-  //     setFormData((prevData) => ({ ...prevData, profile_picture: imageUrl }));
-  //   }
-  // };
-
   const handleImagesChange = (updatedImages) => {
     // Create a new array with only the url and description properties
     const imagesToSend = updatedImages.map((image) => ({
@@ -159,12 +169,9 @@ const HomePageVideoForm = () => {
     formData.seo.keywords = convertStringToArray(formData.seo.keywords);
     try {
       if (id) {
-        console.log(formData, "------------");
         await axios.put(NEWS + `/${id}`, formData, { withCredentials: true });
       } else {
         const res = await axios.post(NEWS, formData, { withCredentials: true });
-        console.log(formData,".................");
-        console.log(res,"-------======-0000");
       }
       navigate("/manage-news-and-insights");
     } catch (error) {
@@ -245,14 +252,29 @@ const HomePageVideoForm = () => {
               {/* Category */}
               <div className="mb-5 md:col-span-6">
                 <label className="block">Category</label>
-                <input
+                {/* <input
                   type="text"
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   required
-                />
+                /> */}
+
+                <select
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  required
+                >
+                  {categories?.map((category) => (
+                    console.log(category,"ppp"),
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Tags */}
