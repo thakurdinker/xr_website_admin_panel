@@ -49,7 +49,6 @@ const AddUser = ({ setAddUser }) => {
         withCredentials: true,
       })
         .then((response) => {
-          console.log(response);
           if (response.data.success) {
             // setShowNotification(true);
 

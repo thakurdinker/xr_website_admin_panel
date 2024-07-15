@@ -737,7 +737,6 @@ const AddProperty = () => {
                 </label>
                 {/* Cloudinary Upload Widget */}
                 <UploadImages
-                  isGallery={false}
                   onImagesChange={handleImagesChange}
                   initialImages={propertyData?.images || []}
                 />

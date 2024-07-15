@@ -30,7 +30,6 @@ const UsersList = () => {
       .delete(UPDATE_USER + "/" + userID, { withCredentials: true })
       .then(function (response) {
         // handle success
-        console.log(response);
         if (response.data.success === true) {
           setAllUsers((prevUser) => {
             return prevUser.filter((user) => user._id !== userID);

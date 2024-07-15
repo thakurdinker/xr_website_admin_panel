@@ -48,8 +48,6 @@ const DropdownUser = () => {
         navigate("/auth/signin");
         return;
       }
-
-      console.log(res.data.message);
     });
   };
 

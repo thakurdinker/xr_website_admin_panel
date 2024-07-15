@@ -1,9 +1,8 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 
-const UploadImages = ({ onImagesChange, initialImages = [] }) => {
+const   UploadImages = ({ onImagesChange, initialImages = [], newsAndBlog }) => {
   const { pathname } = useLocation();
-  console.log(pathname);
   const handleUploadClick = (event) => {
     event.preventDefault(); // Prevent form submission
     // Trigger Cloudinary upload widget
@@ -42,39 +41,51 @@ const UploadImages = ({ onImagesChange, initialImages = [] }) => {
             />
             {!pathname.includes("/forms/add-agent") && (
               <>
-                {" "}
-                <textarea
-                  name="description"
-                  value={image.description}
-                  onChange={(event) =>
-                    onImagesChange(
-                      initialImages.map((img, i) =>
-                        i === index
-                          ? { ...img, description: event.target.value || "" }
-                          : img
-                      )
-                    )
-                  }
-                  placeholder="Enter image description"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                  required
-                ></textarea>
-                <textarea
-                  name="heading"
-                  value={image.heading}
-                  onChange={(event) =>
-                    onImagesChange(
-                      initialImages.map((img, i) =>
-                        i === index
-                          ? { ...img, heading: event.target.value || "" }
-                          : img
-                      )
-                    )
-                  }
-                  placeholder="Enter image heading"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                  required
-                ></textarea>
+                {newsAndBlog ? (
+                  <input
+                    type="text"
+                    name="imageUrl"
+                    value={image?.url}
+                    readOnly
+                    className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    required
+                  />
+                ) : (
+                  <>
+                    <textarea
+                      name="description"
+                      value={image.description}
+                      onChange={(event) =>
+                        onImagesChange(
+                          initialImages.map((img, i) =>
+                            i === index
+                              ? { ...img, description: event.target.value || "" }
+                              : img
+                          )
+                        )
+                      }
+                      placeholder="Enter image description"
+                      className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      required
+                    ></textarea>
+                    <textarea
+                      name="heading"
+                      value={image.heading}
+                      onChange={(event) =>
+                        onImagesChange(
+                          initialImages.map((img, i) =>
+                            i === index
+                              ? { ...img, heading: event.target.value || "" }
+                              : img
+                          )
+                        )
+                      }
+                      placeholder="Enter image heading"
+                      className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      required
+                    ></textarea>
+                  </>
+                )}
               </>
             )}
 

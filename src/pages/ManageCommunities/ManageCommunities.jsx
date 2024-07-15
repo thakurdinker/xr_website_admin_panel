@@ -20,7 +20,6 @@ function ManageCommunities() {
             FETCH_ALL_COMMUNITIES, { withCredentials: true }
           );
   
-          console.log(response.data.communities,"--------");
           if (response.data.success) {
             setCommunities(response.data.communities);
           }

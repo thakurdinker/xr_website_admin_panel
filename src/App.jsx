@@ -71,6 +71,7 @@ import AddHomePageVideo from "./pages/Form/AddHomePageVideo.jsx";
 import { UserContextProvider } from "./context/UserContext.jsx";
 import ProtectedRoute from "./route/ProtectedRoute.jsx";
 import ManageNewsAndInsights from "./pages/ManageNewsAndInsights/ManageNewsAndInsights.jsx";
+import AddNewsAndBlog from "./pages/Form/AddNewsAndBlog.jsx";
 
 function WithUserContext() {
   return (
@@ -222,6 +223,27 @@ function App() {
               <>
                 <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
                 <AddProperty />
+              </>
+            }
+          />
+
+          <Route
+            exact
+            path="/forms/add-news-and-blog"
+            element={
+              <>
+                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <AddNewsAndBlog />
+              </>
+            }
+          />
+          <Route
+            exact
+            path="/forms/add-news-and-blog/:id"
+            element={
+              <>
+                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <AddNewsAndBlog />
               </>
             }
           />

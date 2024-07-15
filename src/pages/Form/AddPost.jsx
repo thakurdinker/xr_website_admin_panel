@@ -92,19 +92,6 @@ const ContentForm = () => {
     return field;
   };
 
-  const handleImagesChange = (newImages) => {
-    // Create a new array with only the url and description properties
-    const imagesToSend = newImages.map((image) => ({
-      url: image.url,
-      description: image.description || "", // Add this line to handle missing description
-    }));
-
-    setFormData((prev) => ({
-      ...prev,
-      images: imagesToSend,
-    }));
-  };
-
   const addFaq = () => {
     setFormData((prevData) => ({
       ...prevData,
@@ -267,17 +254,7 @@ const ContentForm = () => {
                   </select>
                 </div>
 
-                {/* <div className="mb-5 md:col-span-12">
-                  <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                    Images
-                  </label>
-                  <UploadImages
-                    onImagesChange={handleImagesChange}
-                    initialImages={formData?.images || []}
-                    required
-                  />
-                </div> */}
-
+              
                 {/* FAQs */}
                 <div className="mb-5 md:col-span-12">
                   <h3 className="mb-2">FAQs</h3>

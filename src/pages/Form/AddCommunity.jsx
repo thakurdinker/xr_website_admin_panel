@@ -399,21 +399,12 @@ const CommunityForm = () => {
                 </div>
               ))}
 
-              {/* Images */}
-              {/* <div className="mb-5 md:col-span-4 lg:col-span-12">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Images
-                </label>
-                <UploadWidget onImagesChange={handleImagesChange} />
-              </div> */}
-
               <div className="mb-5 md:col-span-12">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Images
                 </label>
                 {/* Cloudinary Upload Widget */}
                 <UploadImages
-                  isGallery={false}
                   onImagesChange={handleImagesChange}
                   initialImages={formData?.images || []}
                   required

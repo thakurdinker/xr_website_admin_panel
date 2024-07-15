@@ -115,11 +115,11 @@ const HomePageVideoForm = () => {
 
       let response;
       if (id) {
-        response = await axios.put(HOME_PAGE_VIDEOS + `/${id}`, payload, {
+        response = await axios.put(NEWS + `/${id}`, payload, {
           withCredentials: true,
         });
       } else {
-        response = await axios.post(HOME_PAGE_VIDEOS, payload, {
+        response = await axios.post(NEWS, payload, {
           withCredentials: true,
         });
       }
