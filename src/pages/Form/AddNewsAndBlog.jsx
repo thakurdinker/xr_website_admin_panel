@@ -65,7 +65,6 @@ const HomePageVideoForm = () => {
     const fetchFormData = async () => {
       try {
         const response = await axios.get(NEWS_AND_INSIGHTS);
-        console.log(response.data.categories);
         setCategories(response.data.categories);
         // setFormData(response.data);
       } catch (error) {
@@ -269,7 +268,6 @@ const HomePageVideoForm = () => {
                   required
                 >
                   {categories?.map((category) => (
-                    console.log(category,"ppp"),
                     <option key={category} value={category}>
                       {category}
                     </option>

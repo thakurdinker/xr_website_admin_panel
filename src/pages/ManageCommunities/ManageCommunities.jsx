@@ -10,6 +10,8 @@ import { IoAddCircle } from "react-icons/io5";
 
 function ManageCommunities() {
     const [communities, setCommunities] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
   
     const navigate = useNavigate();
   
@@ -17,11 +19,12 @@ function ManageCommunities() {
       const fetchCommunities = async () => {
         try {
           const response = await axios.get(
-            FETCH_ALL_COMMUNITIES, { withCredentials: true }
+            FETCH_ALL_COMMUNITIES + `?page=${currentPage}`, { withCredentials: true }
           );
   
           if (response.data.success) {
             setCommunities(response.data.communities);
+            setTotalPages(response.data.totalPages);
           }
         } catch (error) {
           console.error("Error fetching properties:", error);
@@ -29,7 +32,7 @@ function ManageCommunities() {
       };
   
       fetchCommunities();
-    }, []);
+    }, [currentPage]);
   
     const handleEditClick = (communityId) => {
       // Redirect to the AddProperty component in edit mode with the propertyId
@@ -52,6 +55,12 @@ function ManageCommunities() {
     const formatDate = (isoDate) => {
       const dateObject = new Date(isoDate);
       return dateObject.toLocaleString();
+    };
+
+    const handlePageChange = (newPage) => {
+      if (newPage > 0 && newPage <= totalPages) {
+        setCurrentPage(newPage);
+      }
     };
   
     return (
@@ -123,6 +132,27 @@ function ManageCommunities() {
                 ))}
               </div>
               {/* table body end */}
+              {/* Pagination start */}
+          <div className="flex justify-between p-5">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 border rounded"
+            >
+              Previous
+            </button>
+            <div className="flex items-center">
+              Page {currentPage} of {totalPages}
+            </div>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 border rounded"
+            >
+              Next
+            </button>
+          </div>
+          {/* Pagination end */}
             </div>
           </div>
         </div>

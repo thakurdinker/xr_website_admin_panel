@@ -8,35 +8,49 @@ import UsersTable from "../../components/UsersTable/UsersTable";
 
 const UsersList = () => {
   const [allUsers, setAllUsers] = useState([]);
-
   const [addUser, setAddUser] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 10;
+
+  const fetchUsers = async (page) => {
+    try {
+      const response = await axios.get(
+        `${GET_ALL_USERS}?page=${page}&limit=${limit}`,
+        { withCredentials: true }
+      );
+
+      if (response.data.success) {
+        setAllUsers(response.data.users);
+        setTotalPages(response.data.totalPages);
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
 
   useEffect(() => {
-    axios
-      .get(GET_ALL_USERS, { withCredentials: true })
-      .then(function (response) {
-        // handle success
-
-        if (response.data.success === true) setAllUsers(response.data.users);
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      });
-  }, []);
+    fetchUsers(currentPage);
+  }, [currentPage]);
 
   const handleDelete = useCallback((userID) => {
     axios
-      .delete(UPDATE_USER + "/" + userID, { withCredentials: true })
-      .then(function (response) {
-        // handle success
-        if (response.data.success === true) {
-          setAllUsers((prevUser) => {
-            return prevUser.filter((user) => user._id !== userID);
-          });
+      .delete(`${UPDATE_USER}/${userID}`, { withCredentials: true })
+      .then((response) => {
+        if (response.data.success) {
+          setAllUsers((prevUsers) => prevUsers.filter((user) => user._id !== userID));
         }
+      })
+      .catch((error) => {
+        console.error("Error deleting user:", error);
       });
-  });
+  }, []);
+
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
 
   return (
     <DefaultLayout>
@@ -60,6 +74,27 @@ const UsersList = () => {
       )}
 
       {addUser && <AddUser setAddUser={setAddUser} />}
+
+      {/* Pagination Controls */}
+      <div className="flex justify-between p-5">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="px-4 py-2 border rounded"
+        >
+          Previous
+        </button>
+        <div className="flex items-center">
+          Page {currentPage} of {totalPages}
+        </div>
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="px-4 py-2 border rounded"
+        >
+          Next
+        </button>
+      </div>
     </DefaultLayout>
   );
 };

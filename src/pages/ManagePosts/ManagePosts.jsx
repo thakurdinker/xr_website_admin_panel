@@ -59,6 +59,12 @@ function ManagePosts() {
     return dateObject.toLocaleString();
   };
 
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
   return (
     <DefaultLayout>
       <div className="overflow-hidden rounded-[10px]">
@@ -147,6 +153,27 @@ function ManagePosts() {
               ))}
             </div>
             {/* table body end */}
+            {/* Pagination start */}
+          <div className="flex justify-between p-5">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 border rounded"
+            >
+              Previous
+            </button>
+            <div className="flex items-center">
+              Page {currentPage} of {totalPages}
+            </div>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 border rounded"
+            >
+              Next
+            </button>
+          </div>
+          {/* Pagination end */}
           </div>
         </div>
       </div>

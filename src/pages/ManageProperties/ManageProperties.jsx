@@ -38,6 +38,13 @@ const ManageProperties = () => {
     navigate(`/forms/add-property/${propertyId}`);
   };
 
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+
   const handleDeleteClick = async (id) => {
     try {
       const response = await axios.delete(`${FETCH_ALL_PROPERTIES}/${id}`, {
@@ -134,6 +141,27 @@ const ManageProperties = () => {
               ))}
             </div>
             {/* table body end */}
+            {/* Pagination start */}
+          <div className="flex justify-between p-5">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 border rounded"
+            >
+              Previous
+            </button>
+            <div className="flex items-center">
+              Page {currentPage} of {totalPages}
+            </div>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 border rounded"
+            >
+              Next
+            </button>
+          </div>
+          {/* Pagination end */}
           </div>
         </div>
       </div>

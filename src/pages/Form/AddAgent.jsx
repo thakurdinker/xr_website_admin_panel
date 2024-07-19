@@ -38,6 +38,9 @@ const ProfileForm = () => {
     open_graph: { title: "", description: "", image: "" },
   });
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -120,6 +123,7 @@ const ProfileForm = () => {
         const response = await axios.post(FETCH_ALL_AGENTS, formData, {
           withCredentials: true,
         });
+        
       }
       navigate("/manage-agents");
     } catch (error) {

@@ -34,7 +34,6 @@ function ManageAgents() {
   }, [currentPage]);
 
   const handleEditClick = (propertyId) => {
-    // Redirect to the AddProperty component in edit mode with the propertyId
     navigate(`/forms/add-agent/${propertyId}`);
   };
 
@@ -44,7 +43,7 @@ function ManageAgents() {
         withCredentials: true,
       });
       if (response.data.success) {
-        setProperties(properties.filter((property) => property.id !== id));
+        setProperties(properties.filter((property) => property._id !== id));
       } else {
         console.error("Error deleting property:", response.data.message);
       }
@@ -58,6 +57,10 @@ function ManageAgents() {
     return dateObject.toLocaleString();
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   return (
     <DefaultLayout>
       <div className="overflow-hidden rounded-[10px]">
@@ -67,7 +70,7 @@ function ManageAgents() {
             <div className="grid grid-cols-10 bg-[#F9FAFB] px-5 py-4 dark:bg-meta-4 lg:px-7.5 2xl:px-11">
               <div className="col-span-2 flex items-center">
                 <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
-                  PROFILE PICURE
+                  PROFILE PICTURE
                 </h5>
               </div>
               <div className="col-span-2 flex items-center">
@@ -85,7 +88,6 @@ function ManageAgents() {
                   PHONE
                 </h5>
               </div>
-
               <div className="col-span-2 flex items-center justify-end">
                 <Link to="/forms/add-agent" className="text-xl md:text-2xl">
                   <IoAddCircle />
@@ -149,6 +151,27 @@ function ManageAgents() {
             {/* table body end */}
           </div>
         </div>
+        {/* pagination controls start */}
+        <div className="flex justify-between p-5">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 border rounded"
+          >
+            Previous
+          </button>
+          <div className="flex items-center">
+            Page {currentPage} of {totalPages}
+          </div>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 border rounded"
+          >
+            Next
+          </button>
+        </div>
+        {/* pagination controls end */}
       </div>
     </DefaultLayout>
   );

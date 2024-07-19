@@ -19,9 +19,6 @@ const ContentForm = () => {
     status: "draft",
     images: [],
     faqs: [{ question: "", answer: "" }],
-    meta_title: "",
-    meta_description: "",
-    keywords: [],
     seo: { meta_title: "", meta_description: "", keywords: "" },
     schema_org: {
       type: "Article",
@@ -109,11 +106,15 @@ const ContentForm = () => {
         const response = await axios.put(FETCH_ALL_POSTS + `/${id}`, formData, {
           withCredentials: true,
         });
+
+      
       } else {
         // Create new property
         const response = await axios.post(FETCH_ALL_POSTS, formData, {
           withCredentials: true,
         });
+
+
       }
       navigate("/manage-posts");
     } catch (error) {
@@ -299,8 +300,7 @@ const ContentForm = () => {
                   <input
                     type="text"
                     name="meta_title"
-                    value={formData.seo.meta_title}
-                    onChange={handleChange}
+                    onChange={(e) => handleNestedChange(e, "seo", "meta_title")}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                     required
                   />
@@ -313,7 +313,9 @@ const ContentForm = () => {
                     type="text"
                     name="meta_description"
                     value={formData.seo.meta_description}
-                    onChange={handleNestedChange}
+                    onChange={(e) =>
+                      handleNestedChange(e, "seo", "meta_description")
+                    }
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                     required
                   />
