@@ -72,6 +72,7 @@ import { UserContextProvider } from "./context/UserContext.jsx";
 import ProtectedRoute from "./route/ProtectedRoute.jsx";
 import ManageNewsAndInsights from "./pages/ManageNewsAndInsights/ManageNewsAndInsights.jsx";
 import AddNewsAndBlog from "./pages/Form/AddNewsAndBlog.jsx";
+import ForgotPassword from "./pages/Authentication/ForgotPassword.jsx";
 
 function WithUserContext() {
   return (
@@ -102,6 +103,24 @@ function App() {
   ) : (
     <>
       <Routes>
+      <Route
+          path="/reset-password"
+          element={
+            <>
+              <PageTitle title="Reset Password | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <ResetPassword />
+            </>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <>
+              <PageTitle title="Reset Password | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <ForgotPassword />
+            </>
+          }
+        />
         <Route
           path="/auth/signin"
           exact
@@ -774,15 +793,7 @@ function App() {
             </>
           }
         />
-        <Route
-          path="/auth/reset-password"
-          element={
-            <>
-              <PageTitle title="Reset Password | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <ResetPassword />
-            </>
-          }
-        />
+       
         <Route
           path="/auth/coming-soon"
           element={
