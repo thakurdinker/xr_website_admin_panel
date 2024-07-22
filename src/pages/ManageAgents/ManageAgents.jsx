@@ -39,7 +39,7 @@ function ManageAgents() {
 
   const handleDeleteClick = async (id) => {
     try {
-      const response = await axios.delete(FETCH_ALL_AGENTS + `/${id}`, {
+      const response = await axios.delete(`${FETCH_ALL_AGENTS}/${id}`, {
         withCredentials: true,
       });
       if (response.data.success) {
@@ -156,7 +156,7 @@ function ManageAgents() {
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="px-4 py-2 border rounded"
+            className="rounded border px-4 py-2"
           >
             Previous
           </button>
@@ -166,7 +166,7 @@ function ManageAgents() {
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="px-4 py-2 border rounded"
+            className="rounded border px-4 py-2"
           >
             Next
           </button>

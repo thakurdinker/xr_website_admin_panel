@@ -29,14 +29,14 @@ const HomePageVideoForm = () => {
 
           setFormData({
             mainVideo: {
-              url: mainVideo.url,
-              title: mainVideo.title,
-              agent: mainVideo.agent._id,
+              url: mainVideo?.url,
+              title: mainVideo?.title,
+              agent: mainVideo.agent?._id,
             },
             videos: videos.map((video) => ({
-              url: video.url,
-              title: video.title,
-              agent: video.agent._id,
+              url: video?.url,
+              title: video?.title,
+              agent: video.agent?._id,
             })),
           });
         } else {

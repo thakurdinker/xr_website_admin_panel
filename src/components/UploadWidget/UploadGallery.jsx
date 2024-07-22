@@ -1,4 +1,6 @@
+import axios from "axios";
 import React, { useState, useEffect } from "react";
+import { DELETE_IMAGE } from "../../api/constants";
 
 const UploadGallery = ({ onImagesChange, initialImages = [] }) => {
   const [gallery, setGallery] = useState([]);
@@ -26,10 +28,26 @@ const UploadGallery = ({ onImagesChange, initialImages = [] }) => {
     );
   };
 
-  const handleDeleteImage = (url) => {
-    const updatedGallery = gallery.filter((imgUrl) => imgUrl !== url);
-    setGallery(updatedGallery);
-    onImagesChange(updatedGallery);
+  const handleDeleteImage = async (url) => {
+    console.log(url);
+    try {
+      const response = await axios.post(
+        DELETE_IMAGE,
+        { assetUrl: url },
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.isDeleted) {
+        const updatedGallery = gallery.filter((imgUrl) => imgUrl !== url);
+        console.log(updatedGallery.length);
+        setGallery(updatedGallery);
+        onImagesChange(updatedGallery);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (

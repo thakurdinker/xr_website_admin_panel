@@ -1,7 +1,9 @@
+import axios from "axios";
 import React from "react";
 import { useLocation } from "react-router-dom";
+import { DELETE_IMAGE } from "../../api/constants";
 
-const   UploadImages = ({ onImagesChange, initialImages = [], newsAndBlog }) => {
+const UploadImages = ({ onImagesChange, initialImages = [], newsAndBlog }) => {
   const { pathname } = useLocation();
   const handleUploadClick = (event) => {
     event.preventDefault(); // Prevent form submission
@@ -21,6 +23,24 @@ const   UploadImages = ({ onImagesChange, initialImages = [], newsAndBlog }) => 
         }
       }
     );
+  };
+
+  const handleImageDelete = async (assetUrl, initialImages, index) => {
+    try {
+      const response = await axios.post(
+        DELETE_IMAGE,
+        { assetUrl },
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.isDeleted) {
+        onImagesChange(initialImages.filter((_, i) => i !== index));
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -59,7 +79,10 @@ const   UploadImages = ({ onImagesChange, initialImages = [], newsAndBlog }) => 
                         onImagesChange(
                           initialImages.map((img, i) =>
                             i === index
-                              ? { ...img, description: event.target.value || "" }
+                              ? {
+                                  ...img,
+                                  description: event.target.value || "",
+                                }
                               : img
                           )
                         )
@@ -92,7 +115,8 @@ const   UploadImages = ({ onImagesChange, initialImages = [], newsAndBlog }) => 
             <button
               onClick={(e) => {
                 e.preventDefault();
-                onImagesChange(initialImages.filter((_, i) => i !== index));
+
+                handleImageDelete(image.url, initialImages, index);
               }}
               className="absolute right-0 top-0 text-2xl text-black dark:text-white"
             >

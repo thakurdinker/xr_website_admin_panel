@@ -14,4 +14,5 @@ export const FETCH_ALL_COMMUNITIES = BASE_URL + "communities";
 export const HOME_PAGE_VIDEOS = BASE_URL + "homePageVideo";
 export const NEWS = BASE_URL + "content";
 export const NEWS_AND_INSIGHTS = `http://localhost:3333/real-estate-news`;
-export const RESET_PASSWORD = BASE_URL + "resetPassword"
+export const RESET_PASSWORD = BASE_URL + "resetPassword";
+export const DELETE_IMAGE = BASE_URL + "/deleteAsset";
