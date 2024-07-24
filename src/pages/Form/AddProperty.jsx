@@ -11,6 +11,8 @@ import {
   FETCH_ALL_PROPERTY_TYPES,
   FETCH_ALL_COMMUNITIES,
 } from "../../api/constants";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const initialPropertyData = {
   property_name: "",
@@ -295,22 +297,29 @@ const AddProperty = () => {
 
     // Make API request using axios
     try {
+      let response
       const payload = {
         ...propertyData,
         gallery: propertyData.galleryToSend, // Ensure only URLs are sent
       };
       if (id) {
         // Update existing property
-        const response = await axios.put(
+         response = await axios.put(
           FETCH_ALL_PROPERTIES + `/${id}`,
           propertyData,
           { withCredentials: true }
         );
       } else {
         // Create new property
-        const response = await axios.post(FETCH_ALL_PROPERTIES, propertyData, {
+         response = await axios.post(FETCH_ALL_PROPERTIES, propertyData, {
           withCredentials: true,
         });
+      }
+      if (response?.data?.success === false) {
+        toast.error(response?.data?.message);
+        return;
+      }else{
+        toast.success(response?.data?.message);
       }
       navigate("/manage-properties");
     } catch (error) {
@@ -1205,6 +1214,7 @@ const AddProperty = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </DefaultLayout>
   );
 };

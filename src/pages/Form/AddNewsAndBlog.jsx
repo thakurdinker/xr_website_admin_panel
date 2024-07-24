@@ -5,6 +5,8 @@ import axios from "axios";
 import UploadWidget from "../../components/UploadWidget/UploadImages"; // Assuming this is a component for image upload
 import { NEWS, NEWS_AND_INSIGHTS } from "../../api/constants";
 import UploadImages from "../../components/UploadWidget/UploadImages";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const HomePageVideoForm = () => {
   const { id } = useParams();
@@ -167,10 +169,17 @@ const HomePageVideoForm = () => {
     e.preventDefault();
     formData.seo.keywords = convertStringToArray(formData.seo.keywords);
     try {
+      let response
       if (id) {
-        await axios.put(NEWS + `/${id}`, formData, { withCredentials: true });
+        response = await axios.put(NEWS + `/${id}`, formData, { withCredentials: true });
       } else {
-        const res = await axios.post(NEWS, formData, { withCredentials: true });
+        response = await axios.post(NEWS, formData, { withCredentials: true });
+      }
+      if (response?.data?.success === false) {
+        toast.error(response?.data?.message);
+        return;
+      }else{
+        toast.success(response?.data?.message);
       }
       navigate("/manage-news-and-insights");
     } catch (error) {
@@ -526,6 +535,7 @@ const HomePageVideoForm = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </DefaultLayout>
   );
 };

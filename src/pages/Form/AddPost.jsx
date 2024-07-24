@@ -4,6 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { FETCH_ALL_POSTS } from "../../api/constants";
 import UploadImages from "../../components/UploadWidget/UploadImages";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ContentForm = () => {
   const { id } = useParams();
@@ -101,20 +103,23 @@ const ContentForm = () => {
     formData.seo.keywords = convertStringToArray(formData.seo.keywords);
     // Make API request using axios
     try {
+      let response;
       if (id) {
         // Update existing property
-        const response = await axios.put(FETCH_ALL_POSTS + `/${id}`, formData, {
+        response = await axios.put(FETCH_ALL_POSTS + `/${id}`, formData, {
           withCredentials: true,
         });
-
-      
       } else {
         // Create new property
-        const response = await axios.post(FETCH_ALL_POSTS, formData, {
+        response = await axios.post(FETCH_ALL_POSTS, formData, {
           withCredentials: true,
         });
-
-
+      }
+      if (response?.data?.success === false) {
+        toast.error(response?.data?.message);
+        return;
+      } else {
+        toast.success(response?.data?.message);
       }
       navigate("/manage-posts");
     } catch (error) {
@@ -255,7 +260,6 @@ const ContentForm = () => {
                   </select>
                 </div>
 
-              
                 {/* FAQs */}
                 <div className="mb-5 md:col-span-12">
                   <h3 className="mb-2">FAQs</h3>
@@ -444,6 +448,7 @@ const ContentForm = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </DefaultLayout>
   );
 };

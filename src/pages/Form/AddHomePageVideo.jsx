@@ -123,10 +123,10 @@ const HomePageVideoForm = () => {
           withCredentials: true,
         });
       }
-      if (response.data.success)
-        toast.success("Form data submitted successfully!");
-      else if (!response.data.success)
-        toast.error("Error submitting form. Please try again.");
+      if (response?.data?.success)
+        toast.success(response?.data?.message);
+      else if (!response?.data?.success)
+        toast.error(response?.data?.message);
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Error submitting form. Please try again.");

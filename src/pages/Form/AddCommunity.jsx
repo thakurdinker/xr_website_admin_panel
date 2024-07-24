@@ -5,6 +5,8 @@ import axios from "axios";
 import UploadImages from "../../components/UploadWidget/UploadImages";
 import "react-phone-number-input/style.css";
 import { FETCH_ALL_AGENTS, FETCH_ALL_COMMUNITIES } from "../../api/constants";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CommunityForm = () => {
   const { id } = useParams();
@@ -152,18 +154,25 @@ const CommunityForm = () => {
     formData.seo.keywords = convertStringToArray(formData.seo.keywords);
     formData.amenities = convertStringToArray(formData.amenities);
     try {
+      let response
       if (id) {
         // Update existing property
-        const response = await axios.put(
+        response = await axios.put(
           FETCH_ALL_COMMUNITIES + `/${id}`,
           formData,
           { withCredentials: true }
         );
       } else {
         // Create new property
-        const response = await axios.post(FETCH_ALL_COMMUNITIES, formData, {
+        response = await axios.post(FETCH_ALL_COMMUNITIES, formData, {
           withCredentials: true,
         });
+      }
+      if (response?.data?.success === false) {
+        toast.error(response?.data?.message);
+        return;
+      }else{
+        toast.success(response?.data?.message);
       }
       navigate("/manage-communities");
     } catch (error) {
@@ -570,6 +579,7 @@ const CommunityForm = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </DefaultLayout>
   );
 };

@@ -6,6 +6,8 @@ import { FETCH_ALL_AGENTS } from "../../api/constants";
 import UploadWidget from "../../components/UploadWidget/UploadImages";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ProfileForm = () => {
   const { id } = useParams();
@@ -111,9 +113,10 @@ const ProfileForm = () => {
     formData.video_links = convertStringToArray(formData.video_links);
     formData.seo.keywords = convertStringToArray(formData.seo.keywords);
     try {
+      let response
       if (id) {
         // Update existing property
-        const response = await axios.put(
+         response = await axios.put(
           FETCH_ALL_AGENTS + `/${id}`,
           formData,
           { withCredentials: true }
@@ -122,8 +125,13 @@ const ProfileForm = () => {
         // Create new property
         const response = await axios.post(FETCH_ALL_AGENTS, formData, {
           withCredentials: true,
-        });
-        
+        })
+      }
+      if (response?.data?.success === false) {
+        toast.error(response?.data?.message);
+        return;
+      }else{
+        toast.success(response?.data?.message);
       }
       navigate("/manage-agents");
     } catch (error) {
@@ -470,6 +478,7 @@ const ProfileForm = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </DefaultLayout>
   );
 };
