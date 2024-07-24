@@ -131,19 +131,23 @@ const CommunityForm = () => {
     }
     return field;
   };
-  //   const handleSubmit = async (e) => {
-  //     e.preventDefault();
-  //     try {
-  //       if (id) {
-  //         await axios.put(FETCH_ALL_AGENTS + `/${id}`, formData);
-  //       } else {
-  //         await axios.post(FETCH_ALL_AGENTS, formData);
-  //       }
-  //       navigate("/manage-communities");
-  //     } catch (error) {
-  //       console.error("Error adding/updating community:", error);
-  //     }
-  //   };
+  
+  const handleSchemaOrgPropertiesChange = (e) => {
+    const { value } = e.target;
+    try {
+      const parsedValue = JSON.parse(value);
+      setFormData((prevData) => ({
+        ...prevData,
+        schema_org: {
+          ...prevData?.schema_org,
+          properties: parsedValue,
+        },
+      }));
+    } catch (error) {
+      // Handle JSON parse error if needed
+      console.error("Invalid JSON format");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -502,8 +506,8 @@ const CommunityForm = () => {
                 <label className="block">Schema Type</label>
                 <textarea
                   name="schema_org.type"
-                  value={JSON.stringify(formData.schema_org.type)}
-                  onChange={handleChange}
+                  value={formData.schema_org.type}
+                  onChange={(e) =>handleNestedChange(e, "schema_org", "type")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   required
                 />
@@ -514,7 +518,7 @@ const CommunityForm = () => {
                 <textarea
                   name="schema_org.properties"
                   value={JSON.stringify(formData.schema_org.properties)}
-                  onChange={handleChange}
+                  onChange={handleSchemaOrgPropertiesChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   required
                 />

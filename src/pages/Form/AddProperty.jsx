@@ -79,11 +79,7 @@ const initialPropertyData = {
   schema_org: {
     type: "Person",
     properties: {
-      context: "https://json-ld.org/contexts/person.jsonld",
-      id: "http://dbpedia.org/resource/John_Lennon",
-      name: "John Lennon",
-      born: "1940-10-09",
-      spouse: "http://dbpedia.org/resource/Cynthia_Lennon",
+     
     },
   },
   open_graph: { title: "", description: "", image: "", type: "" },
@@ -194,6 +190,22 @@ const AddProperty = () => {
       ...prev,
       images: imagesToSend,
     }));
+  };
+  const handleSchemaOrgPropertiesChange = (e) => {
+    const { value } = e.target;
+    try {
+      const parsedValue = JSON.parse(value);
+      setPropertyData((prevData) => ({
+        ...prevData,
+        schema_org: {
+          ...prevData?.schema_org,
+          properties: parsedValue,
+        },
+      }));
+    } catch (error) {
+      // Handle JSON parse error if needed
+      console.error("Invalid JSON format");
+    }
   };
   const handleAmenitiesChange = (updatedAmenities) => {
     setPropertyData((prev) => ({
@@ -1087,26 +1099,24 @@ const AddProperty = () => {
               </div>
 
               {/* Schema */}
-              <div className="mb-5 md:col-span-3">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Schema Type
-                </label>
-                <input
+              <div className="mb-5 md:col-span-4">
+                <label className="block">Schema Type</label>
+                <textarea
                   name="schema_org.type"
-                  value={JSON.stringify(propertyData.schema_org.type)}
-                  onChange={handleChange}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  value={propertyData.schema_org.type}
+                  onChange={(e) =>handleNestedChange(e, "schema_org", "type")}
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   required
                 />
               </div>
 
-              <div className="mb-5 md:col-span-12">
+              <div className="mb-5 md:col-span-8">
                 <label className="block">Schema Properties (JSON format)</label>
                 <textarea
                   name="schema_org.properties"
                   value={JSON.stringify(propertyData.schema_org.properties)}
-                  onChange={handleChange}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  onChange={handleSchemaOrgPropertiesChange}
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   required
                 />
               </div>

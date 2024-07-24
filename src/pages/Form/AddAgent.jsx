@@ -28,7 +28,7 @@ const ProfileForm = () => {
     video_links: "",
     seo: { meta_title: "", meta_description: "", keywords: "" },
     schema_org: {
-      type: "Person",
+      type: "",
       properties: {
         context: "https://json-ld.org/contexts/person.jsonld",
         id: "http://dbpedia.org/resource/John_Lennon",
@@ -62,6 +62,31 @@ const ProfileForm = () => {
       fetchFormData();
     }
   }, [id]);
+  const handleSchemaOrgChange = (e, field) => {
+    const { value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [parentKey]: { ...prevData[parentKey], [childKey]: value },
+    }));
+  };
+  
+  const handleSchemaOrgPropertiesChange = (e) => {
+    const { value } = e.target;
+    try {
+      const parsedValue = JSON.parse(value);
+      setFormData((prevData) => ({
+        ...prevData,
+        schema_org: {
+          ...prevData?.schema_org,
+          properties: parsedValue,
+        },
+      }));
+    } catch (error) {
+      // Handle JSON parse error if needed
+      console.error("Invalid JSON format");
+    }
+  };
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,6 +95,7 @@ const ProfileForm = () => {
 
   const handleNestedChange = (e, parentKey, childKey) => {
     const { value } = e.target;
+    console.log(value);
     setFormData((prevData) => ({
       ...prevData,
       [parentKey]: { ...prevData[parentKey], [childKey]: value },
@@ -113,24 +139,22 @@ const ProfileForm = () => {
     formData.video_links = convertStringToArray(formData.video_links);
     formData.seo.keywords = convertStringToArray(formData.seo.keywords);
     try {
-      let response
+      let response;
       if (id) {
         // Update existing property
-         response = await axios.put(
-          FETCH_ALL_AGENTS + `/${id}`,
-          formData,
-          { withCredentials: true }
-        );
+        response = await axios.put(FETCH_ALL_AGENTS + `/${id}`, formData, {
+          withCredentials: true,
+        });
       } else {
         // Create new property
         const response = await axios.post(FETCH_ALL_AGENTS, formData, {
           withCredentials: true,
-        })
+        });
       }
       if (response?.data?.success === false) {
         toast.error(response?.data?.message);
         return;
-      }else{
+      } else {
         toast.success(response?.data?.message);
       }
       navigate("/manage-agents");
@@ -401,8 +425,8 @@ const ProfileForm = () => {
                 <label className="block">Schema Type</label>
                 <textarea
                   name="schema_org.type"
-                  value={JSON.stringify(formData.schema_org.type)}
-                  onChange={handleChange}
+                  value={formData.schema_org.type}
+                  onChange={(e) =>handleNestedChange(e, "schema_org", "type")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   required
                 />
@@ -413,7 +437,7 @@ const ProfileForm = () => {
                 <textarea
                   name="schema_org.properties"
                   value={JSON.stringify(formData.schema_org.properties)}
-                  onChange={handleChange}
+                  onChange={handleSchemaOrgPropertiesChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   required
                 />
@@ -421,7 +445,7 @@ const ProfileForm = () => {
 
               {/* Open Graph */}
               <div className="mb-5 md:col-span-4">
-                <label className="block">Title</label>
+                <label className="block"> Open Graph Title</label>
                 <input
                   type="text"
                   name="title"
@@ -433,7 +457,7 @@ const ProfileForm = () => {
               </div>
 
               <div className="mb-5 md:col-span-4">
-                <label className="block">Image</label>
+                <label className="block"> Open Graph Image</label>
                 <input
                   type="text"
                   name="image"
@@ -445,7 +469,7 @@ const ProfileForm = () => {
               </div>
 
               <div className="mb-5 md:col-span-4">
-                <label className="block">Description</label>
+                <label className="block"> Open Graph Description</label>
                 <input
                   type="text"
                   name="description"

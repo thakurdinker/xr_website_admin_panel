@@ -165,6 +165,23 @@ const HomePageVideoForm = () => {
     return field;
   };
 
+  const handleSchemaOrgPropertiesChange = (e) => {
+    const { value } = e.target;
+    try {
+      const parsedValue = JSON.parse(value);
+      setFormData((prevData) => ({
+        ...prevData,
+        schema_org: {
+          ...prevData?.schema_org,
+          properties: parsedValue,
+        },
+      }));
+    } catch (error) {
+      // Handle JSON parse error if needed
+      console.error("Invalid JSON format");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     formData.seo.keywords = convertStringToArray(formData.seo.keywords);
@@ -414,12 +431,13 @@ const HomePageVideoForm = () => {
                 />
               </div>
 
+              {/* Schema */}
               <div className="mb-5 md:col-span-4">
                 <label className="block">Schema Type</label>
                 <textarea
                   name="schema_org.type"
-                  value={JSON.stringify(formData.schema_org.type)}
-                  onChange={handleChange}
+                  value={formData.schema_org.type}
+                  onChange={(e) =>handleNestedChange(e, "schema_org", "type")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   required
                 />
@@ -430,11 +448,12 @@ const HomePageVideoForm = () => {
                 <textarea
                   name="schema_org.properties"
                   value={JSON.stringify(formData.schema_org.properties)}
-                  onChange={handleChange}
+                  onChange={handleSchemaOrgPropertiesChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   required
                 />
               </div>
+
 
               {/* Open Graph Title */}
               <div className="mb-5 md:col-span-4">

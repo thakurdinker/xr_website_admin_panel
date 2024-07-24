@@ -76,6 +76,23 @@ const ContentForm = () => {
     }));
   };
 
+  const handleSchemaOrgPropertiesChange = (e) => {
+    const { value } = e.target;
+    try {
+      const parsedValue = JSON.parse(value);
+      setFormData((prevData) => ({
+        ...prevData,
+        schema_org: {
+          ...prevData?.schema_org,
+          properties: parsedValue,
+        },
+      }));
+    } catch (error) {
+      // Handle JSON parse error if needed
+      console.error("Invalid JSON format");
+    }
+  };
+
   const handleArrayChange = (e, index, arrayName, fieldName) => {
     const { value } = e.target;
     const updatedArray = formData[arrayName].map((item, idx) =>
@@ -338,16 +355,28 @@ const ContentForm = () => {
                   />
                 </div>
 
-                {/* Schema Type */}
-                <div className="mb-5 md:col-span-3">
+                {/* Schema */}
+                <div className="mb-5 md:col-span-4">
                   <label className="block">Schema Type</label>
-                  <input
-                    type="text"
+                  <textarea
                     name="schema_org.type"
                     value={formData.schema_org.type}
                     onChange={(e) =>
                       handleNestedChange(e, "schema_org", "type")
                     }
+                    className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                    required
+                  />
+                </div>
+
+                <div className="mb-5 md:col-span-8">
+                  <label className="block">
+                    Schema Properties (JSON format)
+                  </label>
+                  <textarea
+                    name="schema_org.properties"
+                    value={JSON.stringify(formData.schema_org.properties)}
+                    onChange={handleSchemaOrgPropertiesChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                     required
                   />
@@ -408,20 +437,6 @@ const ContentForm = () => {
                     onChange={(e) =>
                       handleNestedChange(e, "open_graph", "type")
                     }
-                    className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
-                  />
-                </div>
-
-                {/* Schema Properties */}
-                <div className="mb-5 md:col-span-12">
-                  <label className="block">
-                    Schema Properties (JSON format)
-                  </label>
-                  <textarea
-                    name="schema_org.properties"
-                    value={JSON.stringify(formData.schema_org.properties)}
-                    onChange={handleChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                     required
                   />
