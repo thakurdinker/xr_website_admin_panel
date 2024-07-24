@@ -16,3 +16,4 @@ export const NEWS = BASE_URL + "content";
 export const NEWS_AND_INSIGHTS = `http://localhost:3333/real-estate-news`;
 export const RESET_PASSWORD = BASE_URL + "resetPassword";
 export const DELETE_IMAGE = BASE_URL + "/deleteAsset";
+export const FETCH_ICONS = BASE_URL + "/icons";

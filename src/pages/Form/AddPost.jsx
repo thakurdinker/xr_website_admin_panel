@@ -116,7 +116,7 @@ const ContentForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
     formData.seo.keywords = convertStringToArray(formData.seo.keywords);
     // Make API request using axios
     try {

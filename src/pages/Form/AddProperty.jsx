@@ -4,15 +4,17 @@ import DefaultLayout from "../../layout/DefaultLayout";
 import UploadGallery from "../../components/UploadWidget/UploadGallery";
 import UploadImages from "../../components/UploadWidget/UploadImages";
 import UploadAmenity from "../../components/UploadWidget/UploadAmenity";
+import Select from "react-select";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   FETCH_ALL_AGENTS,
   FETCH_ALL_PROPERTIES,
   FETCH_ALL_PROPERTY_TYPES,
   FETCH_ALL_COMMUNITIES,
+  FETCH_ICONS,
 } from "../../api/constants";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const initialPropertyData = {
   property_name: "",
@@ -67,20 +69,13 @@ const initialPropertyData = {
   },
   amenities: {
     description: "",
-    icons: [
-      {
-        icon_url: "",
-        icon_text: "",
-      },
-    ],
+    icons: [],
   },
   faqs: [{ question: "", answer: "" }],
   seo: { meta_title: "", meta_description: "", keywords: "" },
   schema_org: {
     type: "Person",
-    properties: {
-     
-    },
+    properties: {},
   },
   open_graph: { title: "", description: "", image: "", type: "" },
 };
@@ -150,6 +145,29 @@ const AddProperty = () => {
     fetchAllCommunities();
   }, []);
 
+  const [amenitiesOptions, setAmenitiesOptions] = useState([]);
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
+
+  // Fetch the amenities data and set it in state
+  useEffect(() => {
+    const fetchAmenities = async () => {
+      const response = await axios.get(FETCH_ICONS);
+      const amenities = response.data.icons.map(
+        (amenity) => (
+          console.log(amenity),
+          {
+            value: amenity.icon_url,
+            label: amenity.icon_text,
+            id: amenity.id,
+          }
+        )
+      );
+      setAmenitiesOptions(amenities);
+    };
+
+    fetchAmenities();
+  }, []);
+
   const [propertyData, setPropertyData] = useState(initialPropertyData);
   const [propertyType, setPropertyType] = useState("");
   const [community, setCommunity] = useState("");
@@ -207,14 +225,27 @@ const AddProperty = () => {
       console.error("Invalid JSON format");
     }
   };
-  const handleAmenitiesChange = (updatedAmenities) => {
-    setPropertyData((prev) => ({
-      ...prev,
-      amenities: {
-        ...prev.amenities,
-        icons: updatedAmenities,
-      },
-    }));
+
+  console.log(propertyData);
+
+  const handleAmenitiesChange = (selectedOptions) => {
+    setSelectedAmenities(selectedOptions);
+    // console.log(selectedOptions, "000099090");
+    // setPropertyData((prev) => ({
+    //   ...prev,
+    //   amenities: selectedOptions.map((item) => item.id),
+    // }));
+
+    setPropertyData((prev) => {
+      let tempAmenities = {
+        description: prev.amenities.description,
+        icons: selectedOptions.map((item) => item.id),
+      };
+
+      prev.amenities = tempAmenities;
+
+      return prev;
+    });
   };
 
   const handleGalleryChange = (updatedGallery) => {
@@ -306,31 +337,29 @@ const AddProperty = () => {
     propertyData.community_features.transportation = convertStringToArray(
       propertyData.community_features.transportation
     );
-
+    console.log(propertyData, "7777777");
     // Make API request using axios
     try {
-      let response
+      let response;
       const payload = {
         ...propertyData,
         gallery: propertyData.galleryToSend, // Ensure only URLs are sent
       };
       if (id) {
         // Update existing property
-         response = await axios.put(
-          FETCH_ALL_PROPERTIES + `/${id}`,
-          propertyData,
-          { withCredentials: true }
-        );
+        response = await axios.put(FETCH_ALL_PROPERTIES + `/${id}`, payload, {
+          withCredentials: true,
+        });
       } else {
         // Create new property
-         response = await axios.post(FETCH_ALL_PROPERTIES, propertyData, {
+        response = await axios.post(FETCH_ALL_PROPERTIES, payload, {
           withCredentials: true,
         });
       }
       if (response?.data?.success === false) {
         toast.error(response?.data?.message);
         return;
-      }else{
+      } else {
         toast.success(response?.data?.message);
       }
       navigate("/manage-properties");
@@ -525,27 +554,27 @@ const AddProperty = () => {
 
               {/* Type */}
               {/* <div className="mb-5 md:col-span-3">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Type
-                </label>
-                <select
-                  name="type"
-                  value={propertyData?.type || ""}
-                  onChange={handleChange}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
-                >
-                  <option value="" disabled>
-                    Select type
-                  </option>
-                  {Array.isArray(propertyType) &&
-                    propertyType.map((type) => (
-                      <option key={type.name_slug} value={type.name_slug}>
-                        {type.name}
-                      </option>
-                    ))}
-                </select>
-              </div> */}
+                  <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                    Type
+                  </label>
+                  <select
+                    name="type"
+                    value={propertyData?.type || ""}
+                    onChange={handleChange}
+                    className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                    required
+                  >
+                    <option value="" disabled>
+                      Select type
+                    </option>
+                    {Array.isArray(propertyType) &&
+                      propertyType.map((type) => (
+                        <option key={type.name_slug} value={type.name_slug}>
+                          {type.name}
+                        </option>
+                      ))}
+                  </select>
+                </div> */}
 
               <div className="mb-5 md:col-span-3">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -790,21 +819,6 @@ const AddProperty = () => {
                 />
               </div>
 
-              {/* Gallery Title 2 */}
-              <div className="mb-5 md:col-span-3">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Gallery Title 2
-                </label>
-                <input
-                  type="text"
-                  name="gallery_title_2"
-                  value={propertyData?.gallery_title_2}
-                  onChange={handleChange}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
-                />
-              </div>
-
               {/* Gallery Description 1 */}
               <div className="mb-5 md:col-span-3">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -814,6 +828,21 @@ const AddProperty = () => {
                   type="text"
                   name="gallery_description_1"
                   value={propertyData?.gallery_description_1}
+                  onChange={handleChange}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* Gallery Title 2 */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Gallery Title 2
+                </label>
+                <input
+                  type="text"
+                  name="gallery_title_2"
+                  value={propertyData?.gallery_title_2}
                   onChange={handleChange}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
@@ -852,15 +881,20 @@ const AddProperty = () => {
                 />
               </div>
 
-              {/* Amenity Icon */}
+              {/* Amenities  */}
               <div className="mb-5 md:col-span-6">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Amenity Icon
+                  Amenities
                 </label>
-                {/* Cloudinary Upload Widget */}
-                <UploadAmenity
-                  onImagesChange={handleAmenitiesChange}
-                  initialImages={propertyData.amenities.icons || []}
+                <Select
+                  isMulti
+                  name="amenities"
+                  options={amenitiesOptions}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  value={selectedAmenities}
+                  onChange={handleAmenitiesChange}
+                  placeholder="Select amenities"
                 />
               </div>
 
@@ -1104,7 +1138,7 @@ const AddProperty = () => {
                 <textarea
                   name="schema_org.type"
                   value={propertyData.schema_org.type}
-                  onChange={(e) =>handleNestedChange(e, "schema_org", "type")}
+                  onChange={(e) => handleNestedChange(e, "schema_org", "type")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   required
                 />

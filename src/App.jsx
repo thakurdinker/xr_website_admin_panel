@@ -73,6 +73,8 @@ import ProtectedRoute from "./route/ProtectedRoute.jsx";
 import ManageNewsAndInsights from "./pages/ManageNewsAndInsights/ManageNewsAndInsights.jsx";
 import AddNewsAndBlog from "./pages/Form/AddNewsAndBlog.jsx";
 import ForgotPassword from "./pages/Authentication/ForgotPassword.jsx";
+import ManageIcons from "./pages/ManageIcons/ManageIcons.jsx";
+import AddIcons from "./pages/Form/AddIcons.jsx";
 
 function WithUserContext() {
   return (
@@ -103,7 +105,7 @@ function App() {
   ) : (
     <>
       <Routes>
-      <Route
+        <Route
           path="/reset-password"
           element={
             <>
@@ -139,6 +141,16 @@ function App() {
               <>
                 <PageTitle title="Dashboard" />
                 <Dashboard />
+              </>
+            }
+          />
+          <Route
+            exact
+            path="/manage-icons"
+            element={
+              <>
+                <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <ManageIcons />
               </>
             }
           />
@@ -318,6 +330,17 @@ function App() {
               <>
                 <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
                 <AddCommunity />
+              </>
+            }
+          />
+
+          <Route
+            exact
+            path="/forms/add-icon"
+            element={
+              <>
+                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <AddIcons />
               </>
             }
           />
@@ -793,7 +816,7 @@ function App() {
             </>
           }
         />
-       
+
         <Route
           path="/auth/coming-soon"
           element={
