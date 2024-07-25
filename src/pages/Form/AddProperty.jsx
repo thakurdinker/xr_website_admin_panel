@@ -152,15 +152,13 @@ const AddProperty = () => {
   useEffect(() => {
     const fetchAmenities = async () => {
       const response = await axios.get(FETCH_ICONS);
-      const amenities = response.data.icons.map(
-        (amenity) => (
-          console.log(amenity),
-          {
-            value: amenity.icon_url,
-            label: amenity.icon_text,
-            id: amenity.id,
-          }
-        )
+      const amenities = response.data.icons.map((amenity) =>
+        // console.log(amenity),
+        ({
+          value: amenity.icon_url,
+          label: amenity.icon_text,
+          id: amenity.id,
+        })
       );
       setAmenitiesOptions(amenities);
     };
@@ -226,41 +224,51 @@ const AddProperty = () => {
     }
   };
 
-  console.log(propertyData);
+  const getAmenitiesValue = useCallback(() => {
+    let amenities = [];
+    for (let i = 0; i < propertyData.amenities.icons.length; i++) {
+      amenities.push(
+        ...amenitiesOptions.filter(
+          (icon) => icon.id === propertyData.amenities.icons[i]
+        )
+      );
+    }
 
-  // const handleAmenitiesChange = (selectedOptions) => {
-  //   setSelectedAmenities(selectedOptions);
-  //   // console.log(selectedOptions, "000099090");
-  //   // setPropertyData((prev) => ({
-  //   //   ...prev,
-  //   //   amenities: selectedOptions.map((item) => item.id),
-  //   // }));
-
-  //   setPropertyData((prev) => {
-  //     let tempAmenities = {
-  //       description: prev.amenities.description,
-  //       icons: selectedOptions.map((item) => item.id),
-  //     };
-
-  //     prev.amenities = tempAmenities;
-
-  //     return prev;
-  //   });
-  // };
-
+    return amenities;
+  });
 
   const handleAmenitiesChange = (selectedOptions) => {
     setSelectedAmenities(selectedOptions);
-    setPropertyData((prev) => ({
-      ...prev,
-      amenities: {
-        ...prev.amenities,
-        icons: selectedOptions.map((item) => ({
-          _id: item.id 
-        }))
-      }
-    }));
+    // console.log(selectedOptions, "000099090");
+    // setPropertyData((prev) => ({
+    //   ...prev,
+    //   amenities: selectedOptions.map((item) => item.id),
+    // }));
+
+    setPropertyData((prev) => {
+      let tempAmenities = {
+        description: prev.amenities.description,
+        icons: selectedOptions.map((item) => item.id),
+      };
+
+      prev.amenities = tempAmenities;
+
+      return prev;
+    });
   };
+
+  // const handleAmenitiesChange = (selectedOptions) => {
+  //   setSelectedAmenities(selectedOptions);
+  //   setPropertyData((prev) => ({
+  //     ...prev,
+  //     amenities: {
+  //       ...prev.amenities,
+  //       icons: selectedOptions.map((item) => ({
+  //         _id: item.id
+  //       }))
+  //     }
+  //   }));
+  // };
 
   const handleGalleryChange = (updatedGallery) => {
     // Store full objects in state
@@ -351,7 +359,7 @@ const AddProperty = () => {
     propertyData.community_features.transportation = convertStringToArray(
       propertyData.community_features.transportation
     );
-    console.log(propertyData, "7777777");
+
     // Make API request using axios
     try {
       let response;
@@ -370,7 +378,7 @@ const AddProperty = () => {
           withCredentials: true,
         });
       }
-      console.log(response.data,"-----8888888");
+
       if (response?.data?.success === false) {
         toast.error(response?.data?.message);
         return;
@@ -907,7 +915,7 @@ const AddProperty = () => {
                   options={amenitiesOptions}
                   className="basic-multi-select"
                   classNamePrefix="select"
-                  value={selectedAmenities}
+                  value={getAmenitiesValue()}
                   onChange={handleAmenitiesChange}
                   placeholder="Select amenities"
                 />
