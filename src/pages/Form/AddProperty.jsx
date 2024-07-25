@@ -35,7 +35,7 @@ const initialPropertyData = {
     },
   },
   features: {
-    bedrooms: "",
+    // bedrooms: "",
     bathrooms: "",
     area: "",
     year_built: "",
@@ -167,7 +167,7 @@ const AddProperty = () => {
   }, []);
 
   const [propertyData, setPropertyData] = useState(initialPropertyData);
-  const [propertyType, setPropertyType] = useState("");
+  const [propertyType, setPropertyType] = useState([]);
   const [community, setCommunity] = useState("");
   const navigate = useNavigate();
 
@@ -331,12 +331,28 @@ const AddProperty = () => {
     }));
   };
 
+  // const handleCheckboxChange = (e) => {
+  //   const { name, value, checked } = e.target;
+  //   setPropertyData((prev) => {
+  //     const newTypes = checked
+  //       ? [...prev.type, value]
+  //       : prev.type.filter((type) => type !== value);
+  //     return {
+  //       ...prev,
+  //       type: newTypes,
+  //     };
+  //   });
+  // };
+
   const handleCheckboxChange = (e) => {
-    const { name, value, checked } = e.target;
+    const { value, checked } = e.target;
     setPropertyData((prev) => {
-      const newTypes = checked
-        ? [...prev.type, value]
-        : prev.type.filter((type) => type !== value);
+      let newTypes = [];
+      if (checked) {
+        newTypes = [...prev.type, { name: value, bedrooms: "" }];
+      } else {
+        newTypes = prev.type.filter((type) => type.name !== value);
+      }
       return {
         ...prev,
         type: newTypes,
@@ -344,11 +360,83 @@ const AddProperty = () => {
     });
   };
 
+  const handleBedroomsChange = (e, typeSlug) => {
+    const { value } = e.target;
+    setPropertyData((prev) => {
+      const updatedTypes = prev.type.map((type) =>
+        type.name === typeSlug ? { ...type, bedrooms: value } : type
+      );
+      return {
+        ...prev,
+        type: updatedTypes,
+      };
+    });
+  };
+
+  const cleanTypeData = (typeData) => {
+    return typeData.filter((item) => item.name && item.bedrooms);
+  };
+
+  useEffect(() => {
+    setPropertyData((prev) => ({
+      ...prev,
+      type: cleanTypeData(prev.type),
+    }));
+  }, []);
+
+  // const handleFormSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   // Convert string fields to arrays
+  //   propertyData.type = convertStringToArray(propertyData.type);
+  //   propertyData.status = convertStringToArray(propertyData.status);
+  //   propertyData.features.amenities = convertStringToArray(
+  //     propertyData.features.amenities
+  //   );
+  //   propertyData.community_features.nearby_facilities = convertStringToArray(
+  //     propertyData.community_features.nearby_facilities
+  //   );
+  //   propertyData.community_features.transportation = convertStringToArray(
+  //     propertyData.community_features.transportation
+  //   );
+  //   propertyData.seo.keywords = convertStringToArray(propertyData.seo.keywords);
+
+  //   // Make API request using axios
+  //   try {
+  //     let response;
+  //     const payload = {
+  //       ...propertyData,
+  //       gallery: propertyData.galleryToSend, // Ensure only URLs are sent
+  //     };
+  //     if (id) {
+  //       // Update existing property
+  //       response = await axios.put(FETCH_ALL_PROPERTIES + `/${id}`, payload, {
+  //         withCredentials: true,
+  //       });
+  //     } else {
+  //       // Create new property
+  //       response = await axios.post(FETCH_ALL_PROPERTIES, payload, {
+  //         withCredentials: true,
+  //       });
+  //     }
+
+  //     if (response?.data?.success === false) {
+  //       toast.error(response?.data?.message);
+  //       return;
+  //     } else {
+  //       toast.success(response?.data?.message);
+  //     }
+  //     navigate("/manage-properties");
+  //   } catch (error) {
+  //     console.error("Error adding/updating property:", error);
+  //   }
+  // };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    // Make API request using axios
 
-    // Convert string fields to arrays
-    propertyData.type = convertStringToArray(propertyData.type);
+    // propertyData.type = convertStringToArray(propertyData.type);
     propertyData.status = convertStringToArray(propertyData.status);
     propertyData.features.amenities = convertStringToArray(
       propertyData.features.amenities
@@ -359,26 +447,26 @@ const AddProperty = () => {
     propertyData.community_features.transportation = convertStringToArray(
       propertyData.community_features.transportation
     );
-
-    // Make API request using axios
+    propertyData.seo.keywords = convertStringToArray(propertyData.seo.keywords);
     try {
       let response;
-      const payload = {
-        ...propertyData,
-        gallery: propertyData.galleryToSend, // Ensure only URLs are sent
-      };
       if (id) {
         // Update existing property
-        response = await axios.put(FETCH_ALL_PROPERTIES + `/${id}`, payload, {
-          withCredentials: true,
-        });
+        response = await axios.put(
+          FETCH_ALL_PROPERTIES + `/${id}`,
+          propertyData,
+          {
+            withCredentials: true,
+          }
+        );
       } else {
         // Create new property
-        response = await axios.post(FETCH_ALL_PROPERTIES, payload, {
+        response = await axios.post(FETCH_ALL_PROPERTIES, propertyData, {
           withCredentials: true,
         });
       }
-
+      console.log(propertyData, "8888888888888");
+      console.log(response.data, "-=-=--=--=-=");
       if (response?.data?.success === false) {
         toast.error(response?.data?.message);
         return;
@@ -576,58 +664,116 @@ const AddProperty = () => {
               </div>
 
               {/* Type */}
-              {/* <div className="mb-5 md:col-span-3">
-                  <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                    Type
-                  </label>
-                  <select
-                    name="type"
-                    value={propertyData?.type || ""}
-                    onChange={handleChange}
-                    className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                    required
-                  >
-                    <option value="" disabled>
-                      Select type
-                    </option>
-                    {Array.isArray(propertyType) &&
-                      propertyType.map((type) => (
-                        <option key={type.name_slug} value={type.name_slug}>
-                          {type.name}
-                        </option>
-                      ))}
-                  </select>
-                </div> */}
 
-              <div className="mb-5 md:col-span-3">
+              {/* <div className="mb-5 md:col-span-12">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Type
                 </label>
                 <div>
                   {Array.isArray(propertyType) &&
                     propertyType.map((type) => (
-                      <div key={type.name_slug}>
+                      <div
+                        key={type.name_slug}
+                        className="mb-2 flex items-center"
+                      >
                         <label className="inline-flex items-center">
                           <input
                             type="checkbox"
                             name="type"
                             value={type.name_slug}
-                            checked={propertyData.type.includes(type.name_slug)}
+                            checked={propertyData.type.some(
+                              (t) => t.name === type.name_slug
+                            )}
                             onChange={handleCheckboxChange}
                             className="form-checkbox"
                           />
                           <span className="ml-2">{type.name}</span>
                         </label>
+                        {propertyData.type.some(
+                          (t) => t.name === type.name_slug
+                        ) && (
+                          <input
+                            type="number"
+                            min="0"
+                            name={`bedrooms-${type.name_slug}`}
+                            value={
+                              propertyData.type.find(
+                                (t) => t.name === type.name_slug
+                              )?.bedrooms || ""
+                            }
+                            onChange={(e) =>
+                              handleBedroomsChange(e, type.name_slug)
+                            }
+                            placeholder="Bedrooms"
+                            className="border-gray-300 ml-4 rounded border p-2"
+                          />
+                        )}
+                      </div>
+                    ))}
+                </div>
+              </div> */}
+
+              <div className="mb-6 md:col-span-12">
+              <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Type
+                </label>
+                <div className="space-y-4">
+                  {Array.isArray(propertyType) &&
+                    propertyType.map((type) => (
+                      <div
+                        key={type.name_slug}
+                        className="border-gray-300 ark:border-form-strokedark flex transform items-center justify-between rounded-lg border bg-white p-4 shadow-lg transition-transform hover:scale-105 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                      >
+                        <label className="flex items-center space-x-3">
+                          <input
+                            type="checkbox"
+                            name="type"
+                            value={type.name_slug}
+                            checked={propertyData.type.some(
+                              (t) => t.name === type.name_slug
+                            )}
+                            onChange={handleCheckboxChange}
+                            className="border-gray-300 h-5 w-5 rounded text-blue-500 focus:ring-blue-500"
+                          />
+                          <span className="text-gray-800 dark:text-gray-200 text-lg font-medium">
+                            {type.name}
+                          </span>
+                        </label>
+                        {propertyData.type.some(
+                          (t) => t.name === type.name_slug
+                        ) && (
+                          <div className="ml-4 flex items-center space-x-2">
+                            <label className="text-gray-700 dark:text-gray-300 text-sm font-medium">
+                              Bedrooms
+                            </label>
+
+                            <input
+                              type="number"
+                              min="0"
+                              name={`bedrooms-${type.name_slug}`}
+                              value={
+                                propertyData.type.find(
+                                  (t) => t.name === type.name_slug
+                                )?.bedrooms || ""
+                              }
+                              onChange={(e) =>
+                                handleBedroomsChange(e, type.name_slug)
+                              }
+                              placeholder="0"
+                              className="border-gray-300 bg-gray-50 text-gray-800 ark:border-form-strokedark w-20 rounded-md border p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-form-strokedark dark:bg-form-input dark:text-white  dark:focus:border-black"
+                            />
+                          </div>
+                        )}
                       </div>
                     ))}
                 </div>
               </div>
 
               {/* Address */}
-              <div className="mb-5 md:col-span-4 lg:col-span-2">
+              <div className="mb-5 md:col-span-4 lg:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Address
-                </label>
+                </label>    
                 <input
                   type="text"
                   name="address"
@@ -640,7 +786,7 @@ const AddProperty = () => {
               </div>
 
               {/* City */}
-              <div className="mb-5 md:col-span-4 lg:col-span-2">
+              <div className="mb-5 md:col-span-4 lg:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   City
                 </label>
@@ -656,7 +802,7 @@ const AddProperty = () => {
               </div>
 
               {/* State */}
-              <div className="mb-5 md:col-span-4 lg:col-span-2">
+              <div className="mb-5 md:col-span-4 lg:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   State
                 </label>
@@ -672,7 +818,7 @@ const AddProperty = () => {
               </div>
 
               {/* Country */}
-              <div className="mb-5 md:col-span-4 lg:col-span-2">
+              <div className="mb-5 md:col-span-4 lg:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Country
                 </label>
@@ -688,7 +834,7 @@ const AddProperty = () => {
               </div>
 
               {/* Latitude */}
-              <div className="mb-5 md:col-span-4 lg:col-span-2">
+              <div className="mb-5 md:col-span-4 lg:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Latitude
                 </label>
@@ -711,7 +857,7 @@ const AddProperty = () => {
               </div>
 
               {/* Longitude */}
-              <div className="mb-5 md:col-span-4 lg:col-span-2">
+              <div className="mb-5 md:col-span-4 lg:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Longitude
                 </label>
@@ -733,26 +879,8 @@ const AddProperty = () => {
                 />
               </div>
 
-              {/* Bedrooms */}
-              <div className="mb-5 md:col-span-4 lg:col-span-2">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Bedrooms
-                </label>
-                <input
-                  type="text"
-                  name="bedrooms"
-                  value={propertyData?.features?.bedrooms}
-                  onChange={(e) =>
-                    handleNestedChange(e, "features", "bedrooms")
-                  }
-                  placeholder="Enter number of bedrooms"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
-                />
-              </div>
-
               {/* Bathrooms */}
-              <div className="mb-5 md:col-span-4 lg:col-span-2">
+              <div className="mb-5 md:col-span-4 lg:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Bathrooms
                 </label>
@@ -770,7 +898,7 @@ const AddProperty = () => {
               </div>
 
               {/* Year Built */}
-              <div className="mb-5 md:col-span-4 lg:col-span-2">
+              <div className="mb-5 md:col-span-4 lg:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Year Built
                 </label>
@@ -788,7 +916,7 @@ const AddProperty = () => {
               </div>
 
               {/* Area */}
-              <div className="mb-5 md:col-span-4 lg:col-span-2">
+              <div className="mb-5 md:col-span-4 lg:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Area
                 </label>
@@ -1179,7 +1307,7 @@ const AddProperty = () => {
               </div>
 
               {/* Open Graph */}
-              <div className="mb-5 md:col-span-4">
+              <div className="mb-5 md:col-span-3">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Open Graph Title
                 </label>
@@ -1193,7 +1321,7 @@ const AddProperty = () => {
                 />
               </div>
 
-              <div className="mb-5 md:col-span-4">
+              <div className="mb-5 md:col-span-3">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Open Graph Image
                 </label>
@@ -1207,7 +1335,7 @@ const AddProperty = () => {
                 />
               </div>
 
-              <div className="mb-5 md:col-span-4">
+              <div className="mb-5 md:col-span-3">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Open Graph Description
                 </label>
@@ -1218,6 +1346,20 @@ const AddProperty = () => {
                   onChange={(e) =>
                     handleNestedChange(e, "open_graph", "description")
                   }
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Open Graph Type
+                </label>
+                <input
+                  type="text"
+                  name="type"
+                  value={propertyData.open_graph.type}
+                  onChange={(e) => handleNestedChange(e, "open_graph", "type")}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
                 />
