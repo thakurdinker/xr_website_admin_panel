@@ -26,14 +26,12 @@ const ContentForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Data to submit:", formData); // Log data to submit
 
     try {
       let response = await axios.post(FETCH_ICONS, formData, {
         withCredentials: true,
       });
 
-      console.log("Response:", response.data); // Log response data
 
       if (response?.data?.success) {
         toast.success(response?.data?.message);

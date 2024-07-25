@@ -1,17 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import DefaultLayout from "../../layout/DefaultLayout";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import UploadImages from "../../components/UploadWidget/UploadImages";
 import "react-phone-number-input/style.css";
-import { FETCH_ALL_AGENTS, FETCH_ALL_COMMUNITIES } from "../../api/constants";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import {
+  FETCH_ALL_AGENTS,
+  FETCH_ALL_COMMUNITIES,
+  FETCH_ICONS,
+} from "../../api/constants";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Select from "react-select";
 
 const CommunityForm = () => {
   const { id } = useParams();
   const [images, setImages] = useState([]);
   const [profilePic, setProfilePic] = useState([]);
+
   const [formData, setFormData] = useState({
     name: "",
     slug: "",
@@ -26,7 +32,10 @@ const CommunityForm = () => {
         lng: 0,
       },
     },
-    amenities: [{ name: "", icon_url: "", description: "" }],
+    amenities: {
+      description: "",
+      icons: [],
+    },
     images: [],
     faqs: [{ question: "", answer: "" }],
     seo: {
@@ -50,7 +59,8 @@ const CommunityForm = () => {
       image: "",
     },
   });
-
+  const [amenitiesOptions, setAmenitiesOptions] = useState([]);
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -76,6 +86,21 @@ const CommunityForm = () => {
       faqs: [...prevData.faqs, { question: "", answer: "" }],
     }));
   };
+
+  useEffect(() => {
+    const fetchAmenities = async () => {
+      const response = await axios.get(FETCH_ICONS);
+      console.log(response.data);
+      const amenities = response.data.icons.map((amenity) => ({
+        value: amenity.icon_url,
+        label: amenity.icon_text,
+        id: amenity.id,
+      }));
+      setAmenitiesOptions(amenities);
+    };
+
+    fetchAmenities();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -131,7 +156,47 @@ const CommunityForm = () => {
     }
     return field;
   };
-  
+
+  const handleAmenitiesChange = (selectedOptions) => {
+    setSelectedAmenities(selectedOptions);
+    setFormData((prev) => {
+      let tempAmenities = {
+        description: prev.amenities.description,
+        icons: selectedOptions.map((item) => item.id),
+      };
+
+      prev.amenities = tempAmenities;
+
+      return prev;
+    });
+  };
+
+  // const getAmenitiesValue = useCallback(() => {
+  //   let amenities = [];
+  //   for (let i = 0; i < formData.amenities.icons.length; i++) {
+  //     amenities.push(
+  //       ...amenitiesOptions.filter(
+  //         (icon) => icon.id === formData.amenities.icons[i]
+  //       )
+  //     );
+  //   }
+
+  //   return amenities;
+  // }, [formData.amenities.icons, amenitiesOptions]);
+
+  const getAmenitiesValue = useCallback(() => {
+    let amenities = [];
+    for (let i = 0; i < formData?.amenities?.icons?.length; i++) {
+      amenities.push(
+        ...amenitiesOptions.filter(
+          (icon) => icon.id === formData.amenities.icons[i]
+        )
+      );
+    }
+
+    return amenities;
+  });
+
   const handleSchemaOrgPropertiesChange = (e) => {
     const { value } = e.target;
     try {
@@ -158,14 +223,12 @@ const CommunityForm = () => {
     formData.seo.keywords = convertStringToArray(formData.seo.keywords);
     formData.amenities = convertStringToArray(formData.amenities);
     try {
-      let response
+      let response;
       if (id) {
         // Update existing property
-        response = await axios.put(
-          FETCH_ALL_COMMUNITIES + `/${id}`,
-          formData,
-          { withCredentials: true }
-        );
+        response = await axios.put(FETCH_ALL_COMMUNITIES + `/${id}`, formData, {
+          withCredentials: true,
+        });
       } else {
         // Create new property
         response = await axios.post(FETCH_ALL_COMMUNITIES, formData, {
@@ -175,7 +238,7 @@ const CommunityForm = () => {
       if (response?.data?.success === false) {
         toast.error(response?.data?.message);
         return;
-      }else{
+      } else {
         toast.success(response?.data?.message);
       }
       navigate("/manage-communities");
@@ -359,10 +422,10 @@ const CommunityForm = () => {
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 />
               </div> */}
+
               {/* Amenities */}
-              {formData.amenities.map((amenity, index) => (
+              {/* {formData.amenities.map((amenity, index) => (
                 <div key={index} className="mb-5 md:col-span-4 lg:col-span-12">
-                  {/* Amenities Name */}
                   <div className="mb-5">
                     <label className="block text-sm font-medium text-black dark:text-white">
                       Amenities Name
@@ -378,7 +441,7 @@ const CommunityForm = () => {
                     />
                   </div>
 
-                  {/* Amenities Icon Url */}
+                  
                   <div className="mb-5">
                     <label className="block text-sm font-medium text-black dark:text-white">
                       Amenities Icon Url
@@ -394,7 +457,6 @@ const CommunityForm = () => {
                     />
                   </div>
 
-                  {/* Amenities Description */}
                   <div className="mb-5">
                     <label className="block text-sm font-medium text-black dark:text-white">
                       Amenities Description
@@ -410,7 +472,41 @@ const CommunityForm = () => {
                     />
                   </div>
                 </div>
-              ))}
+              ))} */}
+
+              {/* Amenity Description */}
+              <div className="mb-5 md:col-span-6">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Amenity Description
+                </label>
+                <input
+                  type="text"
+                  name="meta_title"
+                  value={formData?.amenities?.description}
+                  onChange={(e) =>
+                    handleNestedChange(e, "amenities", "description")
+                  }
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                />
+              </div>
+
+              {/* Amenities  */}
+              <div className="mb-5 md:col-span-6">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Amenities
+                </label>
+                <Select
+                  isMulti
+                  name="amenities"
+                  options={amenitiesOptions}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  value={getAmenitiesValue()}
+                  onChange={handleAmenitiesChange}
+                  placeholder="Select amenities"
+                />
+              </div>
 
               <div className="mb-5 md:col-span-12">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -507,7 +603,7 @@ const CommunityForm = () => {
                 <textarea
                   name="schema_org.type"
                   value={formData.schema_org.type}
-                  onChange={(e) =>handleNestedChange(e, "schema_org", "type")}
+                  onChange={(e) => handleNestedChange(e, "schema_org", "type")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   required
                 />

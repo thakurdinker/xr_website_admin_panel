@@ -153,7 +153,6 @@ const AddProperty = () => {
     const fetchAmenities = async () => {
       const response = await axios.get(FETCH_ICONS);
       const amenities = response.data.icons.map((amenity) =>
-        // console.log(amenity),
         ({
           value: amenity.icon_url,
           label: amenity.icon_text,
@@ -226,7 +225,7 @@ const AddProperty = () => {
 
   const getAmenitiesValue = useCallback(() => {
     let amenities = [];
-    for (let i = 0; i < propertyData.amenities.icons.length; i++) {
+    for (let i = 0; i < propertyData?.amenities?.icons?.length; i++) {
       amenities.push(
         ...amenitiesOptions.filter(
           (icon) => icon.id === propertyData.amenities.icons[i]
@@ -239,12 +238,6 @@ const AddProperty = () => {
 
   const handleAmenitiesChange = (selectedOptions) => {
     setSelectedAmenities(selectedOptions);
-    // console.log(selectedOptions, "000099090");
-    // setPropertyData((prev) => ({
-    //   ...prev,
-    //   amenities: selectedOptions.map((item) => item.id),
-    // }));
-
     setPropertyData((prev) => {
       let tempAmenities = {
         description: prev.amenities.description,
@@ -438,9 +431,9 @@ const AddProperty = () => {
 
     // propertyData.type = convertStringToArray(propertyData.type);
     propertyData.status = convertStringToArray(propertyData.status);
-    propertyData.features.amenities = convertStringToArray(
-      propertyData.features.amenities
-    );
+    // propertyData.features.amenities = convertStringToArray(
+    //   propertyData.features.amenities
+    // );
     propertyData.community_features.nearby_facilities = convertStringToArray(
       propertyData.community_features.nearby_facilities
     );
@@ -465,8 +458,6 @@ const AddProperty = () => {
           withCredentials: true,
         });
       }
-      console.log(propertyData, "8888888888888");
-      console.log(response.data, "-=-=--=--=-=");
       if (response?.data?.success === false) {
         toast.error(response?.data?.message);
         return;
@@ -665,56 +656,8 @@ const AddProperty = () => {
 
               {/* Type */}
 
-              {/* <div className="mb-5 md:col-span-12">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Type
-                </label>
-                <div>
-                  {Array.isArray(propertyType) &&
-                    propertyType.map((type) => (
-                      <div
-                        key={type.name_slug}
-                        className="mb-2 flex items-center"
-                      >
-                        <label className="inline-flex items-center">
-                          <input
-                            type="checkbox"
-                            name="type"
-                            value={type.name_slug}
-                            checked={propertyData.type.some(
-                              (t) => t.name === type.name_slug
-                            )}
-                            onChange={handleCheckboxChange}
-                            className="form-checkbox"
-                          />
-                          <span className="ml-2">{type.name}</span>
-                        </label>
-                        {propertyData.type.some(
-                          (t) => t.name === type.name_slug
-                        ) && (
-                          <input
-                            type="number"
-                            min="0"
-                            name={`bedrooms-${type.name_slug}`}
-                            value={
-                              propertyData.type.find(
-                                (t) => t.name === type.name_slug
-                              )?.bedrooms || ""
-                            }
-                            onChange={(e) =>
-                              handleBedroomsChange(e, type.name_slug)
-                            }
-                            placeholder="Bedrooms"
-                            className="border-gray-300 ml-4 rounded border p-2"
-                          />
-                        )}
-                      </div>
-                    ))}
-                </div>
-              </div> */}
-
               <div className="mb-6 md:col-span-12">
-              <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Type
                 </label>
                 <div className="space-y-4">
@@ -773,7 +716,7 @@ const AddProperty = () => {
               <div className="mb-5 md:col-span-4 lg:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Address
-                </label>    
+                </label>
                 <input
                   type="text"
                   name="address"

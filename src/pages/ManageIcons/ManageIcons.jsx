@@ -21,7 +21,6 @@ function ManageIcons() {
         params: { page, limit },
         withCredentials: true,
       });
-      console.log(response.data);
       if (response.data.success) {
         setIcons(response.data.icons);
         setTotalPages(response.data.totalPages);

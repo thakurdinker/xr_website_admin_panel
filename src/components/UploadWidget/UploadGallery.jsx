@@ -29,7 +29,6 @@ const UploadGallery = ({ onImagesChange, initialImages = [] }) => {
   };
 
   const handleDeleteImage = async (url) => {
-    console.log(url);
     try {
       const response = await axios.post(
         DELETE_IMAGE,
@@ -41,7 +40,6 @@ const UploadGallery = ({ onImagesChange, initialImages = [] }) => {
 
       if (response.data.isDeleted) {
         const updatedGallery = gallery.filter((imgUrl) => imgUrl !== url);
-        console.log(updatedGallery.length);
         setGallery(updatedGallery);
         onImagesChange(updatedGallery);
       }

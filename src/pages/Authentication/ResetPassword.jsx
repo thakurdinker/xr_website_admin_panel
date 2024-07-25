@@ -33,7 +33,6 @@ const ResetPasswordPage = () => {
         { withCredentials: true }
       );
 
-      console.log(response.data, "11111");
       if (!response.data.error) {
         setSuccess("Password reset successfully. Redirecting to login...");
         navigate("/auth/signin");
