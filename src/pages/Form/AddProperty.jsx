@@ -228,24 +228,38 @@ const AddProperty = () => {
 
   console.log(propertyData);
 
+  // const handleAmenitiesChange = (selectedOptions) => {
+  //   setSelectedAmenities(selectedOptions);
+  //   // console.log(selectedOptions, "000099090");
+  //   // setPropertyData((prev) => ({
+  //   //   ...prev,
+  //   //   amenities: selectedOptions.map((item) => item.id),
+  //   // }));
+
+  //   setPropertyData((prev) => {
+  //     let tempAmenities = {
+  //       description: prev.amenities.description,
+  //       icons: selectedOptions.map((item) => item.id),
+  //     };
+
+  //     prev.amenities = tempAmenities;
+
+  //     return prev;
+  //   });
+  // };
+
+
   const handleAmenitiesChange = (selectedOptions) => {
     setSelectedAmenities(selectedOptions);
-    // console.log(selectedOptions, "000099090");
-    // setPropertyData((prev) => ({
-    //   ...prev,
-    //   amenities: selectedOptions.map((item) => item.id),
-    // }));
-
-    setPropertyData((prev) => {
-      let tempAmenities = {
-        description: prev.amenities.description,
-        icons: selectedOptions.map((item) => item.id),
-      };
-
-      prev.amenities = tempAmenities;
-
-      return prev;
-    });
+    setPropertyData((prev) => ({
+      ...prev,
+      amenities: {
+        ...prev.amenities,
+        icons: selectedOptions.map((item) => ({
+          _id: item.id 
+        }))
+      }
+    }));
   };
 
   const handleGalleryChange = (updatedGallery) => {
@@ -356,6 +370,7 @@ const AddProperty = () => {
           withCredentials: true,
         });
       }
+      console.log(response.data,"-----8888888");
       if (response?.data?.success === false) {
         toast.error(response?.data?.message);
         return;

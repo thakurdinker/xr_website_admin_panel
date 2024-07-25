@@ -31,12 +31,12 @@ const HomePageVideoForm = () => {
             mainVideo: {
               url: mainVideo?.url,
               title: mainVideo?.title,
-              agent: mainVideo.agent?._id,
+              agent: mainVideo?.agent?._id,
             },
             videos: videos.map((video) => ({
               url: video?.url,
               title: video?.title,
-              agent: video.agent?._id,
+              agent: video?.agent?._id,
             })),
           });
         } else {
@@ -52,7 +52,7 @@ const HomePageVideoForm = () => {
         const response = await axios.get(FETCH_ALL_AGENTS, {
           withCredentials: true,
         });
-        setAgents(response.data.agents);
+        setAgents(response?.data?.agents);
       } catch (error) {
         console.error("Error fetching agents:", error);
       }
