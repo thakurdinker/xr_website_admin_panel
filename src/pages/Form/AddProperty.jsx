@@ -4,6 +4,8 @@ import DefaultLayout from "../../layout/DefaultLayout";
 import UploadGallery from "../../components/UploadWidget/UploadGallery";
 import UploadImages from "../../components/UploadWidget/UploadImages";
 import UploadAmenity from "../../components/UploadWidget/UploadAmenity";
+import UploadWidget from "../../components/UploadWidget/UploadImages";
+
 import Select from "react-select";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -152,13 +154,11 @@ const AddProperty = () => {
   useEffect(() => {
     const fetchAmenities = async () => {
       const response = await axios.get(FETCH_ICONS);
-      const amenities = response.data.icons.map((amenity) =>
-        ({
-          value: amenity.icon_url,
-          label: amenity.icon_text,
-          id: amenity.id,
-        })
-      );
+      const amenities = response.data.icons.map((amenity) => ({
+        value: amenity.icon_url,
+        label: amenity.icon_text,
+        id: amenity.id,
+      }));
       setAmenitiesOptions(amenities);
     };
 
@@ -205,6 +205,8 @@ const AddProperty = () => {
       ...prev,
       images: imagesToSend,
     }));
+
+    
   };
   const handleSchemaOrgPropertiesChange = (e) => {
     const { value } = e.target;
@@ -302,6 +304,7 @@ const AddProperty = () => {
     }));
   };
 
+
   const convertStringToArray = (field, delimiter = ",") => {
     if (typeof field === "string") {
       return field.split(delimiter).map((item) => item.trim());
@@ -322,6 +325,48 @@ const AddProperty = () => {
       ...prevData,
       faqs: [...prevData.faqs, { question: "", answer: "" }],
     }));
+  };
+
+  const handleImageChange = (images) => {
+    const imagesToSend = {
+      image: images[images.length - 1].url,
+      description: images[images.length - 1].description || "", // Add this line to handle missing description
+      heading: images[images.length - 1].heading || "",
+    };
+
+    // setPropertyData((prev) => ({
+    //   ...prev,
+    //   section_1: {
+    //     ...prev.section_1,
+    //     image: imagesToSend.url,
+    //     description: imagesToSend.description,
+    //     heading: imagesToSend.heading,
+    //   },
+    // }));
+
+    setPropertyData((prev) => ({
+      ...prev,
+      section_1: {
+        ...prev.section_1,
+        image:imagesToSend.image,
+        description:imagesToSend.description,
+        heading:imagesToSend.heading,
+
+      }
+
+    }));
+
+
+    // if (images.length > 0) {
+    //   console.log(images,"-=-=-=-=-=-=-=-=--=-");
+    //   const imageUrl = images[images.length - 1].url;
+    //   const description = images[images.length - 1].description;
+    //   const heading = images[images.length - 1].heading;
+    //   setPropertyData((prevData) => ({
+    //     ...prevData,
+    //     section_1: { ...prevData.section_1, image: imageUrl , description:description, heading:heading},
+    //   }));
+    // }
   };
 
   // const handleCheckboxChange = (e) => {
@@ -537,7 +582,7 @@ const AddProperty = () => {
                   name="status"
                   value={propertyData?.status}
                   onChange={handleChange}
-                  placeholder="Enter status"
+                  placeholder='"for sale", "latest", "off-plan"'
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
                 />
@@ -591,7 +636,7 @@ const AddProperty = () => {
               </div>
 
               {/* Section 1 Heading */}
-              <div className="mb-5 md:col-span-3">
+              {/* <div className="mb-5 md:col-span-6">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Section 1 Heading
                 </label>
@@ -605,10 +650,10 @@ const AddProperty = () => {
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
                 />
-              </div>
+              </div> */}
 
               {/* Section 1 Title */}
-              <div className="mb-5 md:col-span-3">
+              <div className="mb-5 md:col-span-6">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Section 1 Title
                 </label>
@@ -623,7 +668,7 @@ const AddProperty = () => {
               </div>
 
               {/* Section 1 Description */}
-              <div className="mb-5 md:col-span-3">
+              {/* <div className="mb-5 md:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Section 1 Description
                 </label>
@@ -637,10 +682,10 @@ const AddProperty = () => {
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
                 />
-              </div>
+              </div> */}
 
               {/* Section 1 Image */}
-              <div className="mb-5 md:col-span-3">
+              {/* <div className="mb-5 md:col-span-12">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Section 1 Image
                 </label>
@@ -651,6 +696,27 @@ const AddProperty = () => {
                   onChange={(e) => handleNestedChange(e, "section_1", "image")}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   required
+                />
+              </div> */}
+
+              <div className="mb-5 md:col-span-6">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Section 1 Image
+                </label>
+                {/* <UploadWidget
+                  onImagesChange={handleImageChange}
+                  initialImages={
+                    propertyData?.section_1?.image
+                      ? [{ url: propertyData.section_1.image }]
+                      : []
+                  }
+                /> */}
+
+                <UploadImages
+                  onImagesChange={handleImageChange}
+                  initialImages={propertyData?.section_1
+                    ? [{ url: propertyData.section_1.image, description:propertyData.section_1.description, heading:propertyData.section_1.heading  }]
+                    : []}
                 />
               </div>
 
@@ -665,7 +731,7 @@ const AddProperty = () => {
                     propertyType.map((type) => (
                       <div
                         key={type.name_slug}
-                        className="border-gray-300 ark:border-form-strokedark flex transform items-center justify-between rounded-lg border bg-white p-4 shadow-lg transition-transform hover:scale-105 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                        className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                       >
                         <label className="flex items-center space-x-3">
                           <input
@@ -678,7 +744,7 @@ const AddProperty = () => {
                             onChange={handleCheckboxChange}
                             className="border-gray-300 h-5 w-5 rounded text-blue-500 focus:ring-blue-500"
                           />
-                          <span className="text-gray-800 dark:text-gray-200 text-lg font-medium">
+                          <span className="text-gray-800 dark:text-gray-200 font-normal">
                             {type.name}
                           </span>
                         </label>
@@ -686,7 +752,7 @@ const AddProperty = () => {
                           (t) => t.name === type.name_slug
                         ) && (
                           <div className="ml-4 flex items-center space-x-2">
-                            <label className="text-gray-700 dark:text-gray-300 text-sm font-medium">
+                            <label className="text-gray-700 dark:text-gray-300 font-normal">
                               Bedrooms
                             </label>
 

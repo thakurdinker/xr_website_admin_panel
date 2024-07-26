@@ -15,6 +15,7 @@ const UploadImages = ({ onImagesChange, initialImages = [], newsAndBlog }) => {
         folder: "xr_media", // Optional: Change to your desired folder
       },
       function (error, result) {
+        console.log(initialImages,"99999999999");
         if (!error && result && result.event === "success") {
           const uploadedImage = {
             url: result.info.secure_url,
@@ -74,7 +75,7 @@ const UploadImages = ({ onImagesChange, initialImages = [], newsAndBlog }) => {
                   <>
                     <textarea
                       name="description"
-                      value={image.description}
+                      value={image?.description}
                       onChange={(event) =>
                         onImagesChange(
                           initialImages.map((img, i) =>
@@ -93,7 +94,7 @@ const UploadImages = ({ onImagesChange, initialImages = [], newsAndBlog }) => {
                     ></textarea>
                     <textarea
                       name="heading"
-                      value={image.heading}
+                      value={image?.heading}
                       onChange={(event) =>
                         onImagesChange(
                           initialImages.map((img, i) =>

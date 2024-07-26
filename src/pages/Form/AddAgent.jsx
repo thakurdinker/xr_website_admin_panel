@@ -241,15 +241,6 @@ const ProfileForm = () => {
                   }
                   required
                 />
-                {/* {formData.profile_picture && (
-                  <div className="mt-2">
-                    <img
-                      src={formData.profile_picture}
-                      alt="Profile"
-                      className="h-20 w-20 object-cover"
-                    />
-                  </div>
-                )} */}
               </div>
 
               {/* Bio */}
