@@ -536,7 +536,7 @@ const AddProperty = () => {
                   onChange={handleChange}
                   placeholder="Enter property name"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -552,7 +552,7 @@ const AddProperty = () => {
                   onChange={handleChange}
                   placeholder="Enter property name slug"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -568,7 +568,7 @@ const AddProperty = () => {
                   onChange={handleChange}
                   placeholder="Enter property price"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -584,7 +584,7 @@ const AddProperty = () => {
                   onChange={handleChange}
                   placeholder='"for sale", "latest", "off-plan"'
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -599,7 +599,7 @@ const AddProperty = () => {
                   onChange={handleChange}
                   placeholder="Enter property description"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 ></textarea>
               </div>
 
@@ -615,7 +615,7 @@ const AddProperty = () => {
                   onChange={handleChange}
                   placeholder="Enter developer name"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -631,7 +631,7 @@ const AddProperty = () => {
                   onChange={handleChange}
                   placeholder="Enter developer name slug"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -648,7 +648,7 @@ const AddProperty = () => {
                     handleNestedChange(e, "section_1", "heading")
                   }
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div> */}
 
@@ -663,7 +663,7 @@ const AddProperty = () => {
                   value={propertyData?.section_1?.title}
                   onChange={(e) => handleNestedChange(e, "section_1", "title")}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -680,7 +680,7 @@ const AddProperty = () => {
                     handleNestedChange(e, "section_1", "description")
                   }
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div> */}
 
@@ -695,7 +695,7 @@ const AddProperty = () => {
                   value={propertyData?.section_1?.image}
                   onChange={(e) => handleNestedChange(e, "section_1", "image")}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div> */}
 
@@ -719,6 +719,8 @@ const AddProperty = () => {
                     : []}
                 />
               </div>
+
+               
 
               {/* Type */}
 
@@ -790,7 +792,7 @@ const AddProperty = () => {
                   onChange={(e) => handleNestedChange(e, "location", "address")}
                   placeholder="Enter address"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -806,7 +808,7 @@ const AddProperty = () => {
                   onChange={(e) => handleNestedChange(e, "location", "city")}
                   placeholder="Enter city"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -822,7 +824,7 @@ const AddProperty = () => {
                   onChange={(e) => handleNestedChange(e, "location", "state")}
                   placeholder="Enter state"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -838,7 +840,7 @@ const AddProperty = () => {
                   onChange={(e) => handleNestedChange(e, "location", "country")}
                   placeholder="Enter country"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -861,7 +863,7 @@ const AddProperty = () => {
                   }}
                   placeholder="Enter latitude"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -884,7 +886,7 @@ const AddProperty = () => {
                   }
                   placeholder="Enter longitude"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -902,7 +904,7 @@ const AddProperty = () => {
                   }
                   placeholder="Enter number of bathrooms"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -920,7 +922,7 @@ const AddProperty = () => {
                   }
                   placeholder="Enter year built"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -936,8 +938,29 @@ const AddProperty = () => {
                   onChange={(e) => handleNestedChange(e, "features", "area")}
                   placeholder="Enter property area"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
+              </div>
+
+              {/* Project Overview */}
+              <div className="mb-5 md:col-span-12">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Project Overview
+                </label>
+                <textarea
+                  name="project_overview"
+                  value={propertyData?.community_features?.project_overview}
+                  onChange={(e) =>
+                    handleNestedChange(
+                      e,
+                      "community_features",
+                      "project_overview"
+                    )
+                  }
+                  placeholder="Enter project overview"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  
+                ></textarea>
               </div>
 
               {/* Images */}
@@ -951,6 +974,8 @@ const AddProperty = () => {
                   initialImages={propertyData?.images || []}
                 />
               </div>
+
+              
 
               {/* Gallery */}
               <div className="mb-5 md:col-span-6">
@@ -975,7 +1000,7 @@ const AddProperty = () => {
                   value={propertyData?.gallery_title_1}
                   onChange={handleChange}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -990,7 +1015,7 @@ const AddProperty = () => {
                   value={propertyData?.gallery_description_1}
                   onChange={handleChange}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -1005,7 +1030,7 @@ const AddProperty = () => {
                   value={propertyData?.gallery_title_2}
                   onChange={handleChange}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -1020,9 +1045,11 @@ const AddProperty = () => {
                   value={propertyData?.gallery_description_2}
                   onChange={handleChange}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
+
+              
 
               {/* Amenity Description */}
               <div className="mb-5 md:col-span-6">
@@ -1037,7 +1064,7 @@ const AddProperty = () => {
                     handleNestedChange(e, "amenities", "description")
                   }
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -1068,7 +1095,7 @@ const AddProperty = () => {
                   value={propertyData?.community_name}
                   onChange={handleChange}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 >
                   <option value="" disabled>
                     Select community
@@ -1095,7 +1122,7 @@ const AddProperty = () => {
                   onChange={handleChange}
                   placeholder="Enter community name slug"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -1117,7 +1144,7 @@ const AddProperty = () => {
                   }
                   placeholder="Enter nearby facilities"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -1139,30 +1166,11 @@ const AddProperty = () => {
                   }
                   placeholder="Enter Transportation Services"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
-              {/* Project Overview */}
-              <div className="mb-5 md:col-span-12">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Project Overview
-                </label>
-                <textarea
-                  name="project_overview"
-                  value={propertyData?.community_features?.project_overview}
-                  onChange={(e) =>
-                    handleNestedChange(
-                      e,
-                      "community_features",
-                      "project_overview"
-                    )
-                  }
-                  placeholder="Enter project overview"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
-                ></textarea>
-              </div>
+             
 
               {/* Show Property */}
               <div className="mb-5 md:col-span-6">
@@ -1174,7 +1182,7 @@ const AddProperty = () => {
                   value={propertyData?.show_property}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 >
                   <option value="true">true</option>
                   <option value="false">false</option>
@@ -1191,7 +1199,7 @@ const AddProperty = () => {
                   value={propertyData?.featured}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 >
                   <option value="true">true</option>
                   <option value="false">false</option>
@@ -1211,7 +1219,7 @@ const AddProperty = () => {
                     handleNestedChange(e, "about_project", "heading")
                   }
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -1228,7 +1236,7 @@ const AddProperty = () => {
                     handleNestedChange(e, "about_project", "title")
                   }
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -1245,7 +1253,7 @@ const AddProperty = () => {
                     handleNestedChange(e, "about_project", "description")
                   }
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -1260,7 +1268,7 @@ const AddProperty = () => {
                   value={propertyData?.seo?.meta_title}
                   onChange={(e) => handleNestedChange(e, "seo", "meta_title")}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
               <div className="mb-5 md:col-span-3">
@@ -1275,7 +1283,7 @@ const AddProperty = () => {
                     handleNestedChange(e, "seo", "meta_description")
                   }
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
               <div className="mb-5 md:col-span-3">
@@ -1288,7 +1296,7 @@ const AddProperty = () => {
                   value={propertyData?.seo?.keywords}
                   onChange={(e) => handleNestedChange(e, "seo", "keywords")}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -1300,7 +1308,7 @@ const AddProperty = () => {
                   value={propertyData.schema_org.type}
                   onChange={(e) => handleNestedChange(e, "schema_org", "type")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -1311,7 +1319,7 @@ const AddProperty = () => {
                   value={JSON.stringify(propertyData.schema_org.properties)}
                   onChange={handleSchemaOrgPropertiesChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -1326,7 +1334,7 @@ const AddProperty = () => {
                   value={propertyData.open_graph.title}
                   onChange={(e) => handleNestedChange(e, "open_graph", "title")}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -1340,7 +1348,7 @@ const AddProperty = () => {
                   value={propertyData.open_graph.image}
                   onChange={(e) => handleNestedChange(e, "open_graph", "image")}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -1356,7 +1364,7 @@ const AddProperty = () => {
                     handleNestedChange(e, "open_graph", "description")
                   }
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -1370,7 +1378,7 @@ const AddProperty = () => {
                   value={propertyData.open_graph.type}
                   onChange={(e) => handleNestedChange(e, "open_graph", "type")}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  required
+                  
                 />
               </div>
 
@@ -1388,7 +1396,7 @@ const AddProperty = () => {
                         handleArrayChange(e, index, "faqs", "question")
                       }
                       className="mb-2 w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                      required
+                      
                     />
                     <label className="block">Answer {index + 1}</label>
                     <textarea
@@ -1398,7 +1406,7 @@ const AddProperty = () => {
                         handleArrayChange(e, index, "faqs", "answer")
                       }
                       className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                      required
+                      
                     />
                   </div>
                 ))}
@@ -1406,7 +1414,7 @@ const AddProperty = () => {
                   type="button"
                   onClick={addFaq}
                   className="bg-gray-200 hover:bg-gray-300 mt-2 rounded border border-stroke px-4 py-2 text-black transition dark:border-form-strokedark dark:bg-form-input dark:text-white dark:hover:bg-form-input"
-                  required
+                  
                 >
                   Add FAQ
                 </button>

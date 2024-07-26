@@ -145,6 +145,8 @@ const ProfileForm = () => {
         response = await axios.put(FETCH_ALL_AGENTS + `/${id}`, formData, {
           withCredentials: true,
         });
+
+        console.log(response.data,"-----");
       } else {
         // Create new property
         const response = await axios.post(FETCH_ALL_AGENTS, formData, {
@@ -181,7 +183,7 @@ const ProfileForm = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -194,7 +196,7 @@ const ProfileForm = () => {
                   value={formData.name_slug}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -207,7 +209,7 @@ const ProfileForm = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -239,7 +241,7 @@ const ProfileForm = () => {
                       ? [{ url: formData.profile_picture }]
                       : []
                   }
-                  required
+                  
                 />
               </div>
 
@@ -251,7 +253,7 @@ const ProfileForm = () => {
                   value={formData.bio}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -263,7 +265,6 @@ const ProfileForm = () => {
                   value={formData.personal_info}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
                 />
               </div>
 
@@ -276,7 +277,6 @@ const ProfileForm = () => {
                   value={formData.education}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
                 />
               </div>
 
@@ -291,7 +291,6 @@ const ProfileForm = () => {
                   value={formData.experience}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
                 />
               </div>
 
@@ -304,7 +303,6 @@ const ProfileForm = () => {
                   value={formData.specialties}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
                 />
               </div>
 
@@ -331,7 +329,6 @@ const ProfileForm = () => {
                     handleNestedChange(e, "social_links", "linkedin")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
                 />
               </div>
               <div className="mb-5 md:col-span-4">
@@ -344,7 +341,7 @@ const ProfileForm = () => {
                     handleNestedChange(e, "social_links", "twitter")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
               <div className="mb-5 md:col-span-4">
@@ -357,7 +354,7 @@ const ProfileForm = () => {
                     handleNestedChange(e, "social_links", "facebook")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -370,7 +367,6 @@ const ProfileForm = () => {
                   value={formData.video_links}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
                 />
               </div>
 
@@ -383,7 +379,7 @@ const ProfileForm = () => {
                   value={formData.seo.meta_title}
                   onChange={(e) => handleNestedChange(e, "seo", "meta_title")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
               <div className="mb-5 md:col-span-4">
@@ -396,7 +392,7 @@ const ProfileForm = () => {
                     handleNestedChange(e, "seo", "meta_description")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
               <div className="mb-5 md:col-span-4">
@@ -407,7 +403,7 @@ const ProfileForm = () => {
                   value={formData.seo.keywords}
                   onChange={(e) => handleNestedChange(e, "seo", "keywords")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -419,7 +415,7 @@ const ProfileForm = () => {
                   value={formData.schema_org.type}
                   onChange={(e) =>handleNestedChange(e, "schema_org", "type")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -430,7 +426,7 @@ const ProfileForm = () => {
                   value={JSON.stringify(formData.schema_org.properties)}
                   onChange={handleSchemaOrgPropertiesChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -443,7 +439,7 @@ const ProfileForm = () => {
                   value={formData.open_graph.title}
                   onChange={(e) => handleNestedChange(e, "open_graph", "title")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -455,7 +451,7 @@ const ProfileForm = () => {
                   value={formData.open_graph.image}
                   onChange={(e) => handleNestedChange(e, "open_graph", "image")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -469,7 +465,7 @@ const ProfileForm = () => {
                     handleNestedChange(e, "open_graph", "description")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
