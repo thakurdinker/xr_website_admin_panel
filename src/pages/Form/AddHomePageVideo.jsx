@@ -123,6 +123,7 @@ const HomePageVideoForm = () => {
           withCredentials: true,
         });
       }
+      console.log(response.data,);
       if (response?.data?.success)
         toast.success(response?.data?.message);
       else if (!response?.data?.success)
