@@ -1,4 +1,5 @@
-export const BASE_URL = "http://localhost:3333/admin/";
+export const BASE_URL = "https://api.xrealty.ae/admin/";
+// export const BASE_URL = "http://localhost:333/admin/";
 export const LOGIN = BASE_URL + "login";
 export const LOGOUT = BASE_URL + "logout";
 export const GET_ALL_USERS = BASE_URL + "getUsers";
@@ -13,7 +14,8 @@ export const FETCH_ALL_PROPERTY_TYPES = BASE_URL + "propertyType";
 export const FETCH_ALL_COMMUNITIES = BASE_URL + "communities";
 export const HOME_PAGE_VIDEOS = BASE_URL + "homePageVideo";
 export const NEWS = BASE_URL + "content";
-export const NEWS_AND_INSIGHTS = `http://localhost:3333/real-estate-news`;
+export const NEWS_AND_INSIGHTS = `https://api.xrealty.ae/real-estate-news`;
+// export const NEWS_AND_INSIGHTS = `http://localhost:3333/real-estate-news`;
 export const RESET_PASSWORD = BASE_URL + "resetPassword";
 export const DELETE_IMAGE = BASE_URL + "/deleteAsset";
 export const FETCH_ICONS = BASE_URL + "/icons";

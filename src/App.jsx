@@ -109,7 +109,7 @@ function App() {
           path="/reset-password"
           element={
             <>
-              <PageTitle title="Reset Password | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Reset Password" />
               <ResetPassword />
             </>
           }
@@ -118,7 +118,7 @@ function App() {
           path="/forgot-password"
           element={
             <>
-              <PageTitle title="Reset Password | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Reset Password" />
               <ForgotPassword />
             </>
           }
@@ -128,7 +128,7 @@ function App() {
           exact
           element={
             <UserContextProvider>
-              <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Signin" />
               <SignIn />
             </UserContextProvider>
           }
@@ -149,7 +149,7 @@ function App() {
             path="/manage-icons"
             element={
               <>
-                <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <PageTitle title="Profile" />
                 <ManageIcons />
               </>
             }
@@ -220,7 +220,7 @@ function App() {
             path="/manage-posts"
             element={
               <>
-                <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <PageTitle title="Manage Posts" />
                 <ManagePosts />
               </>
             }
@@ -230,7 +230,7 @@ function App() {
             path="/homepageVideo"
             element={
               <>
-                <PageTitle title="Under Maintenance | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <PageTitle title="HomePageVideo" />
                 <AddHomePageVideo />
               </>
             }
@@ -241,7 +241,7 @@ function App() {
             path="/forms/add-property"
             element={
               <>
-                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <PageTitle title="Add Property" />
                 <AddProperty />
               </>
             }
@@ -252,7 +252,7 @@ function App() {
             path="/forms/add-property/:id"
             element={
               <>
-                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <PageTitle title="Add Property" />
                 <AddProperty />
               </>
             }
@@ -263,7 +263,7 @@ function App() {
             path="/forms/add-news-and-blog"
             element={
               <>
-                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <PageTitle title="News and Blogs" />
                 <AddNewsAndBlog />
               </>
             }
@@ -273,7 +273,7 @@ function App() {
             path="/forms/add-news-and-blog/:id"
             element={
               <>
-                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <PageTitle title="News and Blogs" />
                 <AddNewsAndBlog />
               </>
             }
@@ -284,7 +284,7 @@ function App() {
             path="/forms/add-agent"
             element={
               <>
-                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <PageTitle title="Add Agent" />
                 <AddAgent />
               </>
             }
@@ -295,7 +295,7 @@ function App() {
             path="/forms/add-agent/:id"
             element={
               <>
-                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <PageTitle title="Add Agent" />
                 <AddAgent />
               </>
             }
@@ -306,7 +306,7 @@ function App() {
             path="/forms/add-post"
             element={
               <>
-                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <PageTitle title="Add Post" />
                 <AddPost />
               </>
             }
@@ -317,7 +317,7 @@ function App() {
             path="/forms/add-post/:id"
             element={
               <>
-                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <PageTitle title="Add Post" />
                 <AddPost />
               </>
             }
@@ -328,7 +328,7 @@ function App() {
             path="/forms/add-community/:id"
             element={
               <>
-                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <PageTitle title="Add Community" />
                 <AddCommunity />
               </>
             }
@@ -339,7 +339,7 @@ function App() {
             path="/forms/add-icon"
             element={
               <>
-                <PageTitle title="Pro Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <PageTitle title="Add Icons" />
                 <AddIcons />
               </>
             }
