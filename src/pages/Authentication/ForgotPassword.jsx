@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { RESET_PASSWORD_REQUEST } from "../../api/constants";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -11,7 +12,7 @@ const ForgotPassword = () => {
     e.preventDefault();
     axios({
       method: "post",
-      url: "http://localhost:3333/admin/resetPasswordRequest",
+      url: RESET_PASSWORD_REQUEST,
       data: {
         email: email,
       },

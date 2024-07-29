@@ -19,3 +19,4 @@ export const NEWS_AND_INSIGHTS = `https://api.xrealty.ae/real-estate-news`;
 export const RESET_PASSWORD = BASE_URL + "resetPassword";
 export const DELETE_IMAGE = BASE_URL + "/deleteAsset";
 export const FETCH_ICONS = BASE_URL + "/icons";
+export const RESET_PASSWORD_REQUEST = BASE_URL + "resetPasswordRequest";
