@@ -595,7 +595,7 @@ const AddProperty = () => {
               </div>
 
               {/* Description */}
-              <div className="mb-5 md:col-span-12">
+              {/* <div className="mb-5 md:col-span-12">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Description
                 </label>
@@ -607,7 +607,7 @@ const AddProperty = () => {
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   
                 ></textarea>
-              </div>
+              </div> */}
 
               {/* Developer */}
               <div className="mb-5 md:col-span-6">
@@ -949,7 +949,7 @@ const AddProperty = () => {
               </div>
 
               {/* Project Overview */}
-              <div className="mb-5 md:col-span-12">
+              {/* <div className="mb-5 md:col-span-12">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Project Overview
                 </label>
@@ -967,7 +967,7 @@ const AddProperty = () => {
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                   
                 ></textarea>
-              </div>
+              </div> */}
 
               {/* Images */}
               <div className="mb-5 md:col-span-12">
