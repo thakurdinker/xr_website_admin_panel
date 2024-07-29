@@ -47,7 +47,8 @@ const initialPropertyData = {
   gallery_title_2: "",
   gallery_description_1: "",
   gallery_description_2: "",
-  gallery: [],
+  gallery1: [],
+  gallery2: [],
   status: [],
   community_name: "",
   community_name_slug: "",
@@ -265,19 +266,24 @@ const AddProperty = () => {
   //   }));
   // };
 
-  const handleGalleryChange = (updatedGallery) => {
+  const handleGallery1Change = (updatedGallery) => {
     // Store full objects in state
     setPropertyData((prev) => ({
       ...prev,
-      gallery: updatedGallery,
+      gallery1: updatedGallery,
     }));
 
-    // Extract URLs to send to the server
+    ;
+  };
+  const handleGallery2Change = (updatedGallery) => {
+    // Store full objects in state
     setPropertyData((prev) => ({
       ...prev,
-      gallery: updatedGallery,
+      gallery2: updatedGallery,
     }));
-  };
+
+    
+};
 
   const handleNestedChange = (e, parentKey, childKey) => {
     const { name, value } = e.target;
@@ -964,7 +970,7 @@ const AddProperty = () => {
               </div>
 
               {/* Images */}
-              <div className="mb-5 md:col-span-6">
+              <div className="mb-5 md:col-span-12">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Images
                 </label>
@@ -977,15 +983,27 @@ const AddProperty = () => {
 
               
 
-              {/* Gallery */}
+              {/* Gallery 1*/}
               <div className="mb-5 md:col-span-6">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Gallery
+                  Gallery 1
                 </label>
                 {/* Cloudinary Upload Widget */}
                 <UploadGallery
-                  onImagesChange={handleGalleryChange}
-                  initialImages={propertyData.gallery || []}
+                  onImagesChange={handleGallery1Change}
+                  initialImages={propertyData.gallery1 || []}
+                />
+              </div>
+
+              {/* Gallery 2 */}
+              <div className="mb-5 md:col-span-6">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Gallery 2
+                </label> 
+                {/* Cloudinary Upload Widget */}
+                <UploadGallery
+                  onImagesChange={handleGallery2Change}
+                  initialImages={propertyData.gallery2 || []}
                 />
               </div>
 
@@ -1258,7 +1276,7 @@ const AddProperty = () => {
               </div>
 
               {/* SEO */}
-              <div className="mb-5 md:col-span-3">
+              <div className="mb-5 md:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Meta Title
                 </label>
@@ -1271,7 +1289,7 @@ const AddProperty = () => {
                   
                 />
               </div>
-              <div className="mb-5 md:col-span-3">
+              <div className="mb-5 md:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Meta Description
                 </label>
@@ -1286,7 +1304,7 @@ const AddProperty = () => {
                   
                 />
               </div>
-              <div className="mb-5 md:col-span-3">
+              <div className="mb-5 md:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   SEO Keywords{" "}
                 </label>

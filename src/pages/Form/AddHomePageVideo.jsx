@@ -153,7 +153,7 @@ const HomePageVideoForm = () => {
                     value={formData.mainVideo.url}
                     onChange={handleChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 
@@ -177,7 +177,6 @@ const HomePageVideoForm = () => {
                     value={formData.mainVideo.agent}
                     onChange={handleChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
                   >
                     <option value="" disabled>
                       Select Agent
@@ -206,7 +205,6 @@ const HomePageVideoForm = () => {
                         value={video.url}
                         onChange={handleChange}
                         className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                        required
                       />
                     </div>
                     <div>
@@ -230,7 +228,6 @@ const HomePageVideoForm = () => {
                         value={video.agent}
                         onChange={handleChange}
                         className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                        required
                       >
                         <option value="" disabled>
                           Select Agent

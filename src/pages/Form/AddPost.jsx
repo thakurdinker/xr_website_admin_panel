@@ -163,7 +163,7 @@ const ContentForm = () => {
                     value={formData.title}
                     onChange={handleChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 
@@ -176,7 +176,7 @@ const ContentForm = () => {
                     value={formData.slug}
                     onChange={handleChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 
@@ -189,7 +189,7 @@ const ContentForm = () => {
                     value={formData.author.name}
                     onChange={(e) => handleNestedChange(e, "author", "name")}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 
@@ -202,7 +202,7 @@ const ContentForm = () => {
                     value={formData.author.email}
                     onChange={(e) => handleNestedChange(e, "author", "email")}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 
@@ -214,7 +214,7 @@ const ContentForm = () => {
                     value={formData.content}
                     onChange={handleChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 
@@ -227,7 +227,7 @@ const ContentForm = () => {
                     value={formData.category}
                     onChange={handleChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 
@@ -245,7 +245,7 @@ const ContentForm = () => {
                       })
                     }
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 
@@ -258,7 +258,7 @@ const ContentForm = () => {
                     value={formatDateToYYYYMMDD(formData.publish_date)}
                     onChange={handleChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 
@@ -270,7 +270,7 @@ const ContentForm = () => {
                     value={formData.status}
                     onChange={handleChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   >
                     <option value="draft">Draft</option>
                     <option value="published">Published</option>
@@ -291,7 +291,7 @@ const ContentForm = () => {
                           handleArrayChange(e, index, "faqs", "question")
                         }
                         className="mb-2 w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                        required
+                        
                       />
                       <label className="block">Answer {index + 1}</label>
                       <textarea
@@ -301,7 +301,7 @@ const ContentForm = () => {
                           handleArrayChange(e, index, "faqs", "answer")
                         }
                         className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                        required
+                        
                       />
                     </div>
                   ))}
@@ -309,7 +309,7 @@ const ContentForm = () => {
                     type="button"
                     onClick={addFaq}
                     className="bg-gray-200 hover:bg-gray-300 mt-2 rounded border border-stroke px-4 py-2 text-black transition dark:border-form-strokedark dark:bg-form-input dark:text-white dark:hover:bg-form-input"
-                    required
+                    
                   >
                     Add FAQ
                   </button>
@@ -323,7 +323,7 @@ const ContentForm = () => {
                     name="meta_title"
                     onChange={(e) => handleNestedChange(e, "seo", "meta_title")}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 
@@ -338,7 +338,7 @@ const ContentForm = () => {
                       handleNestedChange(e, "seo", "meta_description")
                     }
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 
@@ -351,7 +351,7 @@ const ContentForm = () => {
                     value={formData.seo.keywords}
                     onChange={(e) => handleNestedChange(e, "seo", "keywords")}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 
@@ -365,7 +365,7 @@ const ContentForm = () => {
                       handleNestedChange(e, "schema_org", "type")
                     }
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 
@@ -378,7 +378,7 @@ const ContentForm = () => {
                     value={JSON.stringify(formData.schema_org.properties)}
                     onChange={handleSchemaOrgPropertiesChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 
@@ -393,7 +393,7 @@ const ContentForm = () => {
                       handleNestedChange(e, "open_graph", "title")
                     }
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 
@@ -408,7 +408,7 @@ const ContentForm = () => {
                       handleNestedChange(e, "open_graph", "description")
                     }
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 
@@ -423,7 +423,7 @@ const ContentForm = () => {
                       handleNestedChange(e, "open_graph", "image")
                     }
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 
@@ -438,7 +438,7 @@ const ContentForm = () => {
                       handleNestedChange(e, "open_graph", "type")
                     }
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
+                    
                   />
                 </div>
 

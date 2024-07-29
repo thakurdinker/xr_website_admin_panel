@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { DELETE_IMAGE } from "../../api/constants";
 
-const UploadGallery = ({ onImagesChange, initialImages = [] }) => {
+const UploadGallery = ({key, onImagesChange, initialImages = [] }) => {
   const [gallery, setGallery] = useState([]);
 
   useEffect(() => {

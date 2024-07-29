@@ -21,14 +21,14 @@ const ProfileForm = () => {
     bio: "",
     personal_info: "",
     education: "",
-    experience: "",
+    experience: 0,
     specialties: "",
     languages: "",
     social_links: { linkedin: "", twitter: "", facebook: "" },
     video_links: "",
     seo: { meta_title: "", meta_description: "", keywords: "" },
     schema_org: {
-      type: "",
+      type: "Person",
       properties: {
         context: "https://json-ld.org/contexts/person.jsonld",
         id: "http://dbpedia.org/resource/John_Lennon",
@@ -145,7 +145,7 @@ const ProfileForm = () => {
         response = await axios.put(FETCH_ALL_AGENTS + `/${id}`, formData, {
           withCredentials: true,
         });
-
+        console.log(formData);
         console.log(response.data,"-----");
       } else {
         // Create new property

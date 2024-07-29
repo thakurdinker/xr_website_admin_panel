@@ -222,7 +222,6 @@ const HomePageVideoForm = () => {
                   value={formData.title}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
                 />
               </div>
 
@@ -235,7 +234,6 @@ const HomePageVideoForm = () => {
                   value={formData.slug}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
                 />
               </div>
 
@@ -248,7 +246,6 @@ const HomePageVideoForm = () => {
                   onChange={handleChange}
                   style={{ minHeight: "50vh" }}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
                 />
               </div>
 
@@ -270,28 +267,18 @@ const HomePageVideoForm = () => {
                   value={formData.featured_image}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
               {/* Category */}
               <div className="mb-5 md:col-span-6">
                 <label className="block">Category</label>
-                {/* <input
-                  type="text"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
-                /> */}
-
                 <select
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
                 >
                   {categories?.map((category) => (
                     <option key={category} value={category}>
@@ -311,7 +298,6 @@ const HomePageVideoForm = () => {
                     value={tag}
                     onChange={(e) => handleTagsChange(e, index, "tags")}
                     className="mb-2 w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
                   />
                 ))}
                 <button
@@ -332,7 +318,7 @@ const HomePageVideoForm = () => {
                   value={formatDateToYYYYMMDD(formData.publish_date)}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -344,7 +330,7 @@ const HomePageVideoForm = () => {
                   value={formData.status}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 >
                   <option value="published">Published</option>
                   <option value="draft">Draft</option>
@@ -373,7 +359,7 @@ const HomePageVideoForm = () => {
                   value={formData.author.name}
                   onChange={(e) => handleNestedChange(e, "author", "name")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -386,7 +372,7 @@ const HomePageVideoForm = () => {
                   value={formData.author.email}
                   onChange={(e) => handleNestedChange(e, "author", "email")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -399,7 +385,7 @@ const HomePageVideoForm = () => {
                   value={formData.seo.meta_title}
                   onChange={(e) => handleNestedChange(e, "seo", "meta_title")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -414,7 +400,7 @@ const HomePageVideoForm = () => {
                     handleNestedChange(e, "seo", "meta_description")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -427,7 +413,7 @@ const HomePageVideoForm = () => {
                   value={formData.seo.keywords}
                   onChange={(e) => handleNestedChange(e, "seo", "keywords")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -439,7 +425,7 @@ const HomePageVideoForm = () => {
                   value={formData.schema_org.type}
                   onChange={(e) =>handleNestedChange(e, "schema_org", "type")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -450,7 +436,7 @@ const HomePageVideoForm = () => {
                   value={JSON.stringify(formData.schema_org.properties)}
                   onChange={handleSchemaOrgPropertiesChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -464,7 +450,7 @@ const HomePageVideoForm = () => {
                   value={formData.open_graph.title}
                   onChange={(e) => handleNestedChange(e, "open_graph", "title")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -477,7 +463,7 @@ const HomePageVideoForm = () => {
                   value={formData.open_graph.image}
                   onChange={(e) => handleNestedChange(e, "open_graph", "image")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -492,7 +478,7 @@ const HomePageVideoForm = () => {
                     handleNestedChange(e, "open_graph", "description")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  required
+                  
                 />
               </div>
 
@@ -510,7 +496,7 @@ const HomePageVideoForm = () => {
                         handleArrayChange(e, index, "faqs", "question")
                       }
                       className="mb-2 w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                      required
+                      
                     />
                     <label className="block">Answer {index + 1}</label>
                     <textarea
@@ -520,7 +506,7 @@ const HomePageVideoForm = () => {
                         handleArrayChange(e, index, "faqs", "answer")
                       }
                       className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                      required
+                      
                     />
                   </div>
                 ))}
@@ -528,7 +514,7 @@ const HomePageVideoForm = () => {
                   type="button"
                   onClick={addFaq}
                   className="bg-gray-200 hover:bg-gray-300 mt-2 rounded border border-stroke px-4 py-2 text-black transition dark:border-form-strokedark dark:bg-form-input dark:text-white dark:hover:bg-form-input"
-                  required
+                  
                 >
                   Add FAQ
                 </button>

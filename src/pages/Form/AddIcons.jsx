@@ -62,7 +62,6 @@ const ContentForm = () => {
                     value={formData.icon_text}
                     onChange={handleIconChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
                   />
                 </div>
                 <div className="mb-5 md:col-span-5">
@@ -73,7 +72,6 @@ const ContentForm = () => {
                     value={formData.icon_url}
                     onChange={handleIconChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    required
                   />
                 </div>
 
