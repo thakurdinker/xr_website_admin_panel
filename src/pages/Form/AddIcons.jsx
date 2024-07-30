@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import DefaultLayout from "../../layout/DefaultLayout";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { FETCH_ICONS } from "../../api/constants";
+import { FETCH_ALL_ICONS, FETCH_ICONS } from "../../api/constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -28,7 +28,7 @@ const ContentForm = () => {
 
 
     try {
-      let response = await axios.post(FETCH_ICONS, formData, {
+      let response = await axios.post(FETCH_ALL_ICONS, formData, {
         withCredentials: true,
       });
 

@@ -14,6 +14,7 @@ import {
   FETCH_ALL_PROPERTY_TYPES,
   FETCH_ALL_COMMUNITIES,
   FETCH_ICONS,
+  FETCH_ALL_ICONS,
 } from "../../api/constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -154,7 +155,7 @@ const AddProperty = () => {
   // Fetch the amenities data and set it in state
   useEffect(() => {
     const fetchAmenities = async () => {
-      const response = await axios.get(FETCH_ICONS);
+      const response = await axios.get(FETCH_ALL_ICONS);
       const amenities = response.data.icons.map((amenity) => ({
         value: amenity.icon_url,
         label: amenity.icon_text,
