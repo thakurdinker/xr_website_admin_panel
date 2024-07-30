@@ -1,5 +1,5 @@
-// export const BASE_URL = "https://api.xrealty.ae/admin/";
-export const BASE_URL = "http://localhost:3333/admin/";
+export const BASE_URL = "https://api.xrealty.ae/admin/";
+// export const BASE_URL = "http://localhost:3333/admin/";
 export const LOGIN = BASE_URL + "login";
 export const LOGOUT = BASE_URL + "logout";
 export const GET_ALL_USERS = BASE_URL + "getUsers";
