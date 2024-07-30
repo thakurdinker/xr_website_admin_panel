@@ -89,7 +89,7 @@ const CommunityForm = () => {
 
   useEffect(() => {
     const fetchAmenities = async () => {
-      const response = await axios.get(FETCH_ICONS);
+      const response = await axios.get(FETCH_ALL_ICONS);
       console.log(response.data);
       const amenities = response.data.icons.map((amenity) => ({
         value: amenity.icon_url,
