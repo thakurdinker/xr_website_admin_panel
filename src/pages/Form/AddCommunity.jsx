@@ -7,7 +7,7 @@ import "react-phone-number-input/style.css";
 import {
   FETCH_ALL_AGENTS,
   FETCH_ALL_COMMUNITIES,
-  FETCH_ICONS,
+  FETCH_ALL_ICONS,
 } from "../../api/constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
