@@ -18,6 +18,17 @@ const CommunityForm = () => {
   const [images, setImages] = useState([]);
   const [profilePic, setProfilePic] = useState([]);
 
+  const [amenitiesOptions, setAmenitiesOptions] = useState([]);
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
+  const navigate = useNavigate();
+
+  const [seoTitle, setSeoTitle] = useState();
+  const [seoDescription, setSeoDescription] = useState();
+  const [seoKeywords, setSeoKeywords] = useState([]);
+
+  const [ogImage, setOgImage] = useState();
+  const [ogType, setOgType] = useState();
+
   const [formData, setFormData] = useState({
     name: "",
     slug: "",
@@ -59,9 +70,6 @@ const CommunityForm = () => {
       image: "",
     },
   });
-  const [amenitiesOptions, setAmenitiesOptions] = useState([]);
-  const [selectedAmenities, setSelectedAmenities] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchFormData = async () => {
@@ -70,6 +78,19 @@ const CommunityForm = () => {
           withCredentials: true,
         });
         setFormData(response.data.community);
+
+        console.log(response.data);
+
+        // setSeoTitle(response.data.property.property_name);
+        // setSeoDescription(response.data.property.description);
+        // setSeoKeywords([
+        //   response.data.property.property_name,
+        //   response.data.property.community_name,
+        //   response.data.property.developer,
+        // ]);
+
+        // setOgImage(response.data.property.gallery1[0]);
+        // setOgType(response.data.property.type[0]?.name);
       } catch (error) {
         console.error("Error fetching community data:", error);
       }
@@ -267,7 +288,6 @@ const CommunityForm = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -282,7 +302,6 @@ const CommunityForm = () => {
                   value={formData.slug}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -311,7 +330,6 @@ const CommunityForm = () => {
                   onChange={(e) => handleNestedChange(e, "location", "address")}
                   placeholder="Enter address"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  
                 />
               </div>
 
@@ -327,7 +345,6 @@ const CommunityForm = () => {
                   onChange={(e) => handleNestedChange(e, "location", "city")}
                   placeholder="Enter city"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  
                 />
               </div>
 
@@ -343,7 +360,6 @@ const CommunityForm = () => {
                   onChange={(e) => handleNestedChange(e, "location", "state")}
                   placeholder="Enter state"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  
                 />
               </div>
 
@@ -359,7 +375,6 @@ const CommunityForm = () => {
                   onChange={(e) => handleNestedChange(e, "location", "country")}
                   placeholder="Enter country"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  
                 />
               </div>
 
@@ -382,7 +397,6 @@ const CommunityForm = () => {
                   }
                   placeholder="Enter latitude"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  
                 />
               </div>
 
@@ -405,7 +419,6 @@ const CommunityForm = () => {
                   }
                   placeholder="Enter longitude"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  
                 />
               </div>
 
@@ -487,7 +500,6 @@ const CommunityForm = () => {
                     handleNestedChange(e, "amenities", "description")
                   }
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  
                 />
               </div>
 
@@ -516,7 +528,6 @@ const CommunityForm = () => {
                 <UploadImages
                   onImagesChange={handleImagesChange}
                   initialImages={formData?.images || []}
-                  
                 />
               </div>
 
@@ -534,7 +545,6 @@ const CommunityForm = () => {
                         handleArrayChange(e, index, "faqs", "question")
                       }
                       className="mb-2 w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                      
                     />
                     <label className="block">Answer {index + 1}</label>
                     <textarea
@@ -544,7 +554,6 @@ const CommunityForm = () => {
                         handleArrayChange(e, index, "faqs", "answer")
                       }
                       className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                      
                     />
                   </div>
                 ))}
@@ -552,7 +561,6 @@ const CommunityForm = () => {
                   type="button"
                   onClick={addFaq}
                   className="bg-gray-200 hover:bg-gray-300 mt-2 rounded border border-stroke px-4 py-2 text-black transition dark:border-form-strokedark dark:bg-form-input dark:text-white dark:hover:bg-form-input"
-                  
                 >
                   Add FAQ
                 </button>
@@ -567,7 +575,6 @@ const CommunityForm = () => {
                   value={formData.seo.meta_title}
                   onChange={(e) => handleNestedChange(e, "seo", "meta_title")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -581,7 +588,6 @@ const CommunityForm = () => {
                     handleNestedChange(e, "seo", "meta_description")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -593,7 +599,6 @@ const CommunityForm = () => {
                   value={formData.seo.keywords}
                   onChange={(e) => handleNestedChange(e, "seo", "keywords")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -605,7 +610,6 @@ const CommunityForm = () => {
                   value={formData.schema_org.type}
                   onChange={(e) => handleNestedChange(e, "schema_org", "type")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -616,7 +620,6 @@ const CommunityForm = () => {
                   value={JSON.stringify(formData.schema_org.properties)}
                   onChange={handleSchemaOrgPropertiesChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -629,7 +632,6 @@ const CommunityForm = () => {
                   value={formData.open_graph.title}
                   onChange={(e) => handleNestedChange(e, "open_graph", "title")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -641,7 +643,6 @@ const CommunityForm = () => {
                   value={formData.open_graph.image}
                   onChange={(e) => handleNestedChange(e, "open_graph", "image")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -655,7 +656,6 @@ const CommunityForm = () => {
                     handleNestedChange(e, "open_graph", "description")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
