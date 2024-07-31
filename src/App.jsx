@@ -75,6 +75,8 @@ import AddNewsAndBlog from "./pages/Form/AddNewsAndBlog.jsx";
 import ForgotPassword from "./pages/Authentication/ForgotPassword.jsx";
 import ManageIcons from "./pages/ManageIcons/ManageIcons.jsx";
 import AddIcons from "./pages/Form/AddIcons.jsx";
+import ManageDevelopers from "./pages/ManageDevelopers/ManageDevelopers.jsx";
+import AddDeveloper from "./pages/Form/AddDeveloper.jsx";
 
 function WithUserContext() {
   return (
@@ -149,8 +151,18 @@ function App() {
             path="/manage-icons"
             element={
               <>
-                <PageTitle title="Profile" />
+                <PageTitle title="Manage Icons" />
                 <ManageIcons />
+              </>
+            }
+          />
+          <Route
+            exact
+            path="/manage-developers"
+            element={
+              <>
+                <PageTitle title="Manage Developers" />
+                <ManageDevelopers />
               </>
             }
           />
@@ -275,6 +287,27 @@ function App() {
               <>
                 <PageTitle title="News and Blogs" />
                 <AddNewsAndBlog />
+              </>
+            }
+          />
+
+          <Route
+            exact
+            path="/forms/add-developer"
+            element={
+              <>
+                <PageTitle title="Add Developer" />
+                <AddDeveloper />
+              </>
+            }
+          />
+          <Route
+            exact
+            path="/forms/add-developer/:id"
+            element={
+              <>
+                <PageTitle title="Add Developer" />
+                <AddDeveloper />
               </>
             }
           />

@@ -16,6 +16,7 @@ import {
   FETCH_ICONS,
   FETCH_ALL_ICONS,
   GET_ALL_COMMUNITIES_DROP_DOWN,
+  DEVELOPERS_URL,
 } from "../../api/constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -88,6 +89,8 @@ const initialPropertyData = {
 const AddProperty = () => {
   const { id } = useParams();
 
+  const [developers, setDevelopers] = useState([]);
+
   const updatePropertyData = (propertyData, apiData) => {
     const updatedData = { ...propertyData };
     Object.keys(propertyData).forEach((key) => {
@@ -150,6 +153,16 @@ const AddProperty = () => {
     fetchAllCommunities();
   }, []);
 
+  useEffect(() => {
+    const fetchAllDevelopers = async () => {
+      const response = await axios.get(DEVELOPERS_URL, {
+        withCredentials: true,
+      });
+      setDevelopers(response?.data?.data);
+    };
+    fetchAllDevelopers();
+  }, []);
+
   const [amenitiesOptions, setAmenitiesOptions] = useState([]);
   const [selectedAmenities, setSelectedAmenities] = useState([]);
 
@@ -171,6 +184,7 @@ const AddProperty = () => {
   const [propertyData, setPropertyData] = useState(initialPropertyData);
   const [propertyType, setPropertyType] = useState([]);
   const [community, setCommunity] = useState("");
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -187,6 +201,19 @@ const AddProperty = () => {
         ...prev,
         [name]: value,
         community_name_slug: community_slug,
+      }));
+    } else if (name === "developer") {
+      let developer_slug = "";
+      for (let i = 0; i < developers.length; i++) {
+        if (developers[i].developer_slug === value) {
+          developer_slug = value;
+          break;
+        }
+      }
+      setPropertyData((prev) => ({
+        ...prev,
+        [name]: value,
+        developer_name_slug: developer_slug,
       }));
     } else {
       setPropertyData((prev) => ({
@@ -209,6 +236,7 @@ const AddProperty = () => {
       images: imagesToSend,
     }));
   };
+
   const handleSchemaOrgPropertiesChange = (e) => {
     const { value } = e.target;
     try {
@@ -598,7 +626,7 @@ const AddProperty = () => {
               </div> */}
 
               {/* Developer */}
-              <div className="mb-5 md:col-span-6">
+              {/* <div className="mb-5 md:col-span-6">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Developer
                 </label>
@@ -610,10 +638,10 @@ const AddProperty = () => {
                   placeholder="Enter developer name"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                 />
-              </div>
+              </div> */}
 
               {/* Developer Name Slug */}
-              <div className="mb-5 md:col-span-6">
+              {/* <div className="mb-5 md:col-span-6">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Developer Name Slug
                 </label>
@@ -623,6 +651,50 @@ const AddProperty = () => {
                   value={propertyData.developer_name_slug}
                   onChange={handleChange}
                   placeholder="Enter developer name slug"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                />
+              </div> */}
+
+              {/* Developer Name */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Developer Name
+                </label>
+                <select
+                  name="developer"
+                  value={propertyData?.developer}
+                  onChange={handleChange}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                >
+                  <option value="" disabled>
+                    Select Developer
+                  </option>
+                  {developers.length > 0 &&
+                    developers.map((developer) => {
+                      return (
+                        <option
+                          key={developer.id}
+                          value={developer.developer_slug}
+                        >
+                          {developer.developer_name}
+                        </option>
+                      );
+                    })}
+                </select>
+              </div>
+
+              {/* Developer Name Slug*/}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Developer Name Slug
+                </label>
+                <input
+                  disabled
+                  type="text"
+                  name="developer_name_slug"
+                  value={propertyData?.developer_name_slug}
+                  onChange={handleChange}
+                  placeholder="Enter community name slug"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                 />
               </div>

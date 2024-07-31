@@ -22,3 +22,4 @@ export const DELETE_IMAGE = BASE_URL + "/deleteAsset";
 export const FETCH_ICONS = BASE_URL + "/icons";
 export const RESET_PASSWORD_REQUEST = BASE_URL + "resetPasswordRequest";
 export const FETCH_ALL_ICONS = BASE_URL + "/getAllIcons";
+export const DEVELOPERS_URL = BASE_URL + "developers";
