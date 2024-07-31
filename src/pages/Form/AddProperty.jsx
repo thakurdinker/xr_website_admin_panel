@@ -7,7 +7,7 @@ import UploadAmenity from "../../components/UploadWidget/UploadAmenity";
 import UploadWidget from "../../components/UploadWidget/UploadImages";
 
 import Select from "react-select";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   FETCH_ALL_AGENTS,
   FETCH_ALL_PROPERTIES,
@@ -80,8 +80,68 @@ const initialPropertyData = {
   faqs: [{ question: "", answer: "" }],
   seo: { meta_title: "", meta_description: "", keywords: "" },
   schema_org: {
-    type: "Person",
-    properties: {},
+    type: "",
+    properties: {
+      "@context": "https://schema.org",
+      "@type": "ApartmentComplex",
+      name: "Luxury Waterfront Apartment",
+      description:
+        "A luxurious 3-bedroom apartment with stunning waterfront views, located in the heart of Dubai Marina.",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "123 Marina Walk",
+        addressLocality: "Dubai",
+        addressRegion: "Dubai",
+        postalCode: "00000",
+        addressCountry: "AE",
+      },
+      offers: {
+        "@type": "Offer",
+        priceCurrency: "AED",
+        price: "3500000",
+        itemCondition: "https://schema.org/NewCondition",
+        availability: "https://schema.org/InStock",
+        seller: {
+          "@type": "RealEstateAgent",
+          name: "Xperience Realty",
+          url: "https://www.xperiencerealty.com",
+          logo: "https://www.xperiencerealty.com/logo.png",
+          contactPoint: {
+            "@type": "ContactPoint",
+            telephone: "+971-4-123-4567",
+            contactType: "Sales",
+            areaServed: "Dubai, UAE",
+            availableLanguage: ["English", "Arabic"],
+          },
+        },
+      },
+      image: "https://www.xperiencerealty.com/images/property.jpg",
+      numberOfRooms: 3,
+      floorSize: {
+        "@type": "QuantitativeValue",
+        value: 2500,
+        unitCode: "SQF",
+      },
+      petsAllowed: false,
+      amenityFeature: [
+        {
+          "@type": "LocationFeatureSpecification",
+          name: "Swimming Pool",
+          value: "Yes",
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          name: "Gym",
+          value: "Yes",
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          name: "Parking",
+          value: "Yes",
+        },
+      ],
+      url: "https://www.xperiencerealty.com/property/luxury-waterfront-apartment",
+    },
   },
   open_graph: { title: "", description: "", image: "", type: "" },
 };
@@ -90,6 +150,26 @@ const AddProperty = () => {
   const { id } = useParams();
 
   const [developers, setDevelopers] = useState([]);
+  const [propertyData, setPropertyData] = useState(initialPropertyData);
+  const [propertyType, setPropertyType] = useState([]);
+  const [community, setCommunity] = useState("");
+  const [amenitiesOptions, setAmenitiesOptions] = useState([]);
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
+
+  const [seoTitle, setSeoTitle] = useState(propertyData?.property_name);
+  const [seoDescription, setSeoDescription] = useState(
+    propertyData?.description
+  );
+  const [seoKeywords, setSeoKeywords] = useState([
+    propertyData?.property_name,
+    propertyData?.community_name,
+    propertyData?.developer,
+  ]);
+
+  const [ogImage, setOgImage] = useState(propertyData?.gallery1[0]);
+  const [ogType, setOgType] = useState(propertyData?.type[0]?.name);
+
+  const navigate = useNavigate();
 
   const updatePropertyData = (propertyData, apiData) => {
     const updatedData = { ...propertyData };
@@ -112,6 +192,79 @@ const AddProperty = () => {
     return updatedData;
   };
 
+  const getAmenitiesValue = useCallback(() => {
+    let amenities = [];
+    for (let i = 0; i < propertyData?.amenities?.icons?.length; i++) {
+      amenities.push(
+        ...amenitiesOptions.filter(
+          (icon) => icon.id === propertyData.amenities.icons[i]
+        )
+      );
+    }
+
+    return amenities;
+  });
+
+  const generateSchema = () => {
+    return {
+      type: "",
+      properties: {
+        "@context": "https://schema.org",
+        "@type": ogType,
+        name: seoTitle,
+        description: seoDescription,
+        // address: {
+        //   "@type": "PostalAddress",
+        //   streetAddress: "123 Marina Walk",
+        //   addressLocality: "Dubai",
+        //   addressRegion: "Dubai",
+        //   postalCode: "00000",
+        //   addressCountry: "AE",
+        // },
+        // offers: {
+        //   "@type": "Offer",
+        //   priceCurrency: "AED",
+        //   price: "3500000",
+        //   itemCondition: "https://schema.org/NewCondition",
+        //   availability: "https://schema.org/InStock",
+        //   seller: {
+        //     "@type": "RealEstateAgent",
+        //     name: "Xperience Realty",
+        //     url: "https://www.xperiencerealty.com",
+        //     logo: "https://www.xperiencerealty.com/logo.png",
+        //     contactPoint: {
+        //       "@type": "ContactPoint",
+        //       telephone: "+971-4-123-4567",
+        //       contactType: "Sales",
+        //       areaServed: "Dubai, UAE",
+        //       availableLanguage: ["English", "Arabic"],
+        //     },
+        //   },
+        // },
+        image: ogImage,
+        // floorSize: {
+        //   "@type": "QuantitativeValue",
+        //   value: 2500,
+        //   unitCode: "SQF",
+        // },
+        amenityFeature: () => {
+          let amenitiesName = [];
+          getAmenitiesValue().map((amenity) => {
+            let temp = {
+              "@type": "LocationFeatureSpecification",
+              name: amenity.label,
+              value: "Yes",
+            };
+            amenitiesName.push(temp);
+          });
+
+          return amenitiesName;
+        },
+        url: `https://www.xrealty.ae/property/${propertyData.property_name_slug}`,
+      },
+    };
+  };
+
   useEffect(() => {
     // Fetch property data based on the ID from your API
     const fetchPropertyData = async () => {
@@ -123,6 +276,17 @@ const AddProperty = () => {
           ...prev,
           ...response.data.property,
         }));
+
+        setSeoTitle(response.data.property.property_name);
+        setSeoDescription(response.data.property.description);
+        setSeoKeywords([
+          response.data.property.property_name,
+          response.data.property.community_name,
+          response.data.property.developer,
+        ]);
+
+        setOgImage(response.data.property.gallery1[0]);
+        setOgType(response.data.property.type[0]?.name);
       } catch (error) {
         console.error("Error fetching property data:", error);
       }
@@ -163,9 +327,6 @@ const AddProperty = () => {
     fetchAllDevelopers();
   }, []);
 
-  const [amenitiesOptions, setAmenitiesOptions] = useState([]);
-  const [selectedAmenities, setSelectedAmenities] = useState([]);
-
   // Fetch the amenities data and set it in state
   useEffect(() => {
     const fetchAmenities = async () => {
@@ -181,19 +342,14 @@ const AddProperty = () => {
     fetchAmenities();
   }, []);
 
-  const [propertyData, setPropertyData] = useState(initialPropertyData);
-  const [propertyType, setPropertyType] = useState([]);
-  const [community, setCommunity] = useState("");
-
-  const navigate = useNavigate();
-
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     if (name === "community_name") {
       let community_slug = "";
       for (let i = 0; i < community.length; i++) {
-        if (community[i].slug === value) {
-          community_slug = value;
+        if (community[i].name === value) {
+          community_slug = community[i].slug;
           break;
         }
       }
@@ -204,12 +360,15 @@ const AddProperty = () => {
       }));
     } else if (name === "developer") {
       let developer_slug = "";
+      let developer_name = "";
       for (let i = 0; i < developers.length; i++) {
-        if (developers[i].developer_slug === value) {
-          developer_slug = value;
+        if (developers[i].developer_name === value) {
+          developer_slug = developers[i].developer_slug;
+          developer_name = value;
           break;
         }
       }
+
       setPropertyData((prev) => ({
         ...prev,
         [name]: value,
@@ -253,19 +412,6 @@ const AddProperty = () => {
       console.error("Invalid JSON format");
     }
   };
-
-  const getAmenitiesValue = useCallback(() => {
-    let amenities = [];
-    for (let i = 0; i < propertyData?.amenities?.icons?.length; i++) {
-      amenities.push(
-        ...amenitiesOptions.filter(
-          (icon) => icon.id === propertyData.amenities.icons[i]
-        )
-      );
-    }
-
-    return amenities;
-  });
 
   const handleAmenitiesChange = (selectedOptions) => {
     setSelectedAmenities(selectedOptions);
@@ -311,6 +457,27 @@ const AddProperty = () => {
 
   const handleNestedChange = (e, parentKey, childKey) => {
     const { name, value } = e.target;
+
+    if (name === "meta_title" || name === "title") {
+      setSeoTitle(e.target.value);
+    }
+
+    if (name === "meta_description" || name === "description") {
+      setSeoDescription(e.target.value);
+    }
+
+    if (name === "keywords") {
+      setSeoKeywords(e.target.value);
+    }
+
+    if (name === "image") {
+      setOgImage(e.target.value);
+    }
+
+    if (name === "type") {
+      setOgType(e.target.value);
+    }
+
     setPropertyData((prev) => ({
       ...prev,
       [parentKey]: {
@@ -674,7 +841,7 @@ const AddProperty = () => {
                       return (
                         <option
                           key={developer.id}
-                          value={developer.developer_slug}
+                          value={developer.developer_name}
                         >
                           {developer.developer_name}
                         </option>
@@ -693,8 +860,7 @@ const AddProperty = () => {
                   type="text"
                   name="developer_name_slug"
                   value={propertyData?.developer_name_slug}
-                  onChange={handleChange}
-                  placeholder="Enter community name slug"
+                  placeholder="Enter Developer name slug"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                 />
               </div>
@@ -1164,7 +1330,7 @@ const AddProperty = () => {
                   </option>
                   {Array.isArray(community) &&
                     community.map((comm) => (
-                      <option key={comm.id} value={comm.slug}>
+                      <option key={comm.id} value={comm.name}>
                         {comm.name}
                       </option>
                     ))}
@@ -1181,7 +1347,7 @@ const AddProperty = () => {
                   type="text"
                   name="community_name_slug"
                   value={propertyData?.community_name_slug}
-                  onChange={handleChange}
+                  // onChange={handleChange}
                   placeholder="Enter community name slug"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                 />
@@ -1317,7 +1483,7 @@ const AddProperty = () => {
                 <input
                   type="text"
                   name="meta_title"
-                  value={propertyData?.seo?.meta_title}
+                  value={seoTitle}
                   onChange={(e) => handleNestedChange(e, "seo", "meta_title")}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                 />
@@ -1329,7 +1495,7 @@ const AddProperty = () => {
                 <input
                   type="text"
                   name="meta_description"
-                  value={propertyData?.seo?.meta_description}
+                  value={seoDescription}
                   onChange={(e) =>
                     handleNestedChange(e, "seo", "meta_description")
                   }
@@ -1338,12 +1504,12 @@ const AddProperty = () => {
               </div>
               <div className="mb-5 md:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  SEO Keywords{" "}
+                  SEO Keywords (comma seperated)
                 </label>
                 <input
                   type="text"
                   name="keywords"
-                  value={propertyData?.seo?.keywords}
+                  value={seoKeywords}
                   onChange={(e) => handleNestedChange(e, "seo", "keywords")}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                 />
@@ -1354,7 +1520,7 @@ const AddProperty = () => {
                 <label className="block">Schema Type</label>
                 <textarea
                   name="schema_org.type"
-                  value={propertyData.schema_org.type}
+                  value={ogType}
                   onChange={(e) => handleNestedChange(e, "schema_org", "type")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 />
@@ -1364,7 +1530,7 @@ const AddProperty = () => {
                 <label className="block">Schema Properties (JSON format)</label>
                 <textarea
                   name="schema_org.properties"
-                  value={JSON.stringify(propertyData.schema_org.properties)}
+                  value={JSON.stringify(generateSchema())}
                   onChange={handleSchemaOrgPropertiesChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 />
@@ -1378,7 +1544,7 @@ const AddProperty = () => {
                 <input
                   type="text"
                   name="title"
-                  value={propertyData.open_graph.title}
+                  value={seoTitle}
                   onChange={(e) => handleNestedChange(e, "open_graph", "title")}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                 />
@@ -1391,7 +1557,7 @@ const AddProperty = () => {
                 <input
                   type="text"
                   name="image"
-                  value={propertyData.open_graph.image}
+                  value={ogImage}
                   onChange={(e) => handleNestedChange(e, "open_graph", "image")}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                 />
@@ -1404,7 +1570,7 @@ const AddProperty = () => {
                 <input
                   type="text"
                   name="description"
-                  value={propertyData.open_graph.description}
+                  value={seoDescription}
                   onChange={(e) =>
                     handleNestedChange(e, "open_graph", "description")
                   }
@@ -1419,7 +1585,7 @@ const AddProperty = () => {
                 <input
                   type="text"
                   name="type"
-                  value={propertyData.open_graph.type}
+                  value={ogType}
                   onChange={(e) => handleNestedChange(e, "open_graph", "type")}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                 />
