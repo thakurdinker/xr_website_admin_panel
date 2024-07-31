@@ -156,18 +156,12 @@ const AddProperty = () => {
   const [amenitiesOptions, setAmenitiesOptions] = useState([]);
   const [selectedAmenities, setSelectedAmenities] = useState([]);
 
-  const [seoTitle, setSeoTitle] = useState(propertyData?.property_name);
-  const [seoDescription, setSeoDescription] = useState(
-    propertyData?.description
-  );
-  const [seoKeywords, setSeoKeywords] = useState([
-    propertyData?.property_name,
-    propertyData?.community_name,
-    propertyData?.developer,
-  ]);
+  const [seoTitle, setSeoTitle] = useState();
+  const [seoDescription, setSeoDescription] = useState();
+  const [seoKeywords, setSeoKeywords] = useState([]);
 
-  const [ogImage, setOgImage] = useState(propertyData?.gallery1[0]);
-  const [ogType, setOgType] = useState(propertyData?.type[0]?.name);
+  const [ogImage, setOgImage] = useState();
+  const [ogType, setOgType] = useState();
 
   const navigate = useNavigate();
 
@@ -207,7 +201,7 @@ const AddProperty = () => {
 
   const generateSchema = () => {
     return {
-      type: "",
+      type: ogType,
       properties: {
         "@context": "https://schema.org",
         "@type": ogType,
@@ -277,16 +271,36 @@ const AddProperty = () => {
           ...response.data.property,
         }));
 
-        setSeoTitle(response.data.property.property_name);
-        setSeoDescription(response.data.property.description);
-        setSeoKeywords([
-          response.data.property.property_name,
-          response.data.property.community_name,
-          response.data.property.developer,
-        ]);
+        setSeoTitle(
+          response.data.property.seo.meta_title === ""
+            ? response.data.property.property_name
+            : response.data.property.seo.meta_title
+        );
+        setSeoDescription(
+          response.data.property.seo.meta_description === ""
+            ? response.data.property.section_1.description
+            : response.data.property.seo.meta_description
+        );
+        setSeoKeywords(
+          response.data.property.seo.keywords[0] === ""
+            ? [
+                response.data.property.property_name,
+                response.data.property.developer,
+                response.data.property.community_name,
+              ]
+            : response.data.property.seo.keywords
+        );
 
-        setOgImage(response.data.property.gallery1[0]);
-        setOgType(response.data.property.type[0]?.name);
+        setOgImage(
+          response.data.property.open_graph.image === ""
+            ? response.data.property.gallery1[0]
+            : response.data.property.open_graph.image
+        );
+        setOgType(
+          response.data.property.open_graph.type === ""
+            ? response.data.property.type[0].name
+            : response.data.property.open_graph.type
+        );
       } catch (error) {
         console.error("Error fetching property data:", error);
       }
@@ -345,6 +359,10 @@ const AddProperty = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    if (name === "property_name") {
+      setSeoTitle(e.target.value);
+    }
+
     if (name === "community_name") {
       let community_slug = "";
       for (let i = 0; i < community.length; i++) {
@@ -353,6 +371,17 @@ const AddProperty = () => {
           break;
         }
       }
+
+      setSeoKeywords((prev) => {
+        if (prev) {
+          const newKeywords = [...prev?.filter((i) => i !== value)];
+          newKeywords.push(value);
+          return newKeywords;
+        } else {
+          return [value];
+        }
+      });
+
       setPropertyData((prev) => ({
         ...prev,
         [name]: value,
@@ -368,6 +397,16 @@ const AddProperty = () => {
           break;
         }
       }
+
+      setSeoKeywords((prev) => {
+        if (prev) {
+          const newKeywords = [...prev?.filter((i) => i !== value)];
+          newKeywords.push(value);
+          return newKeywords;
+        } else {
+          return [value];
+        }
+      });
 
       setPropertyData((prev) => ({
         ...prev,
@@ -459,6 +498,7 @@ const AddProperty = () => {
     const { name, value } = e.target;
 
     if (name === "meta_title" || name === "title") {
+      // console.log(seoTitle);
       setSeoTitle(e.target.value);
     }
 
@@ -549,6 +589,8 @@ const AddProperty = () => {
         heading: imagesToSend.heading,
       },
     }));
+
+    setSeoDescription(imagesToSend.description);
 
     // if (images.length > 0) {
     //   console.log(images,"-=-=-=-=-=-=-=-=--=-");
@@ -678,7 +720,20 @@ const AddProperty = () => {
     propertyData.community_features.transportation = convertStringToArray(
       propertyData.community_features.transportation
     );
-    propertyData.seo.keywords = convertStringToArray(propertyData.seo.keywords);
+    // propertyData.seo.keywords = convertStringToArray(propertyData.seo.keywords);
+    propertyData.seo.keywords = convertStringToArray(seoKeywords);
+
+    propertyData.seo.meta_title = seoTitle;
+    propertyData.seo.meta_description = seoDescription;
+
+    propertyData.open_graph.description = seoDescription;
+    propertyData.open_graph.title = seoTitle;
+    propertyData.open_graph.image = ogImage;
+    propertyData.open_graph.type = ogType;
+
+    propertyData.schema_org.type = ogType;
+    propertyData.schema_org = generateSchema();
+
     try {
       let response;
       if (id) {
