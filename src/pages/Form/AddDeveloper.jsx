@@ -2,14 +2,11 @@ import React, { useEffect, useState } from "react";
 import DefaultLayout from "../../layout/DefaultLayout";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import {
-  DEVELOPERS_URL,
-  FETCH_ALL_ICONS,
-  FETCH_ICONS,
-} from "../../api/constants";
+import { DEVELOPERS_URL } from "../../api/constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UploadImages from "../../components/UploadWidget/UploadImages";
+import UploadDeveloperImage from "../../components/UploadWidget/UploadDeveloperImage";
 
 export default function AddDeveloper() {
   const { id } = useParams();
@@ -26,7 +23,6 @@ export default function AddDeveloper() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -35,7 +31,6 @@ export default function AddDeveloper() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       let response;
       if (id) {
@@ -60,17 +55,10 @@ export default function AddDeveloper() {
   };
 
   const handleImagesChange = (updatedImages) => {
-    // Create a new array with only the url and description properties
-    // const imagesToSend = updatedImages.map((image) => ({
-    //   url: image.url,
-    // }));
-
     setFormData((prev) => ({
       ...prev,
-      logo_img_url: updatedImages[0].url,
+      logo_img_url: updatedImages[0]?.url || "",
     }));
-
-    console.log(updatedImages);
   };
 
   useEffect(() => {
@@ -147,12 +135,12 @@ export default function AddDeveloper() {
                     Images
                   </label>
                   {/* Cloudinary Upload Widget */}
-                  <UploadImages
+                  <UploadDeveloperImage
                     onImagesChange={handleImagesChange}
                     initialImages={
-                      formData.logo_img_url === ""
-                        ? []
-                        : [formData.logo_img_url]
+                      formData.logo_img_url
+                        ? [{ url: formData.logo_img_url }]
+                        : []
                     }
                   />
                 </div>
@@ -182,3 +170,4 @@ export default function AddDeveloper() {
     </DefaultLayout>
   );
 }
+
