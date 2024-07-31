@@ -71,6 +71,35 @@ const CommunityForm = () => {
     },
   });
 
+  const generateSchema = () => {
+    return {
+      type: ogType,
+      properties: {
+        "@context": "https://schema.org",
+        "@type": ogType,
+        name: seoTitle,
+        description: seoDescription,
+
+        image: ogImage,
+
+        amenityFeature: (function () {
+          let amenitiesName = [];
+          getAmenitiesValue().map((amenity) => {
+            let temp = {
+              "@type": "LocationFeatureSpecification",
+              name: amenity.label,
+              value: "Yes",
+            };
+            amenitiesName.push(temp);
+          });
+
+          return amenitiesName;
+        })(),
+        url: `https://www.xrealty.ae/communitites/${formData?.slug}`,
+      },
+    };
+  };
+
   useEffect(() => {
     const fetchFormData = async () => {
       try {
@@ -81,16 +110,28 @@ const CommunityForm = () => {
 
         console.log(response.data);
 
-        // setSeoTitle(response.data.property.property_name);
-        // setSeoDescription(response.data.property.description);
-        // setSeoKeywords([
-        //   response.data.property.property_name,
-        //   response.data.property.community_name,
-        //   response.data.property.developer,
-        // ]);
+        setSeoTitle(
+          response.data.community.seo.meta_title === ""
+            ? response.data.community.name
+            : response.data.community.seo.meta_title
+        );
+        setSeoDescription(
+          response.data.community?.seo?.meta_description === ""
+            ? response.data.community.description
+            : response.data.community?.seo?.meta_description
+        );
+        setSeoKeywords(
+          response.data.community.seo.keywords[0] === ""
+            ? [response.data.community.name]
+            : response.data.community.seo.keywords
+        );
 
-        // setOgImage(response.data.property.gallery1[0]);
-        // setOgType(response.data.property.type[0]?.name);
+        setOgImage(
+          response.data.community.open_graph.image === ""
+            ? response.data.community.images[0].url
+            : response.data.community.open_graph.image
+        );
+        setOgType("Place");
       } catch (error) {
         console.error("Error fetching community data:", error);
       }
@@ -126,14 +167,23 @@ const CommunityForm = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+
+    if (name === "name") {
+      setSeoTitle(value);
+    }
   };
 
   const handleNestedChange = (e, parentKey, childKey) => {
     const { value } = e.target;
+
     setFormData((prevData) => ({
       ...prevData,
       [parentKey]: { ...prevData[parentKey], [childKey]: value },
     }));
+
+    if (e.target.name === "schema_org.type") {
+      setOgType(e.target.value);
+    }
   };
 
   const handleDoubleNestedChange = (e, parentKey, childKey, subChildKey) => {
@@ -241,8 +291,19 @@ const CommunityForm = () => {
     formData.specialties = convertStringToArray(formData.specialties);
     formData.languages = convertStringToArray(formData.languages);
     formData.video_links = convertStringToArray(formData.video_links);
-    formData.seo.keywords = convertStringToArray(formData.seo.keywords);
+    // formData.seo.keywords = convertStringToArray(formData.seo.keywords);
+    formData.seo.keywords = convertStringToArray(seoKeywords);
+    formData.seo.meta_title = seoTitle;
+    formData.seo.meta_description = seoDescription;
+
+    formData.open_graph.description = seoDescription;
+    formData.open_graph.title = seoTitle;
+    formData.open_graph.image = ogImage;
+
+    formData.schema_org = generateSchema();
+
     formData.amenities = convertStringToArray(formData.amenities);
+
     try {
       let response;
       if (id) {
@@ -572,7 +633,7 @@ const CommunityForm = () => {
                 <input
                   type="text"
                   name="meta_title"
-                  value={formData.seo.meta_title}
+                  value={seoTitle}
                   onChange={(e) => handleNestedChange(e, "seo", "meta_title")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 />
@@ -583,7 +644,7 @@ const CommunityForm = () => {
                 <input
                   type="text"
                   name="meta_description"
-                  value={formData.seo.meta_description}
+                  value={seoDescription}
                   onChange={(e) =>
                     handleNestedChange(e, "seo", "meta_description")
                   }
@@ -596,7 +657,7 @@ const CommunityForm = () => {
                 <input
                   type="text"
                   name="keywords"
-                  value={formData.seo.keywords}
+                  value={seoKeywords}
                   onChange={(e) => handleNestedChange(e, "seo", "keywords")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 />
@@ -607,7 +668,7 @@ const CommunityForm = () => {
                 <label className="block">Schema Type</label>
                 <textarea
                   name="schema_org.type"
-                  value={formData.schema_org.type}
+                  value={ogType}
                   onChange={(e) => handleNestedChange(e, "schema_org", "type")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 />
@@ -617,7 +678,7 @@ const CommunityForm = () => {
                 <label className="block">Schema Properties (JSON format)</label>
                 <textarea
                   name="schema_org.properties"
-                  value={JSON.stringify(formData.schema_org.properties)}
+                  value={JSON.stringify(generateSchema())}
                   onChange={handleSchemaOrgPropertiesChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 />
@@ -629,7 +690,7 @@ const CommunityForm = () => {
                 <input
                   type="text"
                   name="title"
-                  value={formData.open_graph.title}
+                  value={seoTitle}
                   onChange={(e) => handleNestedChange(e, "open_graph", "title")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 />
@@ -640,7 +701,7 @@ const CommunityForm = () => {
                 <input
                   type="text"
                   name="image"
-                  value={formData.open_graph.image}
+                  value={ogImage}
                   onChange={(e) => handleNestedChange(e, "open_graph", "image")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 />
@@ -651,7 +712,7 @@ const CommunityForm = () => {
                 <input
                   type="text"
                   name="description"
-                  value={formData.open_graph.description}
+                  value={seoDescription}
                   onChange={(e) =>
                     handleNestedChange(e, "open_graph", "description")
                   }
