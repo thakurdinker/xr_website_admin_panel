@@ -247,7 +247,7 @@ const AddProperty = () => {
         //   value: 2500,
         //   unitCode: "SQF",
         // },
-        amenityFeature: () => {
+        amenityFeature: (function () {
           let amenitiesName = [];
           getAmenitiesValue().map((amenity) => {
             let temp = {
@@ -259,7 +259,7 @@ const AddProperty = () => {
           });
 
           return amenitiesName;
-        },
+        })(),
         url: `https://www.xrealty.ae/property/${propertyData.property_name_slug}`,
       },
     };
