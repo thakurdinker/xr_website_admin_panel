@@ -95,7 +95,7 @@ const CommunityForm = () => {
 
           return amenitiesName;
         })(),
-        url: `https://www.xrealty.ae/communitites/${formData?.slug}`,
+        url: `https://www.xrealty.ae/communities/${formData?.slug}`,
       },
     };
   };
@@ -107,8 +107,6 @@ const CommunityForm = () => {
           withCredentials: true,
         });
         setFormData(response.data.community);
-
-        console.log(response.data);
 
         setSeoTitle(
           response.data.community.seo.meta_title === ""
@@ -152,7 +150,7 @@ const CommunityForm = () => {
   useEffect(() => {
     const fetchAmenities = async () => {
       const response = await axios.get(FETCH_ALL_ICONS);
-      console.log(response.data);
+
       const amenities = response.data.icons.map((amenity) => ({
         value: amenity.icon_url,
         label: amenity.icon_text,
@@ -171,18 +169,34 @@ const CommunityForm = () => {
     if (name === "name") {
       setSeoTitle(value);
     }
+
+    if (name === "description") {
+      setSeoDescription(value);
+    }
   };
 
   const handleNestedChange = (e, parentKey, childKey) => {
-    const { value } = e.target;
+    const { name, value } = e.target;
 
     setFormData((prevData) => ({
       ...prevData,
       [parentKey]: { ...prevData[parentKey], [childKey]: value },
     }));
 
+    if (name === "meta_title") {
+      setSeoTitle(value);
+    }
+
+    if (name === "meta_description") {
+      setSeoDescription(value);
+    }
+
     if (e.target.name === "schema_org.type") {
       setOgType(e.target.value);
+    }
+
+    if (e.target.name === "keywords") {
+      setSeoKeywords(value);
     }
   };
 
@@ -206,6 +220,8 @@ const CommunityForm = () => {
       url: image.url,
       description: image.description || "", // Add this line to handle missing description
     }));
+
+    setOgImage(updatedImages[0].url);
 
     setFormData((prev) => ({
       ...prev,
