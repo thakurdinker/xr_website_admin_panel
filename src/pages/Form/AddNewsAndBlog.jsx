@@ -5,12 +5,20 @@ import axios from "axios";
 import UploadWidget from "../../components/UploadWidget/UploadImages"; // Assuming this is a component for image upload
 import { NEWS, NEWS_AND_INSIGHTS } from "../../api/constants";
 import UploadImages from "../../components/UploadWidget/UploadImages";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const HomePageVideoForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  const [seoTitle, setSeoTitle] = useState();
+  const [seoDescription, setSeoDescription] = useState();
+  const [seoKeywords, setSeoKeywords] = useState([]);
+
+  const [ogImage, setOgImage] = useState();
+  const [ogType, setOgType] = useState();
+
   const [categories, setCategories] = useState();
   const [formData, setFormData] = useState({
     author: {
@@ -53,6 +61,17 @@ const HomePageVideoForm = () => {
           withCredentials: true,
         });
         setFormData(response.data.content);
+
+        setSeoTitle(
+          response.data.content.seo.meta_title === ""
+            ? response.data.content.title
+            : response.data.content.seo.meta_title
+        );
+        setSeoDescription(response.data.content.seo.meta_description);
+        setSeoKeywords(response.data.content.seo.keywords);
+
+        setOgImage(response.data.content.featured_image);
+        setOgType(response.data.content.schema_org.type);
       } catch (error) {
         console.error("Error fetching form data:", error);
       }
@@ -96,6 +115,11 @@ const HomePageVideoForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "title") {
+      setSeoTitle(e.target.value);
+    }
+
     if (name === "content") {
       const minifiedContent = minifyHTML(value);
       setFormData({ ...formData, [name]: minifiedContent });
@@ -114,7 +138,23 @@ const HomePageVideoForm = () => {
   };
 
   const handleNestedChange = (e, parentKey, childKey) => {
-    const { value } = e.target;
+    const { name, value } = e.target;
+
+    if (name === "seo.meta_title") {
+      setSeoTitle(value);
+    }
+
+    if (name === "seo.meta_description") {
+      setSeoDescription(value);
+    }
+
+    if (name === "seo.keywords") {
+      setSeoKeywords(value);
+    }
+    if (name === "schema_org.type") {
+      setOgType(value);
+    }
+
     setFormData((prevData) => ({
       ...prevData,
       [parentKey]: { ...prevData[parentKey], [childKey]: value },
@@ -166,9 +206,10 @@ const HomePageVideoForm = () => {
   };
 
   const handleSchemaOrgPropertiesChange = (e) => {
-    const { value } = e.target;
+    const { name, value } = e.target;
+
     try {
-      const parsedValue = JSON.parse(value);
+      const parsedValue = value;
       setFormData((prevData) => ({
         ...prevData,
         schema_org: {
@@ -182,20 +223,78 @@ const HomePageVideoForm = () => {
     }
   };
 
+  const generateSchema = () => {
+    return {
+      type: ogType,
+      properties: {
+        "@context": "https://schema.org",
+        "@type": ogType,
+        name: seoTitle,
+        description: seoDescription,
+        // address: {
+        //   "@type": "PostalAddress",
+        //   streetAddress: "123 Marina Walk",
+        //   addressLocality: "Dubai",
+        //   addressRegion: "Dubai",
+        //   postalCode: "00000",
+        //   addressCountry: "AE",
+        // },
+        // offers: {
+        //   "@type": "Offer",
+        //   priceCurrency: "AED",
+        //   price: "3500000",
+        //   itemCondition: "https://schema.org/NewCondition",
+        //   availability: "https://schema.org/InStock",
+        //   seller: {
+        //     "@type": "RealEstateAgent",
+        //     name: "Xperience Realty",
+        //     url: "https://www.xperiencerealty.com",
+        //     logo: "https://www.xperiencerealty.com/logo.png",
+        //     contactPoint: {
+        //       "@type": "ContactPoint",
+        //       telephone: "+971-4-123-4567",
+        //       contactType: "Sales",
+        //       areaServed: "Dubai, UAE",
+        //       availableLanguage: ["English", "Arabic"],
+        //     },
+        //   },
+        // },
+        image: ogImage,
+        // floorSize: {
+        //   "@type": "QuantitativeValue",
+        //   value: 2500,
+        //   unitCode: "SQF",
+        // },
+        url: `https://www.xrealty.ae/${formData?.slug}`,
+      },
+    };
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    formData.seo.keywords = convertStringToArray(formData.seo.keywords);
+    // formData.seo.keywords = convertStringToArray(formData.seo.keywords);
+    formData.seo.keywords = convertStringToArray(seoKeywords);
+    formData.seo.meta_title = seoTitle;
+    formData.seo.meta_description = seoDescription;
+    formData.open_graph.type = ogType;
+    formData.open_graph.image = ogImage;
+    formData.open_graph.title = seoTitle;
+    formData.open_graph.description = seoDescription;
+
+    formData.schema_org = generateSchema();
     try {
-      let response
+      let response;
       if (id) {
-        response = await axios.put(NEWS + `/${id}`, formData, { withCredentials: true });
+        response = await axios.put(NEWS + `/${id}`, formData, {
+          withCredentials: true,
+        });
       } else {
         response = await axios.post(NEWS, formData, { withCredentials: true });
       }
       if (response?.data?.success === false) {
         toast.error(response?.data?.message);
         return;
-      }else{
+      } else {
         toast.success(response?.data?.message);
       }
       navigate("/manage-news-and-insights");
@@ -267,7 +366,6 @@ const HomePageVideoForm = () => {
                   value={formData.featured_image}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -318,7 +416,6 @@ const HomePageVideoForm = () => {
                   value={formatDateToYYYYMMDD(formData.publish_date)}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -330,7 +427,6 @@ const HomePageVideoForm = () => {
                   value={formData.status}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 >
                   <option value="published">Published</option>
                   <option value="draft">Draft</option>
@@ -359,7 +455,6 @@ const HomePageVideoForm = () => {
                   value={formData.author.name}
                   onChange={(e) => handleNestedChange(e, "author", "name")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -372,7 +467,6 @@ const HomePageVideoForm = () => {
                   value={formData.author.email}
                   onChange={(e) => handleNestedChange(e, "author", "email")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -382,10 +476,9 @@ const HomePageVideoForm = () => {
                 <input
                   type="text"
                   name="seo.meta_title"
-                  value={formData.seo.meta_title}
+                  value={seoTitle}
                   onChange={(e) => handleNestedChange(e, "seo", "meta_title")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -395,12 +488,11 @@ const HomePageVideoForm = () => {
                 <input
                   type="text"
                   name="seo.meta_description"
-                  value={formData.seo.meta_description}
+                  value={seoDescription}
                   onChange={(e) =>
                     handleNestedChange(e, "seo", "meta_description")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -410,10 +502,9 @@ const HomePageVideoForm = () => {
                 <input
                   type="text"
                   name="seo.keywords"
-                  value={formData.seo.keywords}
+                  value={seoKeywords}
                   onChange={(e) => handleNestedChange(e, "seo", "keywords")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -422,10 +513,9 @@ const HomePageVideoForm = () => {
                 <label className="block">Schema Type</label>
                 <textarea
                   name="schema_org.type"
-                  value={formData.schema_org.type}
-                  onChange={(e) =>handleNestedChange(e, "schema_org", "type")}
+                  value={ogType}
+                  onChange={(e) => handleNestedChange(e, "schema_org", "type")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -433,13 +523,11 @@ const HomePageVideoForm = () => {
                 <label className="block">Schema Properties (JSON format)</label>
                 <textarea
                   name="schema_org.properties"
-                  value={JSON.stringify(formData.schema_org.properties)}
+                  value={JSON.stringify(generateSchema())}
                   onChange={handleSchemaOrgPropertiesChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
-
 
               {/* Open Graph Title */}
               <div className="mb-5 md:col-span-4">
@@ -447,10 +535,9 @@ const HomePageVideoForm = () => {
                 <input
                   type="text"
                   name="open_graph.title"
-                  value={formData.open_graph.title}
+                  value={seoTitle}
                   onChange={(e) => handleNestedChange(e, "open_graph", "title")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -460,10 +547,9 @@ const HomePageVideoForm = () => {
                 <input
                   type="text"
                   name="open_graph.image"
-                  value={formData.open_graph.image}
+                  value={ogImage}
                   onChange={(e) => handleNestedChange(e, "open_graph", "image")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -473,12 +559,11 @@ const HomePageVideoForm = () => {
                 <input
                   type="text"
                   name="open_graph.description"
-                  value={formData.open_graph.description}
+                  value={seoDescription}
                   onChange={(e) =>
                     handleNestedChange(e, "open_graph", "description")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -496,7 +581,6 @@ const HomePageVideoForm = () => {
                         handleArrayChange(e, index, "faqs", "question")
                       }
                       className="mb-2 w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                      
                     />
                     <label className="block">Answer {index + 1}</label>
                     <textarea
@@ -506,7 +590,6 @@ const HomePageVideoForm = () => {
                         handleArrayChange(e, index, "faqs", "answer")
                       }
                       className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                      
                     />
                   </div>
                 ))}
@@ -514,7 +597,6 @@ const HomePageVideoForm = () => {
                   type="button"
                   onClick={addFaq}
                   className="bg-gray-200 hover:bg-gray-300 mt-2 rounded border border-stroke px-4 py-2 text-black transition dark:border-form-strokedark dark:bg-form-input dark:text-white dark:hover:bg-form-input"
-                  
                 >
                   Add FAQ
                 </button>
@@ -530,7 +612,7 @@ const HomePageVideoForm = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => navigate("/manage-communities")}
+                  onClick={() => navigate("/manage-news-and-insights")}
                   className="border-gray-300 hover:bg-gray-100 inline-flex items-center justify-center rounded-md border bg-white px-5 py-3 font-medium text-black transition"
                 >
                   Cancel

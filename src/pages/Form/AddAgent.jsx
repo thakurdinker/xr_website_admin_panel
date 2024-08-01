@@ -6,11 +6,21 @@ import { FETCH_ALL_AGENTS } from "../../api/constants";
 import UploadWidget from "../../components/UploadWidget/UploadImages";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ProfileForm = () => {
   const { id } = useParams();
+
+  const [seoTitle, setSeoTitle] = useState();
+  const [seoDescription, setSeoDescription] = useState();
+  const [seoKeywords, setSeoKeywords] = useState([]);
+
+  const [ogImage, setOgImage] = useState();
+  const [ogType, setOgType] = useState();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -40,9 +50,6 @@ const ProfileForm = () => {
     open_graph: { title: "", description: "", image: "" },
   });
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,6 +60,31 @@ const ProfileForm = () => {
           withCredentials: true,
         });
         setFormData(response.data.agent);
+
+        console.log(response.data);
+        setSeoTitle(
+          response.data.agent.seo.meta_title === ""
+            ? response.data.agent.name
+            : response.data.agent.seo.meta_title
+        );
+        setSeoDescription(
+          response.data.agent.seo.meta_description === ""
+            ? response.data.agent.bio
+            : response.data.agent.seo.meta_description
+        );
+
+        setSeoKeywords(
+          response.data.agent.seo.keywords[0] === ""
+            ? response.data.agent.name
+            : response.data.agent.seo.keywords
+        );
+
+        setOgImage(
+          response.data.agent.open_graph.image === ""
+            ? response.data.agent.profile_picture
+            : response.data.agent.open_graph.image
+        );
+        setOgType("Person");
       } catch (error) {
         console.error("Error fetching property data:", error);
       }
@@ -69,7 +101,21 @@ const ProfileForm = () => {
       [parentKey]: { ...prevData[parentKey], [childKey]: value },
     }));
   };
-  
+
+  const generateSchema = () => {
+    return {
+      type: "Person",
+      properties: {
+        "@context": "https://schema.org",
+        "@type": ogType,
+        name: seoTitle,
+        description: seoDescription,
+        image: ogImage,
+        url: `https://www.xrealty.ae/agent/${formData.name_slug}`,
+      },
+    };
+  };
+
   const handleSchemaOrgPropertiesChange = (e) => {
     const { value } = e.target;
     try {
@@ -86,16 +132,48 @@ const ProfileForm = () => {
       console.error("Invalid JSON format");
     }
   };
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    console.log(name);
+
+    if (name === "name") {
+      setSeoTitle(value);
+    }
+
+    if (name === "bio") {
+      setSeoDescription(value);
+    }
+
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleNestedChange = (e, parentKey, childKey) => {
-    const { value } = e.target;
-    console.log(value);
+    const { name, value } = e.target;
+    // console.log(value);
+
+    if (name === "meta_title") {
+      setSeoTitle(value);
+    }
+
+    if (name === "image") {
+      setOgImage(value);
+    }
+
+    if (name === "meta_description") {
+      setSeoDescription(value);
+    }
+
+    if (name === "keywords") {
+      setSeoKeywords(value);
+    }
+
+    if (name === "schema_org.type") {
+      setOgType(value);
+    }
+
+    console.log(name);
     setFormData((prevData) => ({
       ...prevData,
       [parentKey]: { ...prevData[parentKey], [childKey]: value },
@@ -137,7 +215,17 @@ const ProfileForm = () => {
     formData.specialties = convertStringToArray(formData.specialties);
     formData.languages = convertStringToArray(formData.languages);
     formData.video_links = convertStringToArray(formData.video_links);
-    formData.seo.keywords = convertStringToArray(formData.seo.keywords);
+    // formData.seo.keywords = convertStringToArray(formData.seo.keywords);
+    formData.seo.keywords = convertStringToArray(seoKeywords);
+    formData.seo.meta_description = seoDescription;
+    formData.seo.meta_title = seoTitle;
+
+    formData.schema_org = generateSchema();
+
+    formData.open_graph.title = seoTitle;
+    formData.open_graph.description = seoDescription;
+    formData.open_graph.image = ogImage;
+
     try {
       let response;
       if (id) {
@@ -146,7 +234,7 @@ const ProfileForm = () => {
           withCredentials: true,
         });
         console.log(formData);
-        console.log(response.data,"-----");
+        console.log(response.data, "-----");
       } else {
         // Create new property
         const response = await axios.post(FETCH_ALL_AGENTS, formData, {
@@ -183,7 +271,6 @@ const ProfileForm = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -196,7 +283,6 @@ const ProfileForm = () => {
                   value={formData.name_slug}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -209,7 +295,6 @@ const ProfileForm = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -241,7 +326,6 @@ const ProfileForm = () => {
                       ? [{ url: formData.profile_picture }]
                       : []
                   }
-                  
                 />
               </div>
 
@@ -253,7 +337,6 @@ const ProfileForm = () => {
                   value={formData.bio}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -341,7 +424,6 @@ const ProfileForm = () => {
                     handleNestedChange(e, "social_links", "twitter")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
               <div className="mb-5 md:col-span-4">
@@ -354,7 +436,6 @@ const ProfileForm = () => {
                     handleNestedChange(e, "social_links", "facebook")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -376,10 +457,9 @@ const ProfileForm = () => {
                 <input
                   type="text"
                   name="meta_title"
-                  value={formData.seo.meta_title}
+                  value={seoTitle}
                   onChange={(e) => handleNestedChange(e, "seo", "meta_title")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
               <div className="mb-5 md:col-span-4">
@@ -387,12 +467,11 @@ const ProfileForm = () => {
                 <input
                   type="text"
                   name="meta_description"
-                  value={formData.seo.meta_description}
+                  value={seoDescription}
                   onChange={(e) =>
                     handleNestedChange(e, "seo", "meta_description")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
               <div className="mb-5 md:col-span-4">
@@ -400,10 +479,9 @@ const ProfileForm = () => {
                 <input
                   type="text"
                   name="keywords"
-                  value={formData.seo.keywords}
+                  value={seoKeywords}
                   onChange={(e) => handleNestedChange(e, "seo", "keywords")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -412,10 +490,9 @@ const ProfileForm = () => {
                 <label className="block">Schema Type</label>
                 <textarea
                   name="schema_org.type"
-                  value={formData.schema_org.type}
-                  onChange={(e) =>handleNestedChange(e, "schema_org", "type")}
+                  value={ogType}
+                  // onChange={(e) => handleNestedChange(e, "schema_org", "type")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -423,10 +500,9 @@ const ProfileForm = () => {
                 <label className="block">Schema Properties (JSON format)</label>
                 <textarea
                   name="schema_org.properties"
-                  value={JSON.stringify(formData.schema_org.properties)}
+                  value={JSON.stringify(generateSchema())}
                   onChange={handleSchemaOrgPropertiesChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -436,10 +512,9 @@ const ProfileForm = () => {
                 <input
                   type="text"
                   name="title"
-                  value={formData.open_graph.title}
+                  value={seoTitle}
                   onChange={(e) => handleNestedChange(e, "open_graph", "title")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -448,10 +523,9 @@ const ProfileForm = () => {
                 <input
                   type="text"
                   name="image"
-                  value={formData.open_graph.image}
+                  value={ogImage}
                   onChange={(e) => handleNestedChange(e, "open_graph", "image")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
@@ -460,12 +534,11 @@ const ProfileForm = () => {
                 <input
                   type="text"
                   name="description"
-                  value={formData.open_graph.description}
+                  value={seoDescription}
                   onChange={(e) =>
                     handleNestedChange(e, "open_graph", "description")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                  
                 />
               </div>
 
