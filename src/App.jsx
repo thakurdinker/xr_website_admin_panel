@@ -77,6 +77,7 @@ import ManageIcons from "./pages/ManageIcons/ManageIcons.jsx";
 import AddIcons from "./pages/Form/AddIcons.jsx";
 import ManageDevelopers from "./pages/ManageDevelopers/ManageDevelopers.jsx";
 import AddDeveloper from "./pages/Form/AddDeveloper.jsx";
+import GenerateSitemap from "./components/GenerateSitemap/GenerateSitemap.jsx";
 
 function WithUserContext() {
   return (
@@ -234,6 +235,17 @@ function App() {
               <>
                 <PageTitle title="Manage Posts" />
                 <ManagePosts />
+              </>
+            }
+          />
+
+          <Route
+            exact
+            path="/generate-sitemap"
+            element={
+              <>
+                <PageTitle title="Generate Sitemap" />
+                <GenerateSitemap />
               </>
             }
           />
