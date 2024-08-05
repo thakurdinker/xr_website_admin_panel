@@ -31,7 +31,6 @@ export default function AddDeveloper() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       let response;
       if (id) {
@@ -171,3 +170,4 @@ export default function AddDeveloper() {
     </DefaultLayout>
   );
 }
+
