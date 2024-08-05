@@ -95,7 +95,7 @@ const CommunityForm = () => {
 
           return amenitiesName;
         })(),
-        url: `https://www.xrealty.ae/communities/${formData?.slug}`,
+        url: `https://www.xrealty.ae/area/${formData?.slug}`,
       },
     };
   };
