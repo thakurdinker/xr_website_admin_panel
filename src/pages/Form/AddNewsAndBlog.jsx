@@ -93,9 +93,7 @@ const HomePageVideoForm = () => {
       }
     };
 
-    if (id) {
       fetchFormData();
-    }
   }, []);
 
   const addFaq = () => {
