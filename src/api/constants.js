@@ -1,6 +1,6 @@
 export const BASE_URL = "https://api.xrealty.ae/admin/";
-// export const BASE_URL = "http://localhost:3333/admin/";
 export const NEWS_AND_INSIGHTS = `https://api.xrealty.ae/real-estate-news`;
+// export const BASE_URL = "http://localhost:3333/admin/";
 // export const NEWS_AND_INSIGHTS = `http://localhost:3333/real-estate-news`;
 export const LOGIN = BASE_URL + "login";
 export const LOGOUT = BASE_URL + "logout";
