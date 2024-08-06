@@ -123,11 +123,9 @@ const HomePageVideoForm = () => {
           withCredentials: true,
         });
       }
-      console.log(response.data,);
-      if (response?.data?.success)
-        toast.success(response?.data?.message);
-      else if (!response?.data?.success)
-        toast.error(response?.data?.message);
+      console.log(response.data);
+      if (response?.data?.success) toast.success(response?.data?.message);
+      else if (!response?.data?.success) toast.error(response?.data?.message);
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Error submitting form. Please try again.");
@@ -153,7 +151,6 @@ const HomePageVideoForm = () => {
                     value={formData.mainVideo.url}
                     onChange={handleChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    
                   />
                 </div>
 
