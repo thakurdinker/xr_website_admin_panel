@@ -34,7 +34,13 @@ const ProfileForm = () => {
     experience: 0,
     specialties: "",
     languages: "",
-    social_links: { linkedin: "", twitter: "", facebook: "" },
+    social_links: {
+      linkedin: "",
+      twitter: "",
+      facebook: "",
+      instagram: "",
+      youtube: "",
+    },
     video_links: "",
     seo: { meta_title: "", meta_description: "", keywords: "" },
     schema_org: {
@@ -434,6 +440,31 @@ const ProfileForm = () => {
                   value={formData.social_links.facebook}
                   onChange={(e) =>
                     handleNestedChange(e, "social_links", "facebook")
+                  }
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                />
+              </div>
+
+              <div className="mb-5 md:col-span-4">
+                <label className="block">Instagram</label>
+                <input
+                  type="text"
+                  name="instagram"
+                  value={formData.social_links.instagram}
+                  onChange={(e) =>
+                    handleNestedChange(e, "social_links", "instagram")
+                  }
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                />
+              </div>
+              <div className="mb-5 md:col-span-4">
+                <label className="block">Youtube</label>
+                <input
+                  type="text"
+                  name="youtube"
+                  value={formData.social_links.youtube}
+                  onChange={(e) =>
+                    handleNestedChange(e, "social_links", "youtube")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 />
