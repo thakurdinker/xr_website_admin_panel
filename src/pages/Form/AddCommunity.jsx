@@ -12,6 +12,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Select from "react-select";
+import { IoCloseCircle } from "react-icons/io5";
 
 const CommunityForm = () => {
   const { id } = useParams();
@@ -299,6 +300,14 @@ const CommunityForm = () => {
       // Handle JSON parse error if needed
       console.error("Invalid JSON format");
     }
+  };
+
+  const handleFAQDelete = (faq, faqIndex) => {
+    let tempFaqs = formData.faqs.filter((faq, index) => index !== faqIndex);
+
+    setFormData((prev) => {
+      return { ...prev, faqs: tempFaqs };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -613,7 +622,15 @@ const CommunityForm = () => {
                 <h3 className="mb-2">FAQs</h3>
                 {formData.faqs.map((faq, index) => (
                   <div key={index} className="mb-2">
-                    <label className="block">Question {index + 1}</label>
+                    <div className=" flex flex-row justify-between">
+                      <label className="block">Question {index + 1}</label>
+                      <IoCloseCircle
+                        className=" hover:cursor-pointer"
+                        color="black"
+                        onClick={() => handleFAQDelete(faq, index)}
+                      />
+                    </div>
+
                     <input
                       type="text"
                       name={`faqs[${index}].question`}
