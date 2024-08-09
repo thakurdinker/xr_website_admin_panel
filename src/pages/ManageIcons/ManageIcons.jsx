@@ -51,6 +51,11 @@ function ManageIcons() {
     }
   };
 
+  const handleEditClick = (iconId) => {
+    // Redirect to the AddIcon component in edit mode with the propertyId
+    navigate(`/forms/add-icon/${iconId}`);
+  };
+
   const handlePageChange = (pageNumber) => {
     if (pageNumber > 0 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -74,7 +79,7 @@ function ManageIcons() {
                   Icons
                 </h5>
               </div>
-              
+
               <div className="col-span-2 flex items-center">
                 <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
                   Description
@@ -94,10 +99,7 @@ function ManageIcons() {
               </div>
 
               <div className="col-span-2 flex items-center justify-end">
-                <Link
-                  to="/forms/add-icon"
-                  className="text-xl md:text-2xl"
-                >
+                <Link to="/forms/add-icon" className="text-xl md:text-2xl">
                   <IoAddCircle />
                 </Link>
               </div>
@@ -112,7 +114,7 @@ function ManageIcons() {
                   className="grid grid-cols-10 border-t border-[#EEEEEE] px-5 py-4 dark:border-strokedark lg:px-7.5 2xl:px-11"
                 >
                   <div className="col-span-2 flex items-center">
-                    <img src={icon.icon_url} className="w-30 h-20" alt="" />
+                    <img src={icon.icon_url} className="h-20 w-30" alt="" />
                   </div>
 
                   <div className="col-span-2 flex items-center">
@@ -135,6 +137,12 @@ function ManageIcons() {
 
                   <div className="col-span-2 flex items-center justify-end space-x-2">
                     <button
+                      className="text-black dark:text-white"
+                      onClick={() => handleEditClick(icon._id)}
+                    >
+                      <MdEditDocument className="h-4 w-4 md:h-6 md:w-6" />
+                    </button>
+                    <button
                       className="text-red"
                       onClick={() => handleDeleteClick(icon._id)}
                     >
@@ -149,7 +157,7 @@ function ManageIcons() {
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="px-4 py-2 border rounded"
+                className="rounded border px-4 py-2"
               >
                 Previous
               </button>
@@ -159,7 +167,7 @@ function ManageIcons() {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 border rounded"
+                className="rounded border px-4 py-2"
               >
                 Next
               </button>
@@ -172,4 +180,3 @@ function ManageIcons() {
 }
 
 export default ManageIcons;
-  
