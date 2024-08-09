@@ -305,6 +305,17 @@ function App() {
 
           <Route
             exact
+            path="/forms/add-icon/:id"
+            element={
+              <>
+                <PageTitle title="Manage Icons" />
+                <AddIcons />
+              </>
+            }
+          />
+
+          <Route
+            exact
             path="/forms/add-developer"
             element={
               <>

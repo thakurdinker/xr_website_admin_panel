@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DefaultLayout from "../../layout/DefaultLayout";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -23,15 +23,37 @@ const ContentForm = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-
-    try {
-      let response = await axios.post(FETCH_ALL_ICONS, formData, {
+  useEffect(() => {
+    async function fetchIcon() {
+      let response = await axios.get(`${FETCH_ICONS}/${id}`, formData, {
         withCredentials: true,
       });
 
+      if (response.data.success) {
+        setFormData({
+          icon_text: response.data.icon.icon_text,
+          icon_url: response.data.icon.icon_url,
+        });
+      }
+    }
+
+    fetchIcon();
+  }, [id]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    let response;
+
+    try {
+      if (id) {
+        response = await axios.put(`${FETCH_ICONS}/${id}`, formData, {
+          withCredentials: true,
+        });
+      } else {
+        response = await axios.post(FETCH_ALL_ICONS, formData, {
+          withCredentials: true,
+        });
+      }
 
       if (response?.data?.success) {
         toast.success(response?.data?.message);
@@ -85,7 +107,7 @@ const ContentForm = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => navigate("/manage-posts")}
+                    onClick={() => navigate("/manage-icons")}
                     className="border-gray-300 hover:bg-gray-100 inline-flex items-center justify-center rounded-md border bg-white px-5 py-3 font-medium text-black transition"
                   >
                     Cancel
