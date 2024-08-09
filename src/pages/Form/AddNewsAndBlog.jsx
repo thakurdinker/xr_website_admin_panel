@@ -7,6 +7,7 @@ import { NEWS, NEWS_AND_INSIGHTS } from "../../api/constants";
 import UploadImages from "../../components/UploadWidget/UploadImages";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { IoCloseCircle } from "react-icons/io5";
 
 const HomePageVideoForm = () => {
   const { id } = useParams();
@@ -268,6 +269,14 @@ const HomePageVideoForm = () => {
     };
   };
 
+  const handleFAQDelete = (faq, faqIndex) => {
+    let tempFaqs = formData.faqs.filter((faq, index) => index !== faqIndex);
+
+    setFormData((prev) => {
+      return { ...prev, faqs: tempFaqs };
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     // formData.seo.keywords = convertStringToArray(formData.seo.keywords);
@@ -294,8 +303,8 @@ const HomePageVideoForm = () => {
         return;
       } else {
         toast.success(response?.data?.message);
+        navigate("/manage-news-and-insights");
       }
-      navigate("/manage-news-and-insights");
     } catch (error) {
       console.error("Error saving form data:", error);
     }
@@ -570,7 +579,15 @@ const HomePageVideoForm = () => {
                 <h3 className="mb-2">FAQs</h3>
                 {formData.faqs.map((faq, index) => (
                   <div key={index} className="mb-2">
-                    <label className="block">Question {index + 1}</label>
+                    <div className=" flex flex-row justify-between">
+                      <label className="block">Question {index + 1}</label>
+                      <IoCloseCircle
+                        className=" hover:cursor-pointer"
+                        color="black"
+                        onClick={() => handleFAQDelete(faq, index)}
+                      />
+                    </div>
+
                     <input
                       type="text"
                       name={`faqs[${index}].question`}
