@@ -12,6 +12,7 @@ export const GET_ALL_ROLES = BASE_URL + "roles";
 export const FETCH_ALL_PROPERTIES = BASE_URL + "properties";
 export const FETCH_ALL_POSTS = BASE_URL + "content";
 export const FETCH_ALL_AGENTS = BASE_URL + "agents";
+export const FETCH_ALL_AGENTS_WITHOUT_PAGINATION = BASE_URL + "agents/listAll";
 export const FETCH_ALL_PROPERTY_TYPES = BASE_URL + "propertyType";
 export const FETCH_ALL_COMMUNITIES = BASE_URL + "communities";
 export const GET_ALL_COMMUNITIES_DROP_DOWN = BASE_URL + "getAllCommunities";

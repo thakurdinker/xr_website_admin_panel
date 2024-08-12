@@ -3,7 +3,11 @@ import DefaultLayout from "../../layout/DefaultLayout";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FETCH_ALL_AGENTS, HOME_PAGE_VIDEOS } from "../../api/constants";
+import {
+  FETCH_ALL_AGENTS,
+  FETCH_ALL_AGENTS_WITHOUT_PAGINATION,
+  HOME_PAGE_VIDEOS,
+} from "../../api/constants";
 
 const HomePageVideoForm = () => {
   const [id, setId] = useState();
@@ -49,7 +53,7 @@ const HomePageVideoForm = () => {
 
     const fetchAgents = async () => {
       try {
-        const response = await axios.get(FETCH_ALL_AGENTS, {
+        const response = await axios.get(FETCH_ALL_AGENTS_WITHOUT_PAGINATION, {
           withCredentials: true,
         });
         setAgents(response?.data?.agents);
