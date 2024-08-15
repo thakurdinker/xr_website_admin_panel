@@ -5,6 +5,7 @@ import axios from "axios";
 import UploadImages from "../../components/UploadWidget/UploadImages";
 import "react-phone-number-input/style.css";
 import {
+  DEVELOPERS_URL,
   FETCH_ALL_AGENTS,
   FETCH_ALL_COMMUNITIES,
   FETCH_ALL_ICONS,
@@ -29,6 +30,9 @@ const CommunityForm = () => {
 
   const [ogImage, setOgImage] = useState();
   const [ogType, setOgType] = useState();
+
+  const [developers, setDevelopers] = useState([]);
+
 
   const [formData, setFormData] = useState({
     name: "",
@@ -70,6 +74,9 @@ const CommunityForm = () => {
       description: "",
       image: "",
     },
+    order: 1,
+    developer: "",
+    developer_name_slug: "",
   });
 
   const generateSchema = () => {
@@ -100,6 +107,17 @@ const CommunityForm = () => {
       },
     };
   };
+
+  useEffect(() => {
+    const fetchAllDevelopers = async () => {
+      const response = await axios.get(DEVELOPERS_URL, {
+        withCredentials: true,
+      });
+      console.log(response.data);
+      setDevelopers(response?.data?.data);
+    };
+    fetchAllDevelopers();
+  }, []);
 
   useEffect(() => {
     const fetchFormData = async () => {
@@ -173,6 +191,30 @@ const CommunityForm = () => {
 
     if (name === "description") {
       setSeoDescription(value);
+    }
+    
+   if (name === "developer") {
+      let developer_slug = "";
+      let developer_name = "";
+      for (let i = 0; i < developers.length; i++) {
+        if (developers[i].developer_name === value) {
+          developer_slug = developers[i].developer_slug;
+          developer_name = value;
+          break;
+        }
+      }
+
+
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        developer_name_slug: developer_slug,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
     }
   };
 
@@ -364,7 +406,7 @@ const CommunityForm = () => {
               className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 md:grid-cols-12"
             >
               {/* Name */}
-              <div className="mb-5 md:col-span-4 lg:col-span-6">
+              <div className="mb-5 md:col-span-4 lg:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Name
                 </label>
@@ -378,7 +420,7 @@ const CommunityForm = () => {
               </div>
 
               {/* Slug */}
-              <div className="mb-5 md:col-span-4 lg:col-span-6">
+              <div className="mb-5 md:col-span-4 lg:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Slug
                 </label>
@@ -388,6 +430,64 @@ const CommunityForm = () => {
                   value={formData.slug}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                />
+              </div>
+
+              {/* Order */}
+              <div className="mb-5 md:col-span-4">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                 Order
+                </label>
+                <input
+                  type="number"
+                  name="order"
+                  value={formData?.order}
+                  onChange={handleChange}
+                  min= {1}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                />  
+              </div>
+
+              {/* Developer Name */}
+              <div className="mb-5 md:col-span-6">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Developer Name
+                </label>
+                <select
+                  name="developer"
+                  value={formData?.developer}
+                  onChange={handleChange}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                >
+                  <option value="" disabled>
+                    Select Developer
+                  </option>
+                  {developers.length > 0 &&
+                    developers.map((developer) => {
+                      return (
+                        <option
+                          key={developer.id}
+                          value={developer.developer_name}
+                        >
+                          {developer.developer_name}
+                        </option>
+                      );
+                    })}
+                </select>
+              </div>
+
+              {/* Developer Name Slug*/}
+              <div className="mb-5 md:col-span-6">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Developer Name Slug
+                </label>
+                <input
+                  disabled
+                  type="text"
+                  name="developer_name_slug"
+                  value={formData.developer_name_slug}
+                  placeholder="Enter Developer name slug"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                 />
               </div>
 

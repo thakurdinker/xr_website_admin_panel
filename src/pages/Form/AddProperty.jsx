@@ -145,6 +145,7 @@ const initialPropertyData = {
     },
   },
   open_graph: { title: "", description: "", image: "", type: "" },
+  order: 1,
 };
 
 const AddProperty = () => {
@@ -267,6 +268,7 @@ const AddProperty = () => {
         const response = await axios.get(FETCH_ALL_PROPERTIES + `/${id}`, {
           withCredentials: true,
         });
+        console.log(response.data, "-=--=-=-");
         setPropertyData((prev) => ({
           ...prev,
           ...response.data.property,
@@ -796,7 +798,7 @@ const AddProperty = () => {
                 />
               </div>
 
-              {/* Property Name  Slug*/}
+              {/* Property Name Slug*/}
               <div className="mb-5 md:col-span-3">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Property Name Slug
@@ -887,7 +889,7 @@ const AddProperty = () => {
               </div> */}
 
               {/* Developer Name */}
-              <div className="mb-5 md:col-span-3">
+              <div className="mb-5 md:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Developer Name
                 </label>
@@ -915,7 +917,7 @@ const AddProperty = () => {
               </div>
 
               {/* Developer Name Slug*/}
-              <div className="mb-5 md:col-span-3">
+              <div className="mb-5 md:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Developer Name Slug
                 </label>
@@ -945,6 +947,21 @@ const AddProperty = () => {
                   
                 />
               </div> */}
+
+              {/* Order */}
+              <div className="mb-5 md:col-span-4">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Order
+                </label>
+                <input
+                  type="number"
+                  name="order"
+                  value={propertyData?.order}
+                  onChange={handleChange}
+                  min={1}
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                />
+              </div>
 
               {/* Section 1 Title */}
               <div className="mb-5 md:col-span-6">

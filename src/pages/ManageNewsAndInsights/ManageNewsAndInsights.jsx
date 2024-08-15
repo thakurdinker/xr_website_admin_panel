@@ -40,15 +40,20 @@ function ManageNewsAndInsights() {
   };
 
   const handleDeleteClick = async (id) => {
-    try {
-      const response = await axios.delete(`${NEWS}/${id}`, { withCredentials: true });
-      if (response.data.success) {
-        setContentList(contentList.filter((content) => content._id !== id));
-      } else {
-        console.error("Error deleting content:", response.data.message);
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this blog?"
+    );
+    if (confirmDelete) {
+      try {
+        const response = await axios.delete(`${NEWS}/${id}`, { withCredentials: true });
+        if (response.data.success) {
+          setContentList(contentList.filter((content) => content._id !== id));
+        } else {
+          console.error("Error deleting blog:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error deleting blog:", error);
       }
-    } catch (error) {
-      console.error("Error deleting content:", error);
     }
   };
 

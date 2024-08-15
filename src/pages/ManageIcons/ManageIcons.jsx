@@ -36,18 +36,23 @@ function ManageIcons() {
   }, [currentPage]);
 
   const handleDeleteClick = async (id) => {
-    try {
-      const response = await axios.delete(`${FETCH_ICONS}/${id}`, {
-        withCredentials: true,
-      });
-      if (response.data.success) {
-        // Refetch the icons after deletion
-        fetchContent(currentPage);
-      } else {
-        console.error("Error deleting content:", response.data.message);
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this icon?"
+    );
+    if (confirmDelete) {
+      try {
+        const response = await axios.delete(`${FETCH_ICONS}/${id}`, {
+          withCredentials: true,
+        });
+        if (response.data.success) {
+          // Refetch the icons after deletion
+          fetchContent(currentPage);
+        } else {
+          console.error("Error deleting icon:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error deleting icon:", error);
       }
-    } catch (error) {
-      console.error("Error deleting content:", error);
     }
   };
 

@@ -38,17 +38,22 @@ function ManageAgents() {
   };
 
   const handleDeleteClick = async (id) => {
-    try {
-      const response = await axios.delete(`${FETCH_ALL_AGENTS}/${id}`, {
-        withCredentials: true,
-      });
-      if (response.data.success) {
-        setProperties(properties.filter((property) => property._id !== id));
-      } else {
-        console.error("Error deleting property:", response.data.message);
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this agent?"
+    );
+    if (confirmDelete) {
+      try {
+        const response = await axios.delete(`${FETCH_ALL_AGENTS}/${id}`, {
+          withCredentials: true,
+        });
+        if (response.data.success) {
+          setProperties(properties.filter((property) => property._id !== id));
+        } else {
+          console.error("Error deleting agent:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error deleting agent:", error);
       }
-    } catch (error) {
-      console.error("Error deleting property:", error);
     }
   };
 
