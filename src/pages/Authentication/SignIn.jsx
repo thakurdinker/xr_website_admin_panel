@@ -20,7 +20,6 @@ const SignIn = () => {
       withCredentials: true,
     })
       .then((response) => {
-        console.log(response.data,"======");
         if (response.data.success === true) {
           setCurrentUser({ isLoggedIn: true });
           navigate("/");

@@ -113,7 +113,6 @@ const CommunityForm = () => {
       const response = await axios.get(DEVELOPERS_URL, {
         withCredentials: true,
       });
-      console.log(response.data);
       setDevelopers(response?.data?.data);
     };
     fetchAllDevelopers();

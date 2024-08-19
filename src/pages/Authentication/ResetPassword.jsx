@@ -37,7 +37,6 @@ const ResetPasswordPage = () => {
         setSuccess("Password reset successfully. Redirecting to login...");
         navigate("/auth/signin");
       } else {
-        console.log("failed");
         setError(response.data.message);
       }
     } catch (err) {

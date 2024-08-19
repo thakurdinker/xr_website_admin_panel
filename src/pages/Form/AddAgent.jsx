@@ -68,7 +68,6 @@ const ProfileForm = () => {
         });
         setFormData(response.data.agent);
 
-        console.log(response.data);
         setSeoTitle(
           response.data.agent.seo.meta_title === ""
             ? response.data.agent.name
@@ -143,7 +142,6 @@ const ProfileForm = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    console.log(name);
 
     if (name === "name") {
       setSeoTitle(value);
@@ -158,7 +156,6 @@ const ProfileForm = () => {
 
   const handleNestedChange = (e, parentKey, childKey) => {
     const { name, value } = e.target;
-    // console.log(value);
 
     if (name === "meta_title") {
       setSeoTitle(value);
@@ -180,7 +177,6 @@ const ProfileForm = () => {
       setOgType(value);
     }
 
-    console.log(name);
     setFormData((prevData) => ({
       ...prevData,
       [parentKey]: { ...prevData[parentKey], [childKey]: value },
@@ -240,8 +236,6 @@ const ProfileForm = () => {
         response = await axios.put(FETCH_ALL_AGENTS + `/${id}`, formData, {
           withCredentials: true,
         });
-        console.log(formData);
-        console.log(response.data, "-----");
       } else {
         // Create new property
         const response = await axios.post(FETCH_ALL_AGENTS, formData, {

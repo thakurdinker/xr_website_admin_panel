@@ -268,7 +268,6 @@ const AddProperty = () => {
         const response = await axios.get(FETCH_ALL_PROPERTIES + `/${id}`, {
           withCredentials: true,
         });
-        console.log(response.data, "-=--=-=-");
         setPropertyData((prev) => ({
           ...prev,
           ...response.data.property,
@@ -509,7 +508,6 @@ const AddProperty = () => {
     const { name, value } = e.target;
 
     if (name === "meta_title" || name === "title") {
-      // console.log(seoTitle);
       setSeoTitle(e.target.value);
     }
 
@@ -604,7 +602,6 @@ const AddProperty = () => {
     setSeoDescription(imagesToSend.description);
 
     // if (images.length > 0) {
-    //   console.log(images,"-=-=-=-=-=-=-=-=--=-");
     //   const imageUrl = images[images.length - 1].url;
     //   const description = images[images.length - 1].description;
     //   const heading = images[images.length - 1].heading;
