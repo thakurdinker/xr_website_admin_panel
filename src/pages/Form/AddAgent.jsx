@@ -54,6 +54,7 @@ const ProfileForm = () => {
       },
     },
     open_graph: { title: "", description: "", image: "" },
+    starAgent:false
   });
 
   const navigate = useNavigate();
@@ -470,9 +471,25 @@ const ProfileForm = () => {
                 />
               </div>
 
+              {/* Star Agent */}
+              <div className="mb-5 md:col-span-4">
+                <label className="block">
+                  Star Agent
+                </label>
+                <select
+                  name="starAgent"
+                  value={formData?.starAgent}
+                  onChange={handleChange}
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                >
+                  <option value="true">true</option>
+                  <option value="false">false</option>
+                </select>
+              </div>
+
               {/* Video Links */}
               <div className="mb-5 md:col-span-12">
-                <label className="block">Video Links </label>
+                <label className="block">Video Links (Comma Separated) </label>
                 <input
                   type="text"
                   name="video_links"

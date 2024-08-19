@@ -19,6 +19,7 @@ export default function AddDeveloper() {
     developer_slug: "",
     description: "",
     heading: "",
+    order: 1,
   });
 
   const handleChange = (e) => {
@@ -88,7 +89,7 @@ export default function AddDeveloper() {
                 onSubmit={handleSubmit}
                 className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 md:grid-cols-12"
               >
-                <div className="mb-5 md:col-span-5">
+                <div className="mb-5 md:col-span-6">
                   <label className="block">Developer Name</label>
                   <input
                     type="text"
@@ -98,7 +99,7 @@ export default function AddDeveloper() {
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   />
                 </div>
-                <div className="mb-5 md:col-span-5">
+                <div className="mb-5 md:col-span-6">
                   <label className="block">Developer Name Slug</label>
                   <input
                     type="text"
@@ -108,7 +109,7 @@ export default function AddDeveloper() {
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   />
                 </div>
-                <div className="mb-5 md:col-span-5">
+                <div className="mb-5 md:col-span-4">
                   <label className="block">Heading</label>
                   <input
                     type="text"
@@ -118,13 +119,25 @@ export default function AddDeveloper() {
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   />
                 </div>
-                <div className="mb-5 md:col-span-5">
+                <div className="mb-5 md:col-span-4">
                   <label className="block">Description</label>
                   <input
                     type="text"
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
+                    className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  />
+                </div>
+                {/* Order */}
+                <div className="mb-5 md:col-span-4">
+                  <label className="block">Order</label>
+                  <input
+                    type="number"
+                    name="order"
+                    value={formData?.order}
+                    onChange={handleChange}
+                    min={1}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   />
                 </div>
