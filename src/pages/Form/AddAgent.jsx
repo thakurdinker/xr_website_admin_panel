@@ -54,6 +54,7 @@ const ProfileForm = () => {
       },
     },
     open_graph: { title: "", description: "", image: "" },
+    starAgent:false
   });
 
   const navigate = useNavigate();
@@ -67,7 +68,6 @@ const ProfileForm = () => {
         });
         setFormData(response.data.agent);
 
-        console.log(response.data);
         setSeoTitle(
           response.data.agent.seo.meta_title === ""
             ? response.data.agent.name
@@ -142,7 +142,6 @@ const ProfileForm = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    console.log(name);
 
     if (name === "name") {
       setSeoTitle(value);
@@ -157,7 +156,6 @@ const ProfileForm = () => {
 
   const handleNestedChange = (e, parentKey, childKey) => {
     const { name, value } = e.target;
-    // console.log(value);
 
     if (name === "meta_title") {
       setSeoTitle(value);
@@ -179,7 +177,6 @@ const ProfileForm = () => {
       setOgType(value);
     }
 
-    console.log(name);
     setFormData((prevData) => ({
       ...prevData,
       [parentKey]: { ...prevData[parentKey], [childKey]: value },
@@ -239,8 +236,6 @@ const ProfileForm = () => {
         response = await axios.put(FETCH_ALL_AGENTS + `/${id}`, formData, {
           withCredentials: true,
         });
-        console.log(formData);
-        console.log(response.data, "-----");
       } else {
         // Create new property
         const response = await axios.post(FETCH_ALL_AGENTS, formData, {
@@ -470,9 +465,25 @@ const ProfileForm = () => {
                 />
               </div>
 
+              {/* Star Agent */}
+              <div className="mb-5 md:col-span-4">
+                <label className="block">
+                  Star Agent
+                </label>
+                <select
+                  name="starAgent"
+                  value={formData?.starAgent}
+                  onChange={handleChange}
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                >
+                  <option value="true">true</option>
+                  <option value="false">false</option>
+                </select>
+              </div>
+
               {/* Video Links */}
               <div className="mb-5 md:col-span-12">
-                <label className="block">Video Links </label>
+                <label className="block">Video Links (Comma Separated) </label>
                 <input
                   type="text"
                   name="video_links"

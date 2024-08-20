@@ -35,19 +35,24 @@ export default function ManageDevelopers() {
   };
 
   const handleDeleteClick = async (id) => {
-    try {
-      const response = await axios.delete(DEVELOPERS_URL + `/${id}`, {
-        withCredentials: true,
-      });
-      if (response.data.success) {
-        setDevelopers(developers.filter((developer) => developer.id !== id));
-      } else {
-        toast.error("Error deleting Developer");
-        console.error("Error deleting Developer:", response.data.message);
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this developer?"
+    );
+    if (confirmDelete) {
+      try {
+        const response = await axios.delete(DEVELOPERS_URL + `/${id}`, {
+          withCredentials: true,
+        });
+        if (response.data.success) {
+          setDevelopers(developers.filter((developer) => developer.id !== id));
+        } else {
+          toast.error("Error deleting developer");
+          console.error("Error deleting developer:", response.data.message);
+        }
+      } catch (error) {
+        toast.error("Error deleting developer");
+        console.error("Error deleting developer:", error);
       }
-    } catch (error) {
-      toast.error("Error deleting Developer");
-      console.error("Error deleting Developer:", error);
     }
   };
 

@@ -44,19 +44,23 @@ const ManageProperties = () => {
     }
   };
 
-
   const handleDeleteClick = async (id) => {
-    try {
-      const response = await axios.delete(`${FETCH_ALL_PROPERTIES}/${id}`, {
-        withCredentials: true,
-      });
-      if (response.data.success) {
-        setProperties(properties.filter((property) => property.id !== id));
-      } else {
-        console.error("Error deleting property:", response.data.message);
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this property?"
+    );
+    if (confirmDelete) {
+      try {
+        const response = await axios.delete(`${FETCH_ALL_PROPERTIES}/${id}`, {
+          withCredentials: true,
+        });
+        if (response.data.success) {
+          setProperties(properties.filter((property) => property.id !== id));
+        } else {
+          console.error("Error deleting property:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error deleting property:", error);
       }
-    } catch (error) {
-      console.error("Error deleting property:", error);
     }
   };
 

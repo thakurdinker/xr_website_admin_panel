@@ -53,6 +53,7 @@ const HomePageVideoForm = () => {
     status: "published",
     images: [],
     faqs: [{ question: "", answer: "" }],
+    order:1
   });
 
   useEffect(() => {
@@ -320,7 +321,7 @@ const HomePageVideoForm = () => {
               className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 md:grid-cols-12"
             >
               {/* Title */}
-              <div className="mb-5 md:col-span-6">
+              <div className="mb-5 md:col-span-4">
                 <label className="block">Title</label>
                 <input
                   type="text"
@@ -332,7 +333,7 @@ const HomePageVideoForm = () => {
               </div>
 
               {/* Slug */}
-              <div className="mb-5 md:col-span-6">
+              <div className="mb-5 md:col-span-4">
                 <label className="block">Slug</label>
                 <input
                   type="text"
@@ -341,6 +342,21 @@ const HomePageVideoForm = () => {
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 />
+              </div>
+
+              {/* Order */}
+              <div className="mb-5 md:col-span-4">
+                <label className="block">
+                 Order
+                </label>
+                <input
+                  type="number"
+                  name="order"
+                  value={formData?.order}
+                  onChange={handleChange}
+                  min= {1}
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                />  
               </div>
 
               {/* Content */}
