@@ -713,63 +713,101 @@ const AddProperty = () => {
   //   }
   // };
 
+  // const handleFormSubmit = async (e) => {
+  //   e.preventDefault();
+  //   // Make API request using axios
+
+  //   // propertyData.type = convertStringToArray(propertyData.type);
+  //   propertyData.status = convertStringToArray(propertyData.status);
+  //   // propertyData.features.amenities = convertStringToArray(
+  //   //   propertyData.features.amenities
+  //   // );
+  //   propertyData.community_features.nearby_facilities = convertStringToArray(
+  //     propertyData.community_features.nearby_facilities
+  //   );
+  //   propertyData.community_features.transportation = convertStringToArray(
+  //     propertyData.community_features.transportation
+  //   );
+  //   // propertyData.seo.keywords = convertStringToArray(propertyData.seo.keywords);
+  //   propertyData.seo.keywords = convertStringToArray(seoKeywords);
+
+  //   propertyData.seo.meta_title = seoTitle;
+  //   propertyData.seo.meta_description = seoDescription;
+
+  //   propertyData.open_graph.description = seoDescription;
+  //   propertyData.open_graph.title = seoTitle;
+  //   propertyData.open_graph.image = ogImage;
+  //   propertyData.open_graph.type = ogType;
+
+  //   propertyData.schema_org.type = ogType;
+  //   propertyData.schema_org = generateSchema();
+
+  //   try {
+  //     let response;
+  //     if (id) {
+  //       // Update existing property
+  //       response = await axios.put(
+  //         FETCH_ALL_PROPERTIES + `/${id}`,
+  //         propertyData,
+  //         {
+  //           withCredentials: true,
+  //         }
+  //       );
+  //     } else {
+  //       // Create new property
+  //       response = await axios.post(FETCH_ALL_PROPERTIES, propertyData, {
+  //         withCredentials: true,
+  //       });
+  //     }
+  //     if (response?.data?.success === false) {
+  //       toast.error(response?.data?.message);
+  //       return;
+  //     } else {
+  //       toast.success(response?.data?.message);
+  //     }
+  //     navigate("/manage-properties");
+  //   } catch (error) {
+  //     console.error("Error adding/updating property:", error);
+  //   }
+  // };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    // Make API request using axios
 
-    // propertyData.type = convertStringToArray(propertyData.type);
-    propertyData.status = convertStringToArray(propertyData.status);
-    // propertyData.features.amenities = convertStringToArray(
-    //   propertyData.features.amenities
-    // );
-    propertyData.community_features.nearby_facilities = convertStringToArray(
-      propertyData.community_features.nearby_facilities
-    );
-    propertyData.community_features.transportation = convertStringToArray(
-      propertyData.community_features.transportation
-    );
-    // propertyData.seo.keywords = convertStringToArray(propertyData.seo.keywords);
-    propertyData.seo.keywords = convertStringToArray(seoKeywords);
-
-    propertyData.seo.meta_title = seoTitle;
-    propertyData.seo.meta_description = seoDescription;
-
-    propertyData.open_graph.description = seoDescription;
-    propertyData.open_graph.title = seoTitle;
-    propertyData.open_graph.image = ogImage;
-    propertyData.open_graph.type = ogType;
-
-    propertyData.schema_org.type = ogType;
-    propertyData.schema_org = generateSchema();
 
     try {
-      let response;
-      if (id) {
-        // Update existing property
-        response = await axios.put(
-          FETCH_ALL_PROPERTIES + `/${id}`,
-          propertyData,
-          {
-            withCredentials: true,
-          }
-        );
-      } else {
-        // Create new property
-        response = await axios.post(FETCH_ALL_PROPERTIES, propertyData, {
-          withCredentials: true,
-        });
-      }
-      if (response?.data?.success === false) {
-        toast.error(response?.data?.message);
-        return;
-      } else {
-        toast.success(response?.data?.message);
-      }
-      navigate("/manage-properties");
+        let response;
+        if (id) {
+            // Update existing property
+            response = await axios.put(`${FETCH_ALL_PROPERTIES}/${id}`, propertyData, {
+                withCredentials: true,
+            });
+        } else {
+            // Create new property
+            response = await axios.post(FETCH_ALL_PROPERTIES, propertyData, {
+                withCredentials: true,
+            });
+        }
+
+        if (response?.data?.success === false) {
+            toast.error(response?.data?.message);
+        } else {
+            toast.success(response?.data?.message);
+            navigate("/manage-properties");
+        }
     } catch (error) {
-      console.error("Error adding/updating property:", error);
+        console.error("Error adding/updating property:", error);
+
+        // Log detailed error response
+        if (error.response && error.response.data) {
+            console.error("Server response:", error.response.data);
+            toast.error(`Error: ${error.response.data.message}`);
+        } else {
+            toast.error("An unexpected error occurred.");
+        }
     }
-  };
+};
+
 
   return (
     <DefaultLayout>

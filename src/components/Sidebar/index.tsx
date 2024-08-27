@@ -254,6 +254,19 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   Generate Sitemap
                 </NavLink>
               </li>
+
+              <li>
+                <NavLink
+                  to="/manage-reviews"
+                  className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes("manage-reviews") &&
+                    "bg-graydark dark:bg-meta-4"
+                  }`}
+                >
+                  <LuNewspaper className="h-5 w-5" />
+                  Manage Reviews
+                </NavLink>
+              </li>
             </ul>
           </div>
         </nav>

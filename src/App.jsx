@@ -51,6 +51,7 @@ import AddProperty from "./pages/Form/AddProperty.jsx";
 import AddPost from "./pages/Form/AddPost.jsx";
 import AddAgent from "./pages/Form/AddAgent.jsx";
 import AddCommunity from "./pages/Form/AddCommunity.jsx";
+import AddReviews from "./pages/Form/AddReviews.jsx";
 import ProTables from "./pages/Tables/ProTables";
 import TermsConditions from "./pages/Pages/TermsConditions";
 import Faq from "./pages/Pages/Faq";
@@ -67,6 +68,7 @@ import ManageProperties from "./pages/ManageProperties/ManageProperties.jsx";
 import ManagePosts from "./pages/ManagePosts/ManagePosts.jsx";
 import ManageAgents from "./pages/ManageAgents/ManageAgents.jsx";
 import ManageCommunities from "./pages/ManageCommunities/ManageCommunities.jsx";
+import ManageReviews from "./pages/ManageReviews/ManageReviews.jsx";
 import AddHomePageVideo from "./pages/Form/AddHomePageVideo.jsx";
 import { UserContextProvider } from "./context/UserContext.jsx";
 import ProtectedRoute from "./route/ProtectedRoute.jsx";
@@ -241,6 +243,17 @@ function App() {
 
           <Route
             exact
+            path="/manage-reviews"
+            element={
+              <>
+                <PageTitle title="Manage Reviews" />
+                <ManageReviews/>
+              </>
+            }
+          />
+
+          <Route
+            exact
             path="/generate-sitemap"
             element={
               <>
@@ -278,6 +291,28 @@ function App() {
               <>
                 <PageTitle title="Add Property" />
                 <AddProperty />
+              </>
+            }
+          />
+
+          <Route
+            exact
+            path="/forms/add-review"
+            element={
+              <>
+                <PageTitle title="Add Review" />
+                <AddReviews />
+              </>
+            }
+          />
+          
+          <Route
+            exact
+            path="/forms/add-review/:id"
+            element={
+              <>
+                <PageTitle title="Add Review" />
+                <AddReviews />
               </>
             }
           />
