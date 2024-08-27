@@ -32,8 +32,6 @@ const ManageProperties = () => {
     fetchProperties();
   }, [currentPage]);
 
-  console.log(reviews);
-
   const handleEditClick = (reviewId) => {
     // Redirect to the AddProperty component in edit mode with the propertyId
     navigate(`/forms/add-review/${reviewId}`);

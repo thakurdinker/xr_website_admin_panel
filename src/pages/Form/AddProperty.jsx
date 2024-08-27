@@ -774,8 +774,6 @@ const AddProperty = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    // Log the data being sent to the server
-    console.log("Data being sent:", propertyData);
 
     try {
         let response;
