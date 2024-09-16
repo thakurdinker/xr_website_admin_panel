@@ -10,6 +10,9 @@ import UploadReviewImages from "../../components/UploadWidget/UploadReviewImages
 const ContentForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  // Extract the current page number from query parameters
+  const query = new URLSearchParams(location.search);
+  const currentPage = parseInt(query.get('page')) || 1;
 
   const [formData, setFormData] = useState({
     name: "",
@@ -75,7 +78,8 @@ const ContentForm = () => {
 
       if (response?.data?.success) {
         toast.success(response?.data?.message);
-        navigate("/manage-reviews");
+       
+        navigate(`/manage-reviews?page=${currentPage}`);
       } else {
         toast.error(response?.data?.message);
       }
@@ -162,7 +166,7 @@ const ContentForm = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => navigate("/manage-reviews")}
+                    onClick={() => navigate(`/manage-reviews?page=${currentPage}`)}
                     className="border-gray-300 hover:bg-gray-100 inline-flex items-center justify-center rounded-md border bg-white px-5 py-3 font-medium text-black transition"
                   >
                     Cancel

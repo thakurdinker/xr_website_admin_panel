@@ -9,9 +9,13 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { IoCloseCircle } from "react-icons/io5";
 
-const HomePageVideoForm = () => {
+const AddNewsAndBlog = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
+    // Extract the current page number from query parameters
+    const query = new URLSearchParams(location.search);
+    const currentPage = parseInt(query.get('page')) || 1;
 
   const [seoTitle, setSeoTitle] = useState();
   const [seoDescription, setSeoDescription] = useState();
@@ -304,7 +308,7 @@ const HomePageVideoForm = () => {
         return;
       } else {
         toast.success(response?.data?.message);
-        navigate("/manage-news-and-insights");
+        navigate(`/manage-news-and-insights?page=${currentPage}`);
       }
     } catch (error) {
       console.error("Error saving form data:", error);
@@ -643,7 +647,7 @@ const HomePageVideoForm = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => navigate("/manage-news-and-insights")}
+                  onClick={() => navigate(`/manage-news-and-insights?page=${currentPage}`)}
                   className="border-gray-300 hover:bg-gray-100 inline-flex items-center justify-center rounded-md border bg-white px-5 py-3 font-medium text-black transition"
                 >
                   Cancel
@@ -658,4 +662,4 @@ const HomePageVideoForm = () => {
   );
 };
 
-export default HomePageVideoForm;
+export default AddNewsAndBlog;
