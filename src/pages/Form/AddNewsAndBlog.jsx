@@ -315,6 +315,13 @@ const AddNewsAndBlog = () => {
     }
   };
 
+  const handleCancel = () => {
+    const confirmCancel = window.confirm("Are you sure you want to cancel? Unsaved changes will be lost.");
+    if (confirmCancel) {
+      navigate(`/manage-news-and-insights?page=${currentPage}`);
+    }
+  };
+
   return (
     <DefaultLayout>
       <div className="grid w-[95vw] lg:w-[60vw]">
@@ -647,7 +654,7 @@ const AddNewsAndBlog = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => navigate(`/manage-news-and-insights?page=${currentPage}`)}
+                  onClick={handleCancel}
                   className="border-gray-300 hover:bg-gray-100 inline-flex items-center justify-center rounded-md border bg-white px-5 py-3 font-medium text-black transition"
                 >
                   Cancel

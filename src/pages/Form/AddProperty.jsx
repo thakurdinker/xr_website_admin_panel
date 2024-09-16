@@ -152,7 +152,7 @@ const AddProperty = () => {
   const { id } = useParams();
   // Extract the current page number from query parameters
   const query = new URLSearchParams(location.search);
-  const currentPage = parseInt(query.get('page')) || 1;
+  const currentPage = parseInt(query.get("page")) || 1;
 
   const [developers, setDevelopers] = useState([]);
   const [propertyData, setPropertyData] = useState(initialPropertyData);
@@ -777,40 +777,52 @@ const AddProperty = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-
     try {
-        let response;
-        if (id) {
-            // Update existing property
-            response = await axios.put(`${FETCH_ALL_PROPERTIES}/${id}`, propertyData, {
-                withCredentials: true,
-            });
-        } else {
-            // Create new property
-            response = await axios.post(FETCH_ALL_PROPERTIES, propertyData, {
-                withCredentials: true,
-            });
-        }
+      let response;
+      if (id) {
+        // Update existing property
+        response = await axios.put(
+          `${FETCH_ALL_PROPERTIES}/${id}`,
+          propertyData,
+          {
+            withCredentials: true,
+          }
+        );
+      } else {
+        // Create new property
+        response = await axios.post(FETCH_ALL_PROPERTIES, propertyData, {
+          withCredentials: true,
+        });
+      }
 
-        if (response?.data?.success === false) {
-            toast.error(response?.data?.message);
-        } else {
-            toast.success(response?.data?.message);
-            navigate(`/manage-properties?page=${currentPage}`);
-        }
+      if (response?.data?.success === false) {
+        toast.error(response?.data?.message);
+      } else {
+        toast.success(response?.data?.message);
+        navigate(`/manage-properties?page=${currentPage}`);
+      }
     } catch (error) {
-        console.error("Error adding/updating property:", error);
+      console.error("Error adding/updating property:", error);
 
-        // Log detailed error response
-        if (error.response && error.response.data) {
-            console.error("Server response:", error.response.data);
-            toast.error(`Error: ${error.response.data.message}`);
-        } else {
-            toast.error("An unexpected error occurred.");
-        }
+      // Log detailed error response
+      if (error.response && error.response.data) {
+        console.error("Server response:", error.response.data);
+        toast.error(`Error: ${error.response.data.message}`);
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
     }
-};
-
+  };
+  // Handler for Cancel button
+  const handleCancel = () => {
+    // Show a confirmation dialog
+    const confirmed = window.confirm(
+      "Are you sure you want to cancel? Unsaved changes will be lost."
+    );
+    if (confirmed) {
+      navigate(`/manage-properties?page=${currentPage}`);
+    }
+  };
 
   return (
     <DefaultLayout>
@@ -1763,7 +1775,7 @@ const AddProperty = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => navigate(`/manage-properties?page=${currentPage}`)}
+                  onClick={handleCancel}
                   className="border-gray-300 hover:bg-gray-100 inline-flex items-center justify-center rounded-md border bg-white px-5 py-3 font-medium text-black transition"
                 >
                   Cancel
