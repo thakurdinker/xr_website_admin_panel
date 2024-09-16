@@ -66,6 +66,14 @@ const ContentForm = () => {
     }
   };
 
+  const handleCancel = () => {
+    const confirmCancel = window.confirm("Are you sure you want to cancel? Unsaved changes will be lost.");
+    if (confirmCancel) {
+      navigate(`/manage-news-and-insights?page=${currentPage}`);
+    }
+  };
+
+
   return (
     <DefaultLayout>
       <div className="flex justify-center">
@@ -107,7 +115,7 @@ const ContentForm = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => navigate("/manage-icons")}
+                    onClick={handleCancel}
                     className="border-gray-300 hover:bg-gray-100 inline-flex items-center justify-center rounded-md border bg-white px-5 py-3 font-medium text-black transition"
                   >
                     Cancel
