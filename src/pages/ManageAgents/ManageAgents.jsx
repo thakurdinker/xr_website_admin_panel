@@ -6,6 +6,7 @@ import { MdDeleteForever } from "react-icons/md";
 import { MdEditDocument } from "react-icons/md";
 import { IoAddCircle } from "react-icons/io5";
 import { FETCH_ALL_AGENTS } from "../../api/constants";
+import Pagination from "../../components/Pagination/Pagination";
 
 function ManageAgents() {
   const [properties, setProperties] = useState([]);
@@ -156,27 +157,11 @@ function ManageAgents() {
             {/* table body end */}
           </div>
         </div>
-        {/* pagination controls start */}
-        <div className="flex justify-between p-5">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="rounded border px-4 py-2"
-          >
-            Previous
-          </button>
-          <div className="flex items-center">
-            Page {currentPage} of {totalPages}
-          </div>
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="rounded border px-4 py-2"
-          >
-            Next
-          </button>
-        </div>
-        {/* pagination controls end */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </div>
     </DefaultLayout>
   );

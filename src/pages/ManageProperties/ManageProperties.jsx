@@ -2,17 +2,23 @@ import React, { useEffect, useState } from "react";
 import DefaultLayout from "../../layout/DefaultLayout";
 import { FETCH_ALL_PROPERTIES } from "../../api/constants";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { MdDeleteForever } from "react-icons/md";
 import { MdEditDocument } from "react-icons/md";
 import { IoAddCircle } from "react-icons/io5";
+import Pagination from "../../components/Pagination/Pagination";
 
 const ManageProperties = () => {
   const [properties, setProperties] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Extract currentPage from query parameters
+  const query = new URLSearchParams(location.search);
+  const initialPage = parseInt(query.get("page")) || 1;
+  const [currentPage, setCurrentPage] = useState(initialPage);
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -34,13 +40,15 @@ const ManageProperties = () => {
   }, [currentPage]);
 
   const handleEditClick = (propertyId) => {
-    // Redirect to the AddProperty component in edit mode with the propertyId
-    navigate(`/forms/add-property/${propertyId}`);
+    // Redirect to the AddProperty component in edit mode with the propertyId and current page
+    navigate(`/forms/add-property/${propertyId}?page=${currentPage}`);
   };
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
       setCurrentPage(newPage);
+      // Update the URL with the new page number
+      navigate(`?page=${newPage}`);
     }
   };
 
@@ -75,7 +83,13 @@ const ManageProperties = () => {
         <div className="max-w-full overflow-x-auto">
           <div>
             {/* table header start */}
-            <div className="grid grid-cols-10 bg-[#F9FAFB] px-5 py-4 dark:bg-meta-4 lg:px-7.5 2xl:px-11 ">
+            <div className="grid grid-cols-11 bg-[#F9FAFB] px-5 py-4 dark:bg-meta-4 lg:px-7.5 2xl:px-11 ">
+              <div className="col-span-1 flex items-center">
+                <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
+                  NUMBER
+                </h5>
+              </div>
+
               <div className="col-span-2 flex items-center">
                 <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
                   NAME
@@ -107,8 +121,14 @@ const ManageProperties = () => {
               {properties.map((property, index) => (
                 <div
                   key={index}
-                  className="grid grid-cols-10 border-t border-[#EEEEEE] px-5 py-4 dark:border-strokedark lg:px-7.5 2xl:px-11"
+                  className="grid grid-cols-11 border-t border-[#EEEEEE] px-5 py-4 dark:border-strokedark lg:px-7.5 2xl:px-11"
                 >
+                  <div className="col-span-1 flex items-center">
+                    <p className="text-xs text-[#637381] dark:text-bodydark md:text-base">
+                      {(currentPage - 1) * 10 + (index + 1)}
+                    </p>
+                  </div>
+
                   <div className="col-span-2 flex items-center">
                     <p className="text-xs text-[#637381] dark:text-bodydark md:text-base">
                       {property.property_name}
@@ -145,27 +165,37 @@ const ManageProperties = () => {
               ))}
             </div>
             {/* table body end */}
+
             {/* Pagination start */}
-          <div className="flex justify-between p-5">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-4 py-2 border rounded"
-            >
-              Previous
-            </button>
-            <div className="flex items-center">
-              Page {currentPage} of {totalPages}
-            </div>
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 border rounded"
-            >
-              Next
-            </button>
-          </div>
-          {/* Pagination end */}
+            {/* <div className="flex justify-between p-5">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="rounded border px-4 py-2"
+              >
+                Previous
+              </button>
+              <div className="flex items-center">
+                Page {currentPage} of {totalPages}
+              </div>
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="rounded border px-4 py-2"
+              >
+                Next
+              </button>
+            </div> */}
+            {/* Pagination end */}
+
+
+
+
+            <Pagination 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
           </div>
         </div>
       </div>

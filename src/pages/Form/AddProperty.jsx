@@ -150,6 +150,9 @@ const initialPropertyData = {
 
 const AddProperty = () => {
   const { id } = useParams();
+  // Extract the current page number from query parameters
+  const query = new URLSearchParams(location.search);
+  const currentPage = parseInt(query.get('page')) || 1;
 
   const [developers, setDevelopers] = useState([]);
   const [propertyData, setPropertyData] = useState(initialPropertyData);
@@ -793,7 +796,7 @@ const AddProperty = () => {
             toast.error(response?.data?.message);
         } else {
             toast.success(response?.data?.message);
-            navigate("/manage-properties");
+            navigate(`/manage-properties?page=${currentPage}`);
         }
     } catch (error) {
         console.error("Error adding/updating property:", error);
@@ -1760,7 +1763,7 @@ const AddProperty = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => navigate("/manage-properties")}
+                  onClick={() => navigate(`/manage-properties?page=${currentPage}`)}
                   className="border-gray-300 hover:bg-gray-100 inline-flex items-center justify-center rounded-md border bg-white px-5 py-3 font-medium text-black transition"
                 >
                   Cancel

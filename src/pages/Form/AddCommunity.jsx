@@ -33,6 +33,10 @@ const CommunityForm = () => {
 
   const [developers, setDevelopers] = useState([]);
 
+  // Extract the current page number from query parameters
+  const query = new URLSearchParams(location.search);
+  const currentPage = parseInt(query.get('page')) || 1;
+
 
   const [formData, setFormData] = useState({
     name: "",
@@ -389,7 +393,7 @@ const CommunityForm = () => {
       } else {
         toast.success(response?.data?.message);
       }
-      navigate("/manage-communities");
+      navigate(`/manage-communities?page=${currentPage}`);
     } catch (error) {
       console.error("Error adding/updating property:", error);
     }
@@ -862,7 +866,7 @@ const CommunityForm = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => navigate("/manage-communities")}
+                  onClick={() =>  navigate(`/manage-communities?page=${currentPage}`)}
                   className="border-gray-300 hover:bg-gray-100 inline-flex items-center justify-center rounded-md border bg-white px-5 py-3 font-medium text-black transition"
                 >
                   Cancel

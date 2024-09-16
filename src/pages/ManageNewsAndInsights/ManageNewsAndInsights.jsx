@@ -2,41 +2,46 @@ import React, { useEffect, useState } from "react";
 import DefaultLayout from "../../layout/DefaultLayout";
 import { NEWS } from "../../api/constants";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { MdDeleteForever } from "react-icons/md";
 import { MdEditDocument } from "react-icons/md";
 import { IoAddCircle } from "react-icons/io5";
+import Pagination from "../../components/Pagination/Pagination";
 
 function ManageNewsAndInsights() {
   const [contentList, setContentList] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const limit = 10;
 
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const fetchContent = async (page = 1) => {
-    try {
-      const response = await axios.get(NEWS, {
-        params: { page, limit },
-        withCredentials: true,
-      });
-      if (response.data.success) {
-        setContentList(response.data.contentList);
-        setCurrentPage(Number(response.data.currentPage));
-        setTotalPages(response.data.totalPages);
-      }
-    } catch (error) {
-      console.error("Error fetching content:", error);
-    }
-  };
+  // Extract currentPage from query parameters
+  const query = new URLSearchParams(location.search);
+  const initialPage = parseInt(query.get("page")) || 1;
+  const [currentPage, setCurrentPage] = useState(initialPage);
 
   useEffect(() => {
+    const fetchContent = async (page = 1) => {
+      try {
+        const response = await axios.get(NEWS, {
+          params: { page, limit },
+          withCredentials: true,
+        });
+        if (response.data.success) {
+          setContentList(response.data.contentList);
+          setTotalPages(response.data.totalPages);
+        }
+      } catch (error) {
+        console.error("Error fetching content:", error);
+      }
+    };
+
     fetchContent(currentPage);
   }, [currentPage]);
 
   const handleEditClick = (contentListId) => {
-    navigate(`/forms/add-news-and-blog/${contentListId}`);
+    navigate(`/forms/add-news-and-blog/${contentListId}?page=${currentPage}`);
   };
 
   const handleDeleteClick = async (id) => {
@@ -60,6 +65,8 @@ function ManageNewsAndInsights() {
   const handlePageChange = (pageNumber) => {
     if (pageNumber > 0 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
+      // Update the URL with the new page number
+      navigate(`?page=${pageNumber}`);
     }
   };
 
@@ -74,7 +81,12 @@ function ManageNewsAndInsights() {
         <div className="max-w-full overflow-x-auto">
           <div>
             {/* table header start */}
-            <div className="grid grid-cols-8 bg-[#F9FAFB] px-5 py-4 dark:bg-meta-4 lg:px-7.5 2xl:px-11">
+            <div className="grid grid-cols-9 bg-[#F9FAFB] px-5 py-4 dark:bg-meta-4 lg:px-7.5 2xl:px-11">
+              <div className="col-span-1 flex items-center">
+                <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
+                  Number
+                </h5>
+              </div>
               <div className="col-span-2 flex items-center">
                 <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
                   Name
@@ -106,8 +118,13 @@ function ManageNewsAndInsights() {
               {contentList.map((content, index) => (
                 <div
                   key={index}
-                  className="grid grid-cols-8 border-t border-[#EEEEEE] px-5 py-4 dark:border-strokedark lg:px-7.5 2xl:px-11"
+                  className="grid grid-cols-9 border-t border-[#EEEEEE] px-5 py-4 dark:border-strokedark lg:px-7.5 2xl:px-11"
                 >
+                  <div className="col-span-1 flex items-center">
+                    <p className="text-xs text-[#637381] dark:text-bodydark md:text-base">
+                      {(currentPage - 1) * limit + (index + 1)}
+                    </p>
+                  </div>
                   <div className="col-span-2 flex items-center">
                     <p className="text-xs text-[#637381] dark:text-bodydark md:text-base">
                       {content.title}
@@ -143,26 +160,11 @@ function ManageNewsAndInsights() {
                 </div>
               ))}
             </div>
-            {/* table body end */}
-            <div className="flex justify-between p-5">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="px-4 py-2 border rounded"
-              >
-                Previous
-              </button>
-              <div className="flex items-center">
-                Page {currentPage} of {totalPages}
-              </div>
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 border rounded"
-              >
-                Next
-              </button>
-            </div>
+            <Pagination 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { MdDeleteForever } from "react-icons/md";
 import { MdEditDocument } from "react-icons/md";
 import { IoAddCircle } from "react-icons/io5";
+import Pagination from "../../components/Pagination/Pagination";
 
 function ManageIcons() {
   const [icons, setIcons] = useState([]);
@@ -157,26 +158,11 @@ function ManageIcons() {
                 </div>
               ))}
             </div>
-            {/* table body end */}
-            <div className="flex justify-between p-5">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="rounded border px-4 py-2"
-              >
-                Previous
-              </button>
-              <div className="flex items-center">
-                Page {currentPage} of {totalPages}
-              </div>
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="rounded border px-4 py-2"
-              >
-                Next
-              </button>
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
           </div>
         </div>
       </div>
