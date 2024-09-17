@@ -80,6 +80,7 @@ import AddIcons from "./pages/Form/AddIcons.jsx";
 import ManageDevelopers from "./pages/ManageDevelopers/ManageDevelopers.jsx";
 import AddDeveloper from "./pages/Form/AddDeveloper.jsx";
 import GenerateSitemap from "./components/GenerateSitemap/GenerateSitemap.jsx";
+import ProjectOfTheMonth from "./components/ProjectOfTheMonth/ProjectOfTheMonth.jsx";
 
 function WithUserContext() {
   return (
@@ -247,7 +248,7 @@ function App() {
             element={
               <>
                 <PageTitle title="Manage Reviews" />
-                <ManageReviews/>
+                <ManageReviews />
               </>
             }
           />
@@ -259,6 +260,17 @@ function App() {
               <>
                 <PageTitle title="Generate Sitemap" />
                 <GenerateSitemap />
+              </>
+            }
+          />
+
+          <Route
+            exact
+            path="/project-of-the-month"
+            element={
+              <>
+                <PageTitle title="Project Of The Month" />
+                <ProjectOfTheMonth />
               </>
             }
           />
@@ -305,7 +317,7 @@ function App() {
               </>
             }
           />
-          
+
           <Route
             exact
             path="/forms/add-review/:id"

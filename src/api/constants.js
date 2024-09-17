@@ -26,3 +26,4 @@ export const FETCH_ALL_ICONS = BASE_URL + "getAllIcons";
 export const DEVELOPERS_URL = BASE_URL + "developers";
 export const SITEMAP_GENERATE_URL = BASE_URL + "generateSitemap";
 export const REVIEWS = BASE_URL + "reviews";
+export const PROJECT_OF_THE_MONTH = BASE_URL + "project-of-the-month";
