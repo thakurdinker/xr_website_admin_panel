@@ -3,8 +3,7 @@ import axios from "axios";
 import DefaultLayout from "../../layout/DefaultLayout";
 import UploadGallery from "../../components/UploadWidget/UploadGallery";
 import UploadImages from "../../components/UploadWidget/UploadImages";
-import UploadAmenity from "../../components/UploadWidget/UploadAmenity";
-import UploadWidget from "../../components/UploadWidget/UploadImages";
+
 
 import Select from "react-select";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -259,7 +258,7 @@ const AddProperty = () => {
 
           return amenitiesName;
         })(),
-        url: `https://www.xrealty.ae/property/${propertyData.property_name_slug}`,
+        url: `https://www.xrealty.ae/property/${propertyData?.property_name_slug}`,
       },
     };
   };

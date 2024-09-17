@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import Logo from "../../images/logo/logo.svg";
-import { MdOutlineSpaceDashboard, MdOutlineSupportAgent } from "react-icons/md";
-import { BsBuildingSlash, BsFillFileEarmarkPostFill } from "react-icons/bs";
+import { MdOutlineReviews, MdOutlineSpaceDashboard, MdOutlineSupportAgent } from "react-icons/md";
+import { BsBuildingSlash, BsFillFileEarmarkPostFill, BsFillHouseHeartFill } from "react-icons/bs";
 import { LuNewspaper } from "react-icons/lu";
-import { TbVideo } from "react-icons/tb";
+import { TbIcons, TbVideo } from "react-icons/tb";
 import { RiCommunityLine } from "react-icons/ri";
 import { FaRegUser } from "react-icons/fa";
+import { IoHome } from "react-icons/io5";
+import { LiaSitemapSolid } from "react-icons/lia";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -224,7 +226,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     "bg-graydark dark:bg-meta-4"
                   }`}
                 >
-                  <LuNewspaper className="h-5 w-5" />
+                  <TbIcons className="h-5 w-5" />
                   Manage Icons
                 </NavLink>
               </li>
@@ -237,7 +239,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     "bg-graydark dark:bg-meta-4"
                   }`}
                 >
-                  <LuNewspaper className="h-5 w-5" />
+                  <IoHome className="h-5 w-5" />
                   Manage Developers
                 </NavLink>
               </li>
@@ -250,7 +252,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     "bg-graydark dark:bg-meta-4"
                   }`}
                 >
-                  <LuNewspaper className="h-5 w-5" />
+                  <LiaSitemapSolid className="h-5 w-5" />
                   Generate Sitemap
                 </NavLink>
               </li>
@@ -263,8 +265,21 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     "bg-graydark dark:bg-meta-4"
                   }`}
                 >
-                  <LuNewspaper className="h-5 w-5" />
+                  <MdOutlineReviews className="h-5 w-5" />
                   Manage Reviews
+                </NavLink>
+              </li>
+              
+               <li>
+                <NavLink
+                  to="/project-of-the-month"
+                  className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes("project-of-the-month") &&
+                    "bg-graydark dark:bg-meta-4"
+                  }`}
+                >
+                  <BsFillHouseHeartFill className="h-5 w-5" />
+                  Project Of The Month
                 </NavLink>
               </li>
             </ul>

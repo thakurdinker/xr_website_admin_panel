@@ -4,18 +4,17 @@ const UploadAmenity = ({ onImagesChange, initialImages = [] }) => {
   const handleUploadClick = (event) => {
     event.preventDefault();
     window.cloudinary.openUploadWidget(
-        {
-            cloudName: "dkhns25jh", // Replace with your Cloudinary cloud name
-            uploadPreset: "ml_default", // Replace with your Cloudinary upload preset
-            folder: "xr_media", // Optional: Change to your desired folder
-          },
+      {
+        cloudName: "dkhns25jh", // Replace with your Cloudinary cloud name
+        uploadPreset: "ml_default", // Replace with your Cloudinary upload preset
+        folder: "xr_media", // Optional: Change to your desired folder
+      },
       function (error, result) {
         if (!error && result && result.event === "success") {
           const uploadedImage = {
             icon_url: result.info.secure_url,
-            icon_text: result.info.icon_text, // If needed from Cloudinary
           };
-          onImagesChange([...initialImages, uploadedImage]);
+          onImagesChange([uploadedImage]);
         }
       }
     );
@@ -37,17 +36,6 @@ const UploadAmenity = ({ onImagesChange, initialImages = [] }) => {
               alt={`Uploaded Amenity ${index + 1}`}
               className="mb-2 h-20 w-20 object-cover"
             />
-            <textarea
-              value={image.icon_text}
-              onChange={(e) => {
-                const updatedImages = [...initialImages];
-                updatedImages[index].icon_text = e.target.value;
-                onImagesChange(updatedImages);
-              }}
-              placeholder="Enter description"
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-              
-            ></textarea>
             <button
               onClick={(e) => {
                 e.preventDefault();
