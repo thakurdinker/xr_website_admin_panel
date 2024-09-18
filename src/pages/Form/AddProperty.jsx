@@ -4,7 +4,6 @@ import DefaultLayout from "../../layout/DefaultLayout";
 import UploadGallery from "../../components/UploadWidget/UploadGallery";
 import UploadImages from "../../components/UploadWidget/UploadImages";
 
-
 import Select from "react-select";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
@@ -1124,7 +1123,7 @@ const AddProperty = () => {
                             </label>
 
                             <input
-                              type="number"
+                              type="text"
                               min="0"
                               name={`bedrooms-${type.name_slug}`}
                               value={
