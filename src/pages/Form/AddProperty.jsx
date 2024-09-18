@@ -375,12 +375,16 @@ const AddProperty = () => {
 
     if (name === "property_name") {
       setSeoTitle(e.target.value);
+      setPropertyData((prev) => ({
+        ...prev,
+        property_name_slug: slugify(value, { lower: true }),
+      }));
     }
 
     if (name === "property_name_slug") {
       setPropertyData((prev) => ({
         ...prev,
-        [name]: value,
+        [name]: slugify(value, { lower: true }),
       }));
 
       return;
@@ -440,7 +444,6 @@ const AddProperty = () => {
       setPropertyData((prev) => ({
         ...prev,
         [name]: value,
-        property_name_slug: slugify(value, { lower: true }),
       }));
     }
   };
