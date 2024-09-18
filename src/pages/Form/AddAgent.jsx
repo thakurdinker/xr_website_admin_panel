@@ -54,7 +54,8 @@ const ProfileForm = () => {
       },
     },
     open_graph: { title: "", description: "", image: "" },
-    starAgent:false
+    starAgent: false,
+    hidden: false,
   });
 
   const navigate = useNavigate();
@@ -141,7 +142,6 @@ const ProfileForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
 
     if (name === "name") {
       setSeoTitle(value);
@@ -299,9 +299,9 @@ const ProfileForm = () => {
                 />
               </div>
 
-              {/* Phone */}
+              {/* Hidden */}
               <div className="mb-5 md:col-span-3">
-                <label className="block">Phone</label>
+                <label className="block">Hidden</label>
                 <PhoneInput
                   placeholder="Enter phone number"
                   value={formData.phone}
@@ -313,7 +313,7 @@ const ProfileForm = () => {
               </div>
 
               {/* Profile Picture */}
-              <div className="mb-5 md:col-span-12">
+              <div className="mb-5 md:col-span-6">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Profile Picture
                 </label>
@@ -328,6 +328,22 @@ const ProfileForm = () => {
                       : []
                   }
                 />
+              </div>
+
+              {/* Phone */}
+              <div className="mb-5 md:col-span-6">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Hidden
+                </label>
+                <select
+                  name="hidden"
+                  value={formData?.hidden}
+                  onChange={handleChange}
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                >
+                  <option value="true">true</option>
+                  <option value="false">false</option>
+                </select>
               </div>
 
               {/* Bio */}
@@ -467,9 +483,7 @@ const ProfileForm = () => {
 
               {/* Star Agent */}
               <div className="mb-5 md:col-span-4">
-                <label className="block">
-                  Star Agent
-                </label>
+                <label className="block">Star Agent</label>
                 <select
                   name="starAgent"
                   value={formData?.starAgent}

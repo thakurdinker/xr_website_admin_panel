@@ -19,6 +19,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { IoCloseCircle } from "react-icons/io5";
+import slugify from "slugify";
 
 const initialPropertyData = {
   property_name: "",
@@ -370,8 +371,19 @@ const AddProperty = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    console.log(e.target.name);
+
     if (name === "property_name") {
       setSeoTitle(e.target.value);
+    }
+
+    if (name === "property_name_slug") {
+      setPropertyData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+
+      return;
     }
 
     if (name === "community_name") {
@@ -428,6 +440,7 @@ const AddProperty = () => {
       setPropertyData((prev) => ({
         ...prev,
         [name]: value,
+        property_name_slug: slugify(value, { lower: true }),
       }));
     }
   };
