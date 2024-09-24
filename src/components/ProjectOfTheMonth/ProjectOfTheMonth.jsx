@@ -262,14 +262,6 @@
 
 // export default ProjectOfTheMonth;
 
-
-
-
-
-
-
-
-
 import React, { useCallback, useEffect, useState } from "react";
 import DefaultLayout from "../../layout/DefaultLayout";
 import { useNavigate } from "react-router-dom";
@@ -301,6 +293,7 @@ const ProjectOfTheMonth = () => {
       { heading: "", description: "" },
     ],
     images: [], // Add images to the initial form data
+    learnMore: "",
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -476,6 +469,17 @@ const ProjectOfTheMonth = () => {
                   />
                 </div>
 
+                {/* Learn More Link */}
+                <div className="mb-5 md:col-span-6">
+                  <label className="block">Learn More Link</label>
+                  <input
+                    name="learnMore"
+                    value={formData.learnMore}
+                    onChange={handleChange}
+                    className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  />
+                </div>
+
                 {/* Amenities  */}
                 <div className="mb-5 md:col-span-12">
                   <label className="block">Amenities</label>
@@ -552,4 +556,3 @@ const ProjectOfTheMonth = () => {
 };
 
 export default ProjectOfTheMonth;
-
