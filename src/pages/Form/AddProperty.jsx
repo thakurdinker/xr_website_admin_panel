@@ -62,6 +62,7 @@ const initialPropertyData = {
   },
   show_property: false,
   featured: false,
+  show_slideShow: false,
   section_1: {
     heading: "",
     title: "",
@@ -371,7 +372,7 @@ const AddProperty = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    console.log(e.target.name);
+    // console.log(e.target.name);
 
     if (name === "property_name") {
       setSeoTitle(e.target.value);
@@ -1564,6 +1565,22 @@ const AddProperty = () => {
                 <select
                   name="featured"
                   value={propertyData?.featured}
+                  onChange={handleChange}
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                >
+                  <option value="true">true</option>
+                  <option value="false">false</option>
+                </select>
+              </div>
+
+              {/* Show on Slideshow for newly Launched*/}
+              <div className="mb-5 md:col-span-6">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  SlideShow (Newly Launched)
+                </label>
+                <select
+                  name="show_slideShow"
+                  value={propertyData?.show_slideShow}
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 >
