@@ -19,6 +19,8 @@ export default function AddDeveloper() {
     developer_slug: "",
     description: "",
     heading: "",
+    meta_title: "",
+    meta_description: "",
     order: 1,
   });
 
@@ -80,9 +82,11 @@ export default function AddDeveloper() {
   }, [id]);
 
   const handleCancel = () => {
-    const confirmCancel = window.confirm("Are you sure you want to cancel? Unsaved changes will be lost.");
+    const confirmCancel = window.confirm(
+      "Are you sure you want to cancel? Unsaved changes will be lost."
+    );
     if (confirmCancel) {
-      navigate("/manage-developers")
+      navigate("/manage-developers");
     }
   };
 
@@ -145,6 +149,30 @@ export default function AddDeveloper() {
                     value={formData?.order}
                     onChange={handleChange}
                     min={1}
+                    className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  />
+                </div>
+
+                {/* Meta Title */}
+                <div className="mb-5 md:col-span-4">
+                  <label className="block">Meta Title</label>
+                  <input
+                    type="text"
+                    name="meta_title"
+                    value={formData?.meta_title}
+                    onChange={handleChange}
+                    className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  />
+                </div>
+
+                {/* Meta Description */}
+                <div className="mb-5 md:col-span-4">
+                  <label className="block">Meta Description</label>
+                  <input
+                    type="text"
+                    name="meta_description"
+                    value={formData?.meta_description}
+                    onChange={handleChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   />
                 </div>
