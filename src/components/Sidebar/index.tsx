@@ -1,8 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import Logo from "../../images/logo/logo.svg";
-import { MdOutlineReviews, MdOutlineSpaceDashboard, MdOutlineSupportAgent } from "react-icons/md";
-import { BsBuildingSlash, BsFillFileEarmarkPostFill, BsFillHouseHeartFill } from "react-icons/bs";
+import {
+  MdOutlineReviews,
+  MdOutlineSpaceDashboard,
+  MdOutlineSupportAgent,
+} from "react-icons/md";
+import {
+  BsBuildingSlash,
+  BsFillFileEarmarkPostFill,
+  BsFillHouseHeartFill,
+} from "react-icons/bs";
 import { LuNewspaper } from "react-icons/lu";
 import { TbIcons, TbVideo } from "react-icons/tb";
 import { RiCommunityLine } from "react-icons/ri";
@@ -269,8 +277,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   Manage Reviews
                 </NavLink>
               </li>
-              
-               <li>
+
+              <li>
                 <NavLink
                   to="/project-of-the-month"
                   className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
@@ -280,6 +288,19 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 >
                   <BsFillHouseHeartFill className="h-5 w-5" />
                   Project Of The Month
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/manage-redirects"
+                  className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes("manage-redirects") &&
+                    "bg-graydark dark:bg-meta-4"
+                  }`}
+                >
+                  <BsFillHouseHeartFill className="h-5 w-5" />
+                  Redirects
                 </NavLink>
               </li>
             </ul>
