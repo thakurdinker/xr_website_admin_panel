@@ -81,6 +81,7 @@ import ManageDevelopers from "./pages/ManageDevelopers/ManageDevelopers.jsx";
 import AddDeveloper from "./pages/Form/AddDeveloper.jsx";
 import GenerateSitemap from "./components/GenerateSitemap/GenerateSitemap.jsx";
 import ProjectOfTheMonth from "./components/ProjectOfTheMonth/ProjectOfTheMonth.jsx";
+import RedirectManager from "./components/Redirects/Redirects.jsx";
 
 function WithUserContext() {
   return (
@@ -271,6 +272,17 @@ function App() {
               <>
                 <PageTitle title="Project Of The Month" />
                 <ProjectOfTheMonth />
+              </>
+            }
+          />
+
+          <Route
+            exact
+            path="/manage-redirects"
+            element={
+              <>
+                <PageTitle title="Redirect Manager" />
+                <RedirectManager />
               </>
             }
           />
