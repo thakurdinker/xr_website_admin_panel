@@ -79,7 +79,12 @@ const initialPropertyData = {
     icons: [],
   },
   faqs: [{ question: "", answer: "" }],
-  seo: { meta_title: "", meta_description: "", keywords: "" },
+  seo: {
+    meta_title: "",
+    meta_description: "",
+    keywords: "",
+    meta_canonical_url: "",
+  },
   schema_org: {
     type: "",
     properties: {
@@ -164,6 +169,7 @@ const AddProperty = () => {
   const [seoTitle, setSeoTitle] = useState();
   const [seoDescription, setSeoDescription] = useState();
   const [seoKeywords, setSeoKeywords] = useState([]);
+  const [seoCanonicalUrl, setSeoCanonicalUrl] = useState([]);
 
   const [ogImage, setOgImage] = useState();
   const [ogType, setOgType] = useState();
@@ -1660,6 +1666,20 @@ const AddProperty = () => {
                   value={seoDescription}
                   onChange={(e) =>
                     handleNestedChange(e, "seo", "meta_description")
+                  }
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                />
+              </div>
+              <div className="mb-5 md:col-span-4">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Meta Canonical Url
+                </label>
+                <input
+                  type="text"
+                  value={propertyData?.seo?.meta_canonical_url}
+                  name="meta_canonical_url"
+                  onChange={(e) =>
+                    handleNestedChange(e, "seo", "meta_canonical_url")
                   }
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                 />
