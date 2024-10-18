@@ -42,7 +42,9 @@ const RedirectManager = () => {
       const method = editingRedirect ? "PUT" : "POST";
       const response = await fetch(url, {
         method,
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
+
         body: JSON.stringify(formData),
       });
 
