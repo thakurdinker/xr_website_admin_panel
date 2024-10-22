@@ -4,7 +4,7 @@ import { REDIRECT_MANAGER } from "../../api/constants";
 const RedirectManager = () => {
   const [redirects, setRedirects] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({ from: "", to: "" });
+  const [formData, setFormData] = useState({ from: "", to: "", type: "301" });
   const [editingRedirect, setEditingRedirect] = useState(null);
 
   // Assume we get this from somewhere else in the app
@@ -44,7 +44,6 @@ const RedirectManager = () => {
         method,
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-
         body: JSON.stringify(formData),
       });
 
@@ -61,7 +60,7 @@ const RedirectManager = () => {
         setRedirects([...redirects, newRedirect]);
       }
 
-      setFormData({ from: "", to: "" });
+      setFormData({ from: "", to: "", type: "301" });
       setEditingRedirect(null);
     } catch (error) {
       console.error("Error saving redirect:", error);
@@ -72,7 +71,7 @@ const RedirectManager = () => {
 
   const handleEdit = (redirect) => {
     setEditingRedirect(redirect);
-    setFormData({ from: redirect.from, to: redirect.to });
+    setFormData({ from: redirect.from, to: redirect.to, type: redirect.type });
   };
 
   const handleDelete = async (redirectId) => {
@@ -135,6 +134,25 @@ const RedirectManager = () => {
           />
         </div>
 
+        <div className="mb-4">
+          <label
+            htmlFor="type"
+            className="text-gray-700 mb-2 block text-sm font-bold"
+          >
+            Redirect Type
+          </label>
+          <select
+            id="type"
+            name="type"
+            value={formData.type}
+            onChange={handleInputChange}
+            className="text-gray-700 focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+          >
+            <option value="301">301 (Permanent)</option>
+            <option value="302">302 (Temporary)</option>
+          </select>
+        </div>
+
         <div className="flex items-center justify-between">
           <button
             type="submit"
@@ -146,7 +164,7 @@ const RedirectManager = () => {
             <button
               type="button"
               onClick={() => {
-                setFormData({ from: "", to: "" });
+                setFormData({ from: "", to: "", type: "301" });
                 setEditingRedirect(null);
               }}
               className="bg-gray-500 hover:bg-gray-700 focus:shadow-outline ml-4 rounded px-4 py-2 font-bold text-white focus:outline-none"
@@ -171,6 +189,9 @@ const RedirectManager = () => {
                   To
                 </th>
                 <th className="border-b px-4 py-2 text-left font-semibold">
+                  Type
+                </th>
+                <th className="border-b px-4 py-2 text-left font-semibold">
                   Actions
                 </th>
               </tr>
@@ -180,6 +201,7 @@ const RedirectManager = () => {
                 <tr key={redirect._id} className="hover:bg-gray-50">
                   <td className="border-b px-4 py-2">{redirect.from}</td>
                   <td className="border-b px-4 py-2">{redirect.to}</td>
+                  <td className="border-b px-4 py-2">{redirect.type}</td>
                   <td className="border-b px-4 py-2">
                     <button
                       onClick={() => handleEdit(redirect)}
