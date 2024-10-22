@@ -82,6 +82,7 @@ import AddDeveloper from "./pages/Form/AddDeveloper.jsx";
 import GenerateSitemap from "./components/GenerateSitemap/GenerateSitemap.jsx";
 import ProjectOfTheMonth from "./components/ProjectOfTheMonth/ProjectOfTheMonth.jsx";
 import RedirectManager from "./components/Redirects/Redirects.jsx";
+import SitemapUpdater from "./components/GenerateSitemap/GenerateSitemapNew.jsx";
 
 function WithUserContext() {
   return (
@@ -260,7 +261,8 @@ function App() {
             element={
               <>
                 <PageTitle title="Generate Sitemap" />
-                <GenerateSitemap />
+                {/* <GenerateSitemap /> */}
+                <SitemapUpdater />
               </>
             }
           />
