@@ -1,7 +1,7 @@
-export const BASE_URL = "https://api.xrealty.ae/admin/";
-export const NEWS_AND_INSIGHTS = `https://api.xrealty.ae/real-estate-news`;
-// export const BASE_URL = "http://localhost:3333/admin/";
-// export const NEWS_AND_INSIGHTS = `http://localhost:3333/real-estate-news`;
+// export const BASE_URL = "https://api.xrealty.ae/admin/";
+// export const NEWS_AND_INSIGHTS = `https://api.xrealty.ae/real-estate-news`;
+export const BASE_URL = "http://localhost:3333/admin/";
+export const NEWS_AND_INSIGHTS = `http://localhost:3333/real-estate-news`;
 export const LOGIN = BASE_URL + "login";
 export const LOGOUT = BASE_URL + "logout";
 export const GET_ALL_USERS = BASE_URL + "getUsers";
@@ -28,3 +28,4 @@ export const SITEMAP_GENERATE_URL = BASE_URL + "generateSitemap";
 export const REVIEWS = BASE_URL + "reviews";
 export const PROJECT_OF_THE_MONTH = BASE_URL + "project-of-the-month";
 export const REDIRECT_MANAGER = BASE_URL + "redirect-rules";
+export const FETCH_SITEMAP = BASE_URL + "sitemap";
