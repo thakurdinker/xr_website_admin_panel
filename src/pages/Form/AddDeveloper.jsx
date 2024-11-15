@@ -22,6 +22,7 @@ export default function AddDeveloper() {
     meta_title: "",
     meta_description: "",
     order: 1,
+    predefinedCommunitiesOrder: [],
   });
 
   const handleChange = (e) => {
@@ -175,6 +176,29 @@ export default function AddDeveloper() {
                     onChange={handleChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   />
+                </div>
+
+                {/* Predefined Communities Order */}
+                <div className="mb-5 md:col-span-12">
+                  <label className="block">Predefined Communities Order</label>
+                  <textarea
+                    name="predefinedCommunitiesOrder"
+                    value={formData.predefinedCommunitiesOrder.join("\n")} // Convert array to newline-separated string
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        predefinedCommunitiesOrder: e.target.value
+                          .split("\n")
+                          .map((name) => name.trim()), // Convert newline-separated string to array
+                      }))
+                    }
+                    className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                    rows={8} // Adjust the height of the textarea
+                  ></textarea>
+                  <p className="text-gray-500 mt-2 text-sm">
+                    Enter each community name on a new line. The order will be
+                    preserved in the backend.
+                  </p>
                 </div>
 
                 {/* Images */}
