@@ -45,6 +45,8 @@ const initialPropertyData = {
     area: "",
     year_built: "",
   },
+
+  payment_plan: "",
   images: [],
   gallery_title_1: "",
   gallery_title_2: "",
@@ -1301,6 +1303,20 @@ const AddProperty = () => {
                     handleNestedChange(e, "features", "year_built")
                   }
                   placeholder="Enter year built"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                />
+              </div>
+              {/* Payment Plan */}
+              <div className="mb-5 md:col-span-4 lg:col-span-4">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Payment Plan
+                </label>
+                <input
+                  type="text"
+                  name="payment_plan"
+                  value={propertyData?.payment_plan}
+                  onChange={handleChange}
+                  placeholder="Enter Payment Plan"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                 />
               </div>
