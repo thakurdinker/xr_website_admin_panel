@@ -89,67 +89,7 @@ const initialPropertyData = {
   },
   schema_org: {
     type: "",
-    properties: {
-      "@context": "https://schema.org",
-      "@type": "ApartmentComplex",
-      name: "Luxury Waterfront Apartment",
-      description:
-        "A luxurious 3-bedroom apartment with stunning waterfront views, located in the heart of Dubai Marina.",
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: "123 Marina Walk",
-        addressLocality: "Dubai",
-        addressRegion: "Dubai",
-        postalCode: "00000",
-        addressCountry: "AE",
-      },
-      offers: {
-        "@type": "Offer",
-        priceCurrency: "AED",
-        price: "3500000",
-        itemCondition: "https://schema.org/NewCondition",
-        availability: "https://schema.org/InStock",
-        seller: {
-          "@type": "RealEstateAgent",
-          name: "Xperience Realty",
-          url: "https://www.xperiencerealty.com",
-          logo: "https://www.xperiencerealty.com/logo.png",
-          contactPoint: {
-            "@type": "ContactPoint",
-            telephone: "+971-4-123-4567",
-            contactType: "Sales",
-            areaServed: "Dubai, UAE",
-            availableLanguage: ["English", "Arabic"],
-          },
-        },
-      },
-      image: "https://www.xperiencerealty.com/images/property.jpg",
-      numberOfRooms: 3,
-      floorSize: {
-        "@type": "QuantitativeValue",
-        value: 2500,
-        unitCode: "SQF",
-      },
-      petsAllowed: false,
-      amenityFeature: [
-        {
-          "@type": "LocationFeatureSpecification",
-          name: "Swimming Pool",
-          value: "Yes",
-        },
-        {
-          "@type": "LocationFeatureSpecification",
-          name: "Gym",
-          value: "Yes",
-        },
-        {
-          "@type": "LocationFeatureSpecification",
-          name: "Parking",
-          value: "Yes",
-        },
-      ],
-      url: "https://www.xperiencerealty.com/property/luxury-waterfront-apartment",
-    },
+    properties: {},
   },
   open_graph: { title: "", description: "", image: "", type: "" },
   order: 1,
@@ -175,6 +115,8 @@ const AddProperty = () => {
 
   const [ogImage, setOgImage] = useState();
   const [ogType, setOgType] = useState();
+  const [schemaType, setSchemaType] = useState();
+  const [schemaProperties, setSchemaProperties] = useState();
 
   const navigate = useNavigate();
 
@@ -214,61 +156,60 @@ const AddProperty = () => {
 
   const generateSchema = () => {
     return {
-      type: ogType,
-      properties: {
-        "@context": "https://schema.org",
-        "@type": ogType,
-        name: seoTitle,
-        description: seoDescription,
-        // address: {
-        //   "@type": "PostalAddress",
-        //   streetAddress: "123 Marina Walk",
-        //   addressLocality: "Dubai",
-        //   addressRegion: "Dubai",
-        //   postalCode: "00000",
-        //   addressCountry: "AE",
-        // },
-        // offers: {
-        //   "@type": "Offer",
-        //   priceCurrency: "AED",
-        //   price: "3500000",
-        //   itemCondition: "https://schema.org/NewCondition",
-        //   availability: "https://schema.org/InStock",
-        //   seller: {
-        //     "@type": "RealEstateAgent",
-        //     name: "Xperience Realty",
-        //     url: "https://www.xperiencerealty.com",
-        //     logo: "https://www.xperiencerealty.com/logo.png",
-        //     contactPoint: {
-        //       "@type": "ContactPoint",
-        //       telephone: "+971-4-123-4567",
-        //       contactType: "Sales",
-        //       areaServed: "Dubai, UAE",
-        //       availableLanguage: ["English", "Arabic"],
-        //     },
-        //   },
-        // },
-        image: ogImage,
-        // floorSize: {
-        //   "@type": "QuantitativeValue",
-        //   value: 2500,
-        //   unitCode: "SQF",
-        // },
-        amenityFeature: (function () {
-          let amenitiesName = [];
-          getAmenitiesValue().map((amenity) => {
-            let temp = {
-              "@type": "LocationFeatureSpecification",
-              name: amenity.label,
-              value: "Yes",
-            };
-            amenitiesName.push(temp);
-          });
+      // type: schemaType,
 
-          return amenitiesName;
-        })(),
-        url: `https://www.xrealty.ae/property/${propertyData?.property_name_slug}`,
-      },
+      "@context": "https://schema.org",
+      "@type": schemaType,
+      name: seoTitle,
+      description: seoDescription,
+      // address: {
+      //   "@type": "PostalAddress",
+      //   streetAddress: "123 Marina Walk",
+      //   addressLocality: "Dubai",
+      //   addressRegion: "Dubai",
+      //   postalCode: "00000",
+      //   addressCountry: "AE",
+      // },
+      // offers: {
+      //   "@type": "Offer",
+      //   priceCurrency: "AED",
+      //   price: "3500000",
+      //   itemCondition: "https://schema.org/NewCondition",
+      //   availability: "https://schema.org/InStock",
+      //   seller: {
+      //     "@type": "RealEstateAgent",
+      //     name: "Xperience Realty",
+      //     url: "https://www.xperiencerealty.com",
+      //     logo: "https://www.xperiencerealty.com/logo.png",
+      //     contactPoint: {
+      //       "@type": "ContactPoint",
+      //       telephone: "+971-4-123-4567",
+      //       contactType: "Sales",
+      //       areaServed: "Dubai, UAE",
+      //       availableLanguage: ["English", "Arabic"],
+      //     },
+      //   },
+      // },
+      image: ogImage,
+      // floorSize: {
+      //   "@type": "QuantitativeValue",
+      //   value: 2500,
+      //   unitCode: "SQF",
+      // },
+      amenityFeature: (function () {
+        let amenitiesName = [];
+        getAmenitiesValue().map((amenity) => {
+          let temp = {
+            "@type": "LocationFeatureSpecification",
+            name: amenity.label,
+            value: "Yes",
+          };
+          amenitiesName.push(temp);
+        });
+
+        return amenitiesName;
+      })(),
+      url: `https://www.xrealty.ae/property/${propertyData?.property_name_slug}/`,
     };
   };
 
@@ -313,6 +254,18 @@ const AddProperty = () => {
           response.data.property.open_graph.type === ""
             ? response.data.property.type[0].name
             : response.data.property.open_graph.type
+        );
+
+        setSchemaType(
+          response.data.property.schema_org.type === ""
+            ? ""
+            : response.data.property.schema_org.type
+        );
+
+        setSchemaProperties(
+          !response.data.property.schema_org.properties
+            ? JSON.stringify({})
+            : JSON.stringify(response.data.property.schema_org.properties)
         );
       } catch (error) {
         console.error("Error fetching property data:", error);
@@ -473,8 +426,12 @@ const AddProperty = () => {
 
   const handleSchemaOrgPropertiesChange = (e) => {
     const { value } = e.target;
+
+    setSchemaProperties(value);
     try {
-      const parsedValue = JSON.parse(value);
+      // const parsedValue = JSON.parse(value);
+      const parsedValue = value;
+
       setPropertyData((prevData) => ({
         ...prevData,
         schema_org: {
@@ -551,6 +508,10 @@ const AddProperty = () => {
 
     if (name === "type") {
       setOgType(e.target.value);
+    }
+
+    if (name === "schema_org.type") {
+      setSchemaType(e.target.value);
     }
 
     setPropertyData((prev) => ({
@@ -1718,7 +1679,7 @@ const AddProperty = () => {
                 <label className="block">Schema Type</label>
                 <textarea
                   name="schema_org.type"
-                  value={ogType}
+                  value={schemaType}
                   onChange={(e) => handleNestedChange(e, "schema_org", "type")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 />
@@ -1728,10 +1689,31 @@ const AddProperty = () => {
                 <label className="block">Schema Properties (JSON format)</label>
                 <textarea
                   name="schema_org.properties"
-                  value={JSON.stringify(generateSchema())}
+                  value={schemaProperties}
                   onChange={handleSchemaOrgPropertiesChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 />
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSchemaProperties(JSON.stringify(generateSchema()));
+                    try {
+                      setPropertyData((prevData) => ({
+                        ...prevData,
+                        schema_org: {
+                          ...prevData?.schema_org,
+                          properties: generateSchema(),
+                        },
+                      }));
+                    } catch (error) {
+                      // Handle JSON parse error if needed
+                      console.error("Invalid JSON format");
+                    }
+                  }}
+                  className="inline-flex items-center justify-center rounded-md bg-black px-5 py-3 font-medium text-white transition hover:bg-opacity-90"
+                >
+                  Generate Schema
+                </button>
               </div>
 
               {/* Open Graph */}

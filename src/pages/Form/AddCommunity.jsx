@@ -31,12 +31,14 @@ const CommunityForm = () => {
   const [ogImage, setOgImage] = useState();
   const [ogType, setOgType] = useState();
 
+  const [schemaType, setSchemaType] = useState();
+  const [schemaProperties, setSchemaProperties] = useState();
+
   const [developers, setDevelopers] = useState([]);
 
   // Extract the current page number from query parameters
   const query = new URLSearchParams(location.search);
-  const currentPage = parseInt(query.get('page')) || 1;
-
+  const currentPage = parseInt(query.get("page")) || 1;
 
   const [formData, setFormData] = useState({
     name: "",
@@ -65,13 +67,7 @@ const CommunityForm = () => {
     },
     schema_org: {
       type: "Person",
-      properties: {
-        context: "https://json-ld.org/contexts/person.jsonld",
-        id: "http://dbpedia.org/resource/John_Lennon",
-        name: "John Lennon",
-        born: "1940-10-09",
-        spouse: "http://dbpedia.org/resource/Cynthia_Lennon",
-      },
+      properties: {},
     },
     open_graph: {
       title: "",
@@ -85,30 +81,29 @@ const CommunityForm = () => {
 
   const generateSchema = () => {
     return {
-      type: ogType,
-      properties: {
-        "@context": "https://schema.org",
-        "@type": ogType,
-        name: seoTitle,
-        description: seoDescription,
+      // type: ogType,
 
-        image: ogImage,
+      "@context": "https://schema.org",
+      "@type": schemaType,
+      name: seoTitle,
+      description: seoDescription,
 
-        amenityFeature: (function () {
-          let amenitiesName = [];
-          getAmenitiesValue().map((amenity) => {
-            let temp = {
-              "@type": "LocationFeatureSpecification",
-              name: amenity.label,
-              value: "Yes",
-            };
-            amenitiesName.push(temp);
-          });
+      image: ogImage,
 
-          return amenitiesName;
-        })(),
-        url: `https://www.xrealty.ae/area/${formData?.slug}`,
-      },
+      amenityFeature: (function () {
+        let amenitiesName = [];
+        getAmenitiesValue().map((amenity) => {
+          let temp = {
+            "@type": "LocationFeatureSpecification",
+            name: amenity.label,
+            value: "Yes",
+          };
+          amenitiesName.push(temp);
+        });
+
+        return amenitiesName;
+      })(),
+      url: `https://www.xrealty.ae/area/${formData?.slug}/`,
     };
   };
 
@@ -152,6 +147,18 @@ const CommunityForm = () => {
             : response.data.community.open_graph.image
         );
         setOgType("Place");
+
+        setSchemaType(
+          response.data.community.schema_org.type === ""
+            ? ""
+            : response.data.community.schema_org.type
+        );
+
+        setSchemaProperties(
+          !response.data.community.schema_org.properties
+            ? JSON.stringify({})
+            : JSON.stringify(response.data.community.schema_org.properties)
+        );
       } catch (error) {
         console.error("Error fetching community data:", error);
       }
@@ -195,8 +202,8 @@ const CommunityForm = () => {
     if (name === "description") {
       setSeoDescription(value);
     }
-    
-   if (name === "developer") {
+
+    if (name === "developer") {
       let developer_slug = "";
       let developer_name = "";
       for (let i = 0; i < developers.length; i++) {
@@ -206,7 +213,6 @@ const CommunityForm = () => {
           break;
         }
       }
-
 
       setFormData((prev) => ({
         ...prev,
@@ -223,6 +229,11 @@ const CommunityForm = () => {
 
   const handleNestedChange = (e, parentKey, childKey) => {
     const { name, value } = e.target;
+
+    if (name === "schema_org.type") {
+      setSchemaType(value);
+      return;
+    }
 
     setFormData((prevData) => ({
       ...prevData,
@@ -332,8 +343,10 @@ const CommunityForm = () => {
 
   const handleSchemaOrgPropertiesChange = (e) => {
     const { value } = e.target;
+    setSchemaProperties(value);
     try {
-      const parsedValue = JSON.parse(value);
+      // const parsedValue = JSON.parse(value);
+      const parsedValue = value;
       setFormData((prevData) => ({
         ...prevData,
         schema_org: {
@@ -370,7 +383,8 @@ const CommunityForm = () => {
     formData.open_graph.title = seoTitle;
     formData.open_graph.image = ogImage;
 
-    formData.schema_org = generateSchema();
+    // formData.schema_org = generateSchema();
+    formData.schema_org.type = schemaType;
 
     formData.amenities = convertStringToArray(formData.amenities);
 
@@ -400,7 +414,9 @@ const CommunityForm = () => {
   };
 
   const handleCancel = () => {
-    const confirmCancel = window.confirm("Are you sure you want to cancel? Unsaved changes will be lost.");
+    const confirmCancel = window.confirm(
+      "Are you sure you want to cancel? Unsaved changes will be lost."
+    );
     if (confirmCancel) {
       navigate(`/manage-communities?page=${currentPage}`);
     }
@@ -446,16 +462,16 @@ const CommunityForm = () => {
               {/* Order */}
               <div className="mb-5 md:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                 Order
+                  Order
                 </label>
                 <input
                   type="number"
                   name="order"
                   value={formData?.order}
                   onChange={handleChange}
-                  min= {1}
+                  min={1}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                />  
+                />
               </div>
 
               {/* Developer Name */}
@@ -811,7 +827,7 @@ const CommunityForm = () => {
                 <label className="block">Schema Type</label>
                 <textarea
                   name="schema_org.type"
-                  value={ogType}
+                  value={schemaType}
                   onChange={(e) => handleNestedChange(e, "schema_org", "type")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 />
@@ -821,10 +837,27 @@ const CommunityForm = () => {
                 <label className="block">Schema Properties (JSON format)</label>
                 <textarea
                   name="schema_org.properties"
-                  value={JSON.stringify(generateSchema())}
+                  value={schemaProperties}
                   onChange={handleSchemaOrgPropertiesChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 />
+
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSchemaProperties(JSON.stringify(generateSchema()));
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      schema_org: {
+                        ...prevData?.schema_org,
+                        properties: generateSchema(),
+                      },
+                    }));
+                  }}
+                  className="inline-flex items-center justify-center rounded-md bg-black px-5 py-3 font-medium text-white transition hover:bg-opacity-90"
+                >
+                  Generate Schema
+                </button>
               </div>
 
               {/* Open Graph */}

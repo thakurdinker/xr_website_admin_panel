@@ -22,6 +22,9 @@ const ProfileForm = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  const [schemaType, setSchemaType] = useState();
+  const [schemaProperties, setSchemaProperties] = useState();
+
   const [formData, setFormData] = useState({
     name: "",
     name_slug: "",
@@ -45,13 +48,7 @@ const ProfileForm = () => {
     seo: { meta_title: "", meta_description: "", keywords: "" },
     schema_org: {
       type: "Person",
-      properties: {
-        context: "https://json-ld.org/contexts/person.jsonld",
-        id: "http://dbpedia.org/resource/John_Lennon",
-        name: "John Lennon",
-        born: "1940-10-09",
-        spouse: "http://dbpedia.org/resource/Cynthia_Lennon",
-      },
+      properties: {},
     },
     open_graph: { title: "", description: "", image: "" },
     starAgent: false,
@@ -92,6 +89,18 @@ const ProfileForm = () => {
             : response.data.agent.open_graph.image
         );
         setOgType("Person");
+
+        setSchemaType(
+          response.data.agent.schema_org.type === ""
+            ? ""
+            : response.data.agent.schema_org.type
+        );
+
+        setSchemaProperties(
+          !response.data.agent.schema_org.properties
+            ? JSON.stringify({})
+            : JSON.stringify(response.data.agent.schema_org.properties)
+        );
       } catch (error) {
         console.error("Error fetching property data:", error);
       }
@@ -111,22 +120,23 @@ const ProfileForm = () => {
 
   const generateSchema = () => {
     return {
-      type: "Person",
-      properties: {
-        "@context": "https://schema.org",
-        "@type": ogType,
-        name: seoTitle,
-        description: seoDescription,
-        image: ogImage,
-        url: `https://www.xrealty.ae/agent/${formData.name_slug}`,
-      },
+      // type: "Person",
+
+      "@context": "https://schema.org",
+      "@type": schemaType,
+      name: seoTitle,
+      description: seoDescription,
+      image: ogImage,
+      url: `https://www.xrealty.ae/agent/${formData.name_slug}/`,
     };
   };
 
   const handleSchemaOrgPropertiesChange = (e) => {
     const { value } = e.target;
+    setSchemaProperties(value);
     try {
-      const parsedValue = JSON.parse(value);
+      // const parsedValue = JSON.parse(value);
+      const parsedValue = value;
       setFormData((prevData) => ({
         ...prevData,
         schema_org: {
@@ -159,6 +169,11 @@ const ProfileForm = () => {
 
     if (name === "meta_title") {
       setSeoTitle(value);
+    }
+
+    if (name === "schema_org.type") {
+      setSchemaType(value);
+      return;
     }
 
     if (name === "image") {
@@ -223,8 +238,8 @@ const ProfileForm = () => {
     formData.seo.meta_description = seoDescription;
     formData.seo.meta_title = seoTitle;
 
-    formData.schema_org = generateSchema();
-
+    // formData.schema_org = generateSchema();
+    formData.schema_org.type = schemaType;
     formData.open_graph.title = seoTitle;
     formData.open_graph.description = seoDescription;
     formData.open_graph.image = ogImage;
@@ -546,8 +561,8 @@ const ProfileForm = () => {
                 <label className="block">Schema Type</label>
                 <textarea
                   name="schema_org.type"
-                  value={ogType}
-                  // onChange={(e) => handleNestedChange(e, "schema_org", "type")}
+                  value={schemaType}
+                  onChange={(e) => handleNestedChange(e, "schema_org", "type")}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 />
               </div>
@@ -556,10 +571,27 @@ const ProfileForm = () => {
                 <label className="block">Schema Properties (JSON format)</label>
                 <textarea
                   name="schema_org.properties"
-                  value={JSON.stringify(generateSchema())}
+                  value={schemaProperties}
                   onChange={handleSchemaOrgPropertiesChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                 />
+
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSchemaProperties(JSON.stringify(generateSchema()));
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      schema_org: {
+                        ...prevData?.schema_org,
+                        properties: generateSchema(),
+                      },
+                    }));
+                  }}
+                  className="inline-flex items-center justify-center rounded-md bg-black px-5 py-3 font-medium text-white transition hover:bg-opacity-90"
+                >
+                  Generate Schema
+                </button>
               </div>
 
               {/* Open Graph */}
