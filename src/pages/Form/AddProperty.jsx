@@ -81,6 +81,9 @@ const initialPropertyData = {
     icons: [],
   },
   faqs: [{ question: "", answer: "" }],
+  faqs_schema: {
+    properties: {},
+  },
   seo: {
     meta_title: "",
     meta_description: "",
@@ -117,7 +120,7 @@ const AddProperty = () => {
   const [ogType, setOgType] = useState();
   const [schemaType, setSchemaType] = useState();
   const [schemaProperties, setSchemaProperties] = useState();
-
+  const [faqsSchemaProperties, setFaqsSchemaProperties] = useState();
   const navigate = useNavigate();
 
   const updatePropertyData = (propertyData, apiData) => {
@@ -154,61 +157,54 @@ const AddProperty = () => {
     return amenities;
   });
 
+  const generateFaqsSchema = () => {
+    return {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: propertyData.faqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.answer,
+        },
+      })),
+    };
+  };
+
   const generateSchema = () => {
     return {
       // type: schemaType,
-
       "@context": "https://schema.org",
       "@type": schemaType,
       name: seoTitle,
       description: seoDescription,
-      // address: {
-      //   "@type": "PostalAddress",
-      //   streetAddress: "123 Marina Walk",
-      //   addressLocality: "Dubai",
-      //   addressRegion: "Dubai",
-      //   postalCode: "00000",
-      //   addressCountry: "AE",
-      // },
-      // offers: {
-      //   "@type": "Offer",
-      //   priceCurrency: "AED",
-      //   price: "3500000",
-      //   itemCondition: "https://schema.org/NewCondition",
-      //   availability: "https://schema.org/InStock",
-      //   seller: {
-      //     "@type": "RealEstateAgent",
-      //     name: "Xperience Realty",
-      //     url: "https://www.xperiencerealty.com",
-      //     logo: "https://www.xperiencerealty.com/logo.png",
-      //     contactPoint: {
-      //       "@type": "ContactPoint",
-      //       telephone: "+971-4-123-4567",
-      //       contactType: "Sales",
-      //       areaServed: "Dubai, UAE",
-      //       availableLanguage: ["English", "Arabic"],
-      //     },
-      //   },
-      // },
+      brand: {
+        "@type": "Brand",
+        name: propertyData.developer,
+      },
+      offers: {
+        "@type": "Offer",
+        priceCurrency: "AED",
+        url: `https://www.xrealty.ae/property/${propertyData?.property_name_slug}/`,
+        price: propertyData.price.replace("AED", ""),
+        itemCondition: "https://schema.org/NewCondition",
+        availability: "https://schema.org/LimitedAvailability",
+      },
       image: ogImage,
-      // floorSize: {
-      //   "@type": "QuantitativeValue",
-      //   value: 2500,
-      //   unitCode: "SQF",
-      // },
-      amenityFeature: (function () {
-        let amenitiesName = [];
-        getAmenitiesValue().map((amenity) => {
-          let temp = {
-            "@type": "LocationFeatureSpecification",
-            name: amenity.label,
-            value: "Yes",
-          };
-          amenitiesName.push(temp);
-        });
+      // amenityFeature: (function () {
+      //   let amenitiesName = [];
+      //   getAmenitiesValue().map((amenity) => {
+      //     let temp = {
+      //       "@type": "LocationFeatureSpecification",
+      //       name: amenity.label,
+      //       value: "Yes",
+      //     };
+      //     amenitiesName.push(temp);
+      //   });
 
-        return amenitiesName;
-      })(),
+      //   return amenitiesName;
+      // })(),
       url: `https://www.xrealty.ae/property/${propertyData?.property_name_slug}/`,
     };
   };
@@ -266,6 +262,12 @@ const AddProperty = () => {
           !response.data.property.schema_org.properties
             ? JSON.stringify({})
             : JSON.stringify(response.data.property.schema_org.properties)
+        );
+
+        setFaqsSchemaProperties(
+          !response.data.property.faqs_schema.properties
+            ? JSON.stringify({})
+            : JSON.stringify(response.data.property.faqs_schema.properties)
         );
       } catch (error) {
         console.error("Error fetching property data:", error);
@@ -430,7 +432,7 @@ const AddProperty = () => {
     setSchemaProperties(value);
     try {
       // const parsedValue = JSON.parse(value);
-      const parsedValue = value;
+      const parsedValue = JSON.parse(value);
 
       setPropertyData((prevData) => ({
         ...prevData,
@@ -533,6 +535,19 @@ const AddProperty = () => {
           ...prev[parentKey][childKey],
           [subChildKey]: value,
         },
+      },
+    }));
+  };
+
+  const handleFaqsSchemaPropertiesChange = (e) => {
+    const { value } = e.target;
+    setFaqsSchemaProperties(value);
+
+    setPropertyData((prev) => ({
+      ...prev,
+      faqs_schema: {
+        ...prev?.faqs_schema,
+        properties: JSON.parse(value),
       },
     }));
   };
@@ -760,6 +775,8 @@ const AddProperty = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+
+    console.log(propertyData);
 
     try {
       let response;
@@ -1811,6 +1828,42 @@ const AddProperty = () => {
                   className="bg-gray-200 hover:bg-gray-300 mt-2 rounded border border-stroke px-4 py-2 text-black transition dark:border-form-strokedark dark:bg-form-input dark:text-white dark:hover:bg-form-input"
                 >
                   Add FAQ
+                </button>
+              </div>
+
+              {/* Faqs Schema */}
+              <div className="mb-5 md:col-span-8">
+                <label className="block">
+                  Faqs Schema Properties (JSON format)
+                </label>
+                <textarea
+                  name="faqs_schema.properties"
+                  value={faqsSchemaProperties}
+                  onChange={handleFaqsSchemaPropertiesChange}
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                />
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setFaqsSchemaProperties(
+                      JSON.stringify(generateFaqsSchema())
+                    );
+                    try {
+                      setPropertyData((prevData) => ({
+                        ...prevData,
+                        faqs_schema: {
+                          ...prevData?.faqs_schema,
+                          properties: generateFaqsSchema(),
+                        },
+                      }));
+                    } catch (error) {
+                      // Handle JSON parse error if needed
+                      console.error("Invalid JSON format");
+                    }
+                  }}
+                  className="inline-flex items-center justify-center rounded-md bg-black px-5 py-3 font-medium text-white transition hover:bg-opacity-90"
+                >
+                  Generate Faqs Schema
                 </button>
               </div>
 
