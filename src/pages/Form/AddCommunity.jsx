@@ -27,7 +27,7 @@ const CommunityForm = () => {
   const [seoTitle, setSeoTitle] = useState();
   const [seoDescription, setSeoDescription] = useState();
   const [seoKeywords, setSeoKeywords] = useState([]);
-
+  const [seoCanonicalUrl, setSeoCanonicalUrl] = useState();
   const [ogImage, setOgImage] = useState();
   const [ogType, setOgType] = useState();
 
@@ -64,6 +64,7 @@ const CommunityForm = () => {
       meta_title: "",
       meta_description: "",
       keywords: [],
+      meta_canonical_url: "",
     },
     schema_org: {
       type: "Person",
@@ -134,6 +135,11 @@ const CommunityForm = () => {
           response.data.community?.seo?.meta_description === ""
             ? response.data.community.description
             : response.data.community?.seo?.meta_description
+        );
+        setSeoCanonicalUrl(
+          response.data.community?.seo?.meta_canonical_url === ""
+            ? ""
+            : response.data.community?.seo?.meta_canonical_url
         );
         setSeoKeywords(
           response.data.community.seo.keywords[0] === ""
@@ -246,6 +252,10 @@ const CommunityForm = () => {
 
     if (name === "meta_description") {
       setSeoDescription(value);
+    }
+
+    if (name === "meta_canonical_url") {
+      setSeoCanonicalUrl(value);
     }
 
     if (e.target.name === "schema_org.type") {
@@ -378,6 +388,7 @@ const CommunityForm = () => {
     formData.seo.keywords = convertStringToArray(seoKeywords);
     formData.seo.meta_title = seoTitle;
     formData.seo.meta_description = seoDescription;
+    formData.seo.meta_canonical_url = seoCanonicalUrl;
 
     formData.open_graph.description = seoDescription;
     formData.open_graph.title = seoTitle;
@@ -808,6 +819,21 @@ const CommunityForm = () => {
                     handleNestedChange(e, "seo", "meta_description")
                   }
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                />
+              </div>
+
+              <div className="mb-5 md:col-span-4">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Meta Canonical Url
+                </label>
+                <input
+                  type="text"
+                  value={seoCanonicalUrl}
+                  name="meta_canonical_url"
+                  onChange={(e) =>
+                    handleNestedChange(e, "seo", "meta_canonical_url")
+                  }
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
                 />
               </div>
 
