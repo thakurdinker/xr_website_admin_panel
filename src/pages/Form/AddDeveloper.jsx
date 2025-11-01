@@ -21,6 +21,7 @@ export default function AddDeveloper() {
     heading: "",
     meta_title: "",
     meta_description: "",
+    meta_keywords: "",
     order: 1,
     predefinedCommunitiesOrder: [],
   });
@@ -173,6 +174,18 @@ export default function AddDeveloper() {
                     type="text"
                     name="meta_description"
                     value={formData?.meta_description}
+                    onChange={handleChange}
+                    className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  />
+                </div>
+
+                {/* Meta Keywords */}
+                <div className="mb-5 md:col-span-4">
+                  <label className="block">Meta Keywords</label>
+                  <input
+                    type="text"
+                    name="meta_keywords"
+                    value={formData?.meta_keywords}
                     onChange={handleChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   />
