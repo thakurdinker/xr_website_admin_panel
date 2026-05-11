@@ -64,7 +64,7 @@ export default function ManageDevelopers() {
   useEffect(() => {
     const fetchDevelopers = async () => {
       try {
-        const response = await fetch(DEVELOPERS_URL);
+        const response = await fetch(DEVELOPERS_URL, { credentials: "include" });
         const data = await response.json();
         setDevelopers(data.data);
       } catch (error) {

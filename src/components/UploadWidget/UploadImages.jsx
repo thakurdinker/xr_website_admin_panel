@@ -10,9 +10,9 @@ const UploadImages = ({ onImagesChange, initialImages = [], newsAndBlog }) => {
     // Trigger Cloudinary upload widget
     window.cloudinary.openUploadWidget(
       {
-        cloudName: "dkhns25jh", // Replace with your Cloudinary cloud name
-        uploadPreset: "ml_default", // Replace with your Cloudinary upload preset
-        folder: "xr_media", // Optional: Change to your desired folder
+        cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "dkhns25jh",
+        uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "ml_default",
+        folder: import.meta.env.VITE_CLOUDINARY_FOLDER || "xr_media",
       },
       function (error, result) {
         if (!error && result && result.event === "success") {
@@ -71,9 +71,40 @@ const UploadImages = ({ onImagesChange, initialImages = [], newsAndBlog }) => {
                   />
                 ) : (
                   <>
+                    <input
+                      type="text"
+                      name="alt"
+                      value={image?.alt || ""}
+                      onChange={(event) =>
+                        onImagesChange(
+                          initialImages.map((img, i) =>
+                            i === index
+                              ? { ...img, alt: event.target.value || "" }
+                              : img
+                          )
+                        )
+                      }
+                      placeholder="Alt text (for SEO & accessibility)"
+                      className="mb-1 w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    />
+                    <textarea
+                      name="heading"
+                      value={image?.heading || ""}
+                      onChange={(event) =>
+                        onImagesChange(
+                          initialImages.map((img, i) =>
+                            i === index
+                              ? { ...img, heading: event.target.value || "" }
+                              : img
+                          )
+                        )
+                      }
+                      placeholder="Image heading"
+                      className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    ></textarea>
                     <textarea
                       name="description"
-                      value={image?.description}
+                      value={image?.description || ""}
                       onChange={(event) =>
                         onImagesChange(
                           initialImages.map((img, i) =>
@@ -86,22 +117,7 @@ const UploadImages = ({ onImagesChange, initialImages = [], newsAndBlog }) => {
                           )
                         )
                       }
-                      placeholder="Enter image description"
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                    ></textarea>
-                    <textarea
-                      name="heading"
-                      value={image?.heading}
-                      onChange={(event) =>
-                        onImagesChange(
-                          initialImages.map((img, i) =>
-                            i === index
-                              ? { ...img, heading: event.target.value || "" }
-                              : img
-                          )
-                        )
-                      }
-                      placeholder="Enter image heading"
+                      placeholder="Image description (optional)"
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     ></textarea>
                   </>

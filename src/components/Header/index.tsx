@@ -8,12 +8,14 @@ import DarkModeSwitcher from "./DarkModeSwitcher";
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
+  sidebarCollapsed?: boolean;
+  setSidebarCollapsed?: (arg0: boolean) => void;
 }) => {
   return (
     <header className="sticky top-0 z-999 flex w-full  bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
       <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6  2xl:px-11">
-        <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
-          {/* <!-- Hamburger Toggle BTN --> */}
+        <div className="flex items-center gap-2 sm:gap-4">
+          {/* <!-- Hamburger Toggle BTN (mobile) --> */}
           <button
             aria-controls="sidebar"
             onClick={(e) => {
@@ -54,7 +56,30 @@ const Header = (props: {
               </span>
             </span>
           </button>
-          {/* <!-- Hamburger Toggle BTN --> */}
+          {/* <!-- Hamburger Toggle BTN (mobile) --> */}
+
+          {/* <!-- Desktop Sidebar Toggle --> */}
+          <button
+            aria-controls="sidebar"
+            onClick={() =>
+              props.setSidebarCollapsed?.(!props.sidebarCollapsed)
+            }
+            className="hidden rounded-sm border border-stroke bg-white p-1.5 shadow-sm hover:text-primary dark:border-strokedark dark:bg-boxdark dark:hover:text-primary lg:block"
+            title={props.sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            <svg
+              className={`h-5 w-5 fill-current transition-transform duration-200 ${
+                props.sidebarCollapsed ? "rotate-180" : ""
+              }`}
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M13.5 15L8.5 10L13.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+              <path d="M7 4V16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+            </svg>
+          </button>
+          {/* <!-- Desktop Sidebar Toggle --> */}
 
           <Link className="block flex-shrink-0 lg:hidden" to="/">
             <img src={LogoIcon} alt="Logo" />

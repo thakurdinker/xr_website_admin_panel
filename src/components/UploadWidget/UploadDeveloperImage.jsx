@@ -5,9 +5,9 @@ const UploadDeveloperImage = ({ onImagesChange, initialImages = [] }) => {
     event.preventDefault();
     window.cloudinary.openUploadWidget(
       {
-        cloudName: "dkhns25jh",
-        uploadPreset: "ml_default",
-        folder: "xr_media",
+        cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "dkhns25jh",
+        uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "ml_default",
+        folder: import.meta.env.VITE_CLOUDINARY_FOLDER || "xr_media",
       },
       function (error, result) {
         if (!error && result && result.event === "success") {

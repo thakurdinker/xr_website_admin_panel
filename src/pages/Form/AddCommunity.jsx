@@ -24,15 +24,15 @@ const CommunityForm = () => {
   const [selectedAmenities, setSelectedAmenities] = useState([]);
   const navigate = useNavigate();
 
-  const [seoTitle, setSeoTitle] = useState();
-  const [seoDescription, setSeoDescription] = useState();
+  const [seoTitle, setSeoTitle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
   const [seoKeywords, setSeoKeywords] = useState([]);
-  const [seoCanonicalUrl, setSeoCanonicalUrl] = useState();
-  const [ogImage, setOgImage] = useState();
-  const [ogType, setOgType] = useState();
+  const [seoCanonicalUrl, setSeoCanonicalUrl] = useState("");
+  const [ogImage, setOgImage] = useState("");
+  const [ogType, setOgType] = useState("");
 
-  const [schemaType, setSchemaType] = useState();
-  const [schemaProperties, setSchemaProperties] = useState();
+  const [schemaType, setSchemaType] = useState("");
+  const [schemaProperties, setSchemaProperties] = useState("");
 
   const [developers, setDevelopers] = useState([]);
 
@@ -124,7 +124,18 @@ const CommunityForm = () => {
         const response = await axios.get(FETCH_ALL_COMMUNITIES + `/${id}`, {
           withCredentials: true,
         });
-        setFormData(response.data.community);
+        setFormData((prev) => {
+          const c = response.data.community;
+          return {
+            ...prev,
+            ...c,
+            location: { ...prev.location, ...c.location, coordinates: { ...prev.location.coordinates, ...c.location?.coordinates } },
+            amenities: { ...prev.amenities, ...c.amenities },
+            seo: { ...prev.seo, ...c.seo },
+            schema_org: { ...prev.schema_org, ...c.schema_org },
+            open_graph: { ...prev.open_graph, ...c.open_graph },
+          };
+        });
 
         setSeoTitle(
           response.data.community.seo.meta_title === ""
@@ -282,10 +293,12 @@ const CommunityForm = () => {
   };
 
   const handleImagesChange = (updatedImages) => {
-    // Create a new array with only the url and description properties
+    // Create a new array with url, alt, description and heading properties
     const imagesToSend = updatedImages.map((image) => ({
       url: image.url,
-      description: image.description || "", // Add this line to handle missing description
+      alt: image.alt || "",
+      description: image.description || "",
+      heading: image.heading || "",
     }));
 
     setOgImage(updatedImages[0].url);
@@ -324,19 +337,6 @@ const CommunityForm = () => {
       return prev;
     });
   };
-
-  // const getAmenitiesValue = useCallback(() => {
-  //   let amenities = [];
-  //   for (let i = 0; i < formData.amenities.icons.length; i++) {
-  //     amenities.push(
-  //       ...amenitiesOptions.filter(
-  //         (icon) => icon.id === formData.amenities.icons[i]
-  //       )
-  //     );
-  //   }
-
-  //   return amenities;
-  // }, [formData.amenities.icons, amenitiesOptions]);
 
   const getAmenitiesValue = useCallback(() => {
     let amenities = [];
@@ -413,14 +413,17 @@ const CommunityForm = () => {
         });
       }
       if (response?.data?.success === false) {
-        toast.error(response?.data?.message);
-        return;
+        toast.error(response?.data?.message || "Failed to save community");
       } else {
-        toast.success(response?.data?.message);
+        toast.success(id ? "Community updated successfully!" : "Community created successfully!");
       }
-      navigate(`/manage-communities?page=${currentPage}`);
     } catch (error) {
-      console.error("Error adding/updating property:", error);
+      console.error("Error adding/updating community:", error);
+      if (error.response && error.response.data) {
+        toast.error(`Error: ${error.response.data.message}`);
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
     }
   };
 
@@ -435,13 +438,38 @@ const CommunityForm = () => {
 
   return (
     <DefaultLayout>
-      <div className="grid w-[95vw] lg:w-[60vw]">
-        <div className="col-span-full">
-          <div className="rounded-lg border bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="mx-auto w-full max-w-[1200px]">
+        <div>
+          {/* Header */}
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-black dark:text-white">
+                {id ? "Edit Community" : "Add Community"}
+              </h2>
+              <p className="mt-1 text-sm text-[#637381] dark:text-bodydark">
+                {id ? "Update community details and settings" : "Create a new community listing"}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate(`/manage-communities?page=${currentPage}`)}
+              className="rounded border border-stroke px-4 py-2 text-sm font-medium text-black hover:bg-gray-100 dark:border-strokedark dark:text-white dark:hover:bg-meta-4"
+            >
+              Back to Communities
+            </button>
+          </div>
+
+          <div className="rounded-xl border border-stroke bg-white shadow-sm dark:border-strokedark dark:bg-boxdark">
             <form
               onSubmit={handleSubmit}
-              className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 md:grid-cols-12"
+              className="grid grid-cols-1 gap-5 p-6 sm:grid-cols-2 md:grid-cols-12 lg:p-8"
             >
+              {/* Section: Basic Info */}
+              <div className="md:col-span-12">
+                <h3 className="text-base font-semibold text-black dark:text-white">Basic Information</h3>
+                <p className="mt-1 text-xs text-[#637381] dark:text-bodydark">Community name, developer, and description</p>
+              </div>
+
               {/* Name */}
               <div className="mb-5 md:col-span-4 lg:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -452,7 +480,7 @@ const CommunityForm = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -466,7 +494,7 @@ const CommunityForm = () => {
                   name="slug"
                   value={formData.slug}
                   onChange={handleChange}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -481,7 +509,7 @@ const CommunityForm = () => {
                   value={formData?.order}
                   onChange={handleChange}
                   min={1}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -494,7 +522,7 @@ const CommunityForm = () => {
                   name="developer"
                   value={formData?.developer}
                   onChange={handleChange}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 >
                   <option value="" disabled>
                     Select Developer
@@ -524,7 +552,7 @@ const CommunityForm = () => {
                   name="developer_name_slug"
                   value={formData.developer_name_slug}
                   placeholder="Enter Developer name slug"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -537,8 +565,15 @@ const CommunityForm = () => {
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
+              </div>
+
+              {/* Section: Location */}
+              <div className="md:col-span-12">
+                <div className="my-1 border-t border-stroke dark:border-strokedark"></div>
+                <h3 className="text-base font-semibold text-black dark:text-white">Location</h3>
+                <p className="mt-1 text-xs text-[#637381] dark:text-bodydark">Address and geographic coordinates</p>
               </div>
 
               {/* Address */}
@@ -552,7 +587,7 @@ const CommunityForm = () => {
                   value={formData?.location?.address}
                   onChange={(e) => handleNestedChange(e, "location", "address")}
                   placeholder="Enter address"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -567,7 +602,7 @@ const CommunityForm = () => {
                   value={formData?.location?.city}
                   onChange={(e) => handleNestedChange(e, "location", "city")}
                   placeholder="Enter city"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -582,7 +617,7 @@ const CommunityForm = () => {
                   value={formData?.location?.state}
                   onChange={(e) => handleNestedChange(e, "location", "state")}
                   placeholder="Enter state"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -597,7 +632,7 @@ const CommunityForm = () => {
                   value={formData?.location?.country}
                   onChange={(e) => handleNestedChange(e, "location", "country")}
                   placeholder="Enter country"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -619,7 +654,7 @@ const CommunityForm = () => {
                     )
                   }
                   placeholder="Enter latitude"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -641,74 +676,16 @@ const CommunityForm = () => {
                     )
                   }
                   placeholder="Enter longitude"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
-              {/* Amenities Name */}
-              {/* <div className="mb-5 md:col-span-4 lg:col-span-12">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Amenities Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.amenities.map.name || ""}
-                  onChange={handleChange}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                />
-              </div> */}
-
-              {/* Amenities */}
-              {/* {formData.amenities.map((amenity, index) => (
-                <div key={index} className="mb-5 md:col-span-4 lg:col-span-12">
-                  <div className="mb-5">
-                    <label className="block text-sm font-medium text-black dark:text-white">
-                      Amenities Name
-                    </label>
-                    <input
-                      type="text"
-                      name={`amenities[${index}].name`}
-                      value={amenity.name}
-                      onChange={(e) =>
-                        handleArrayChange(e, index, "amenities", "name")
-                      }
-                      className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    />
-                  </div>
-
-                  
-                  <div className="mb-5">
-                    <label className="block text-sm font-medium text-black dark:text-white">
-                      Amenities Icon Url
-                    </label>
-                    <input
-                      type="text"
-                      name={`amenities[${index}].icon_url`}
-                      value={amenity.icon_url}
-                      onChange={(e) =>
-                        handleArrayChange(e, index, "amenities", "icon_url")
-                      }
-                      className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    />
-                  </div>
-
-                  <div className="mb-5">
-                    <label className="block text-sm font-medium text-black dark:text-white">
-                      Amenities Description
-                    </label>
-                    <input
-                      type="text"
-                      name={`amenities[${index}].description`}
-                      value={amenity.description}
-                      onChange={(e) =>
-                        handleArrayChange(e, index, "amenities", "description")
-                      }
-                      className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    />
-                  </div>
-                </div>
-              ))} */}
+              {/* Section: Amenities & Media */}
+              <div className="md:col-span-12">
+                <div className="my-1 border-t border-stroke dark:border-strokedark"></div>
+                <h3 className="text-base font-semibold text-black dark:text-white">Amenities & Media</h3>
+                <p className="mt-1 text-xs text-[#637381] dark:text-bodydark">Community amenities and images</p>
+              </div>
 
               {/* Amenity Description */}
               <div className="mb-5 md:col-span-6">
@@ -722,7 +699,7 @@ const CommunityForm = () => {
                   onChange={(e) =>
                     handleNestedChange(e, "amenities", "description")
                   }
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -754,63 +731,95 @@ const CommunityForm = () => {
                 />
               </div>
 
-              {/* FAQs */}
+              {/* Section: FAQs */}
+              <div className="md:col-span-12">
+                <div className="my-1 border-t border-stroke dark:border-strokedark"></div>
+              </div>
               <div className="mb-5 md:col-span-12">
-                <h3 className="mb-2">FAQs</h3>
-                {formData.faqs.map((faq, index) => (
-                  <div key={index} className="mb-2">
-                    <div className=" flex flex-row justify-between">
-                      <label className="block">Question {index + 1}</label>
-                      <IoCloseCircle
-                        className=" hover:cursor-pointer"
-                        color="black"
-                        onClick={() => handleFAQDelete(faq, index)}
-                      />
-                    </div>
-
-                    <input
-                      type="text"
-                      name={`faqs[${index}].question`}
-                      value={faq.question}
-                      onChange={(e) =>
-                        handleArrayChange(e, index, "faqs", "question")
-                      }
-                      className="mb-2 w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    />
-                    <label className="block">Answer {index + 1}</label>
-                    <textarea
-                      name={`faqs[${index}].answer`}
-                      value={faq.answer}
-                      onChange={(e) =>
-                        handleArrayChange(e, index, "faqs", "answer")
-                      }
-                      className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    />
+                <div className="mb-4 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-base font-semibold text-black dark:text-white">FAQs</h3>
+                    <p className="mt-0.5 text-xs text-[#637381] dark:text-bodydark">Frequently asked questions about this community</p>
                   </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={addFaq}
-                  className="bg-gray-200 hover:bg-gray-300 mt-2 rounded border border-stroke px-4 py-2 text-black transition dark:border-form-strokedark dark:bg-form-input dark:text-white dark:hover:bg-form-input"
-                >
-                  Add FAQ
-                </button>
+                  <button
+                    type="button"
+                    onClick={addFaq}
+                    className="rounded bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-opacity-90"
+                  >
+                    + Add FAQ
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {formData.faqs.map((faq, index) => (
+                    <div key={index} className="rounded-lg border border-stroke p-4 dark:border-form-strokedark">
+                      <div className="mb-3 flex items-center justify-between">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-[#637381] dark:text-bodydark">FAQ {index + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleFAQDelete(faq, index)}
+                          className="rounded p-1 text-[#637381] transition hover:bg-red/10 hover:text-red dark:text-bodydark"
+                          title="Remove FAQ"
+                        >
+                          <IoCloseCircle size={20} />
+                        </button>
+                      </div>
+                      <div className="mb-3">
+                        <label className="mb-1 block text-sm font-medium text-black dark:text-white">Question</label>
+                        <input
+                          type="text"
+                          name={`faqs[${index}].question`}
+                          value={faq.question}
+                          onChange={(e) =>
+                            handleArrayChange(e, index, "faqs", "question")
+                          }
+                          placeholder="Enter the question..."
+                          className="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2.5 text-sm text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-black dark:text-white">Answer</label>
+                        <textarea
+                          rows={3}
+                          name={`faqs[${index}].answer`}
+                          value={faq.answer}
+                          onChange={(e) =>
+                            handleArrayChange(e, index, "faqs", "answer")
+                          }
+                          placeholder="Enter the answer..."
+                          className="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2.5 text-sm text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {formData.faqs.length === 0 && (
+                  <div className="rounded-lg border border-dashed border-stroke py-8 text-center dark:border-form-strokedark">
+                    <p className="text-sm text-[#637381] dark:text-bodydark">No FAQs added yet. Click "+ Add FAQ" to get started.</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Section: SEO & Schema */}
+              <div className="md:col-span-12">
+                <div className="my-1 border-t border-stroke dark:border-strokedark"></div>
+                <h3 className="text-base font-semibold text-black dark:text-white">SEO & Structured Data</h3>
+                <p className="mt-1 text-xs text-[#637381] dark:text-bodydark">Search engine optimization, meta tags, and schema markup</p>
               </div>
 
               {/* SEO */}
               <div className="mb-5 md:col-span-4">
-                <label className="block">Meta Title</label>
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">Meta Title</label>
                 <input
                   type="text"
                   name="meta_title"
                   value={seoTitle}
                   onChange={(e) => handleNestedChange(e, "seo", "meta_title")}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2.5 text-sm text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
               <div className="mb-5 md:col-span-4">
-                <label className="block">Meta Description</label>
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">Meta Description</label>
                 <input
                   type="text"
                   name="meta_description"
@@ -818,13 +827,13 @@ const CommunityForm = () => {
                   onChange={(e) =>
                     handleNestedChange(e, "seo", "meta_description")
                   }
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2.5 text-sm text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
               <div className="mb-5 md:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Meta Canonical Url
+                  Meta Canonical URL
                 </label>
                 <input
                   type="text"
@@ -833,42 +842,44 @@ const CommunityForm = () => {
                   onChange={(e) =>
                     handleNestedChange(e, "seo", "meta_canonical_url")
                   }
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2.5 text-sm text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
               <div className="mb-5 md:col-span-4">
-                <label className="block">SEO Keywords </label>
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">SEO Keywords</label>
                 <input
                   type="text"
                   name="keywords"
                   value={seoKeywords}
                   onChange={(e) => handleNestedChange(e, "seo", "keywords")}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2.5 text-sm text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
               {/* Schema */}
               <div className="mb-5 md:col-span-4">
-                <label className="block">Schema Type</label>
-                <textarea
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">Schema Type</label>
+                <input
+                  type="text"
                   name="schema_org.type"
                   value={schemaType}
                   onChange={(e) => handleNestedChange(e, "schema_org", "type")}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2.5 text-sm text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
               <div className="mb-5 md:col-span-8">
-                <label className="block">Schema Properties (JSON format)</label>
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">Schema Properties (JSON)</label>
                 <textarea
+                  rows={4}
                   name="schema_org.properties"
                   value={schemaProperties}
                   onChange={handleSchemaOrgPropertiesChange}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2.5 text-sm text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
-
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.preventDefault();
                     setSchemaProperties(JSON.stringify(generateSchema()));
@@ -880,37 +891,42 @@ const CommunityForm = () => {
                       },
                     }));
                   }}
-                  className="inline-flex items-center justify-center rounded-md bg-black px-5 py-3 font-medium text-white transition hover:bg-opacity-90"
+                  className="mt-2 inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-white transition hover:bg-opacity-90"
                 >
                   Generate Schema
                 </button>
               </div>
 
               {/* Open Graph */}
+              <div className="md:col-span-12">
+                <h4 className="text-sm font-semibold text-black dark:text-white">Open Graph</h4>
+                <p className="mt-0.5 text-xs text-[#637381] dark:text-bodydark">Social media sharing preview</p>
+              </div>
+
               <div className="mb-5 md:col-span-4">
-                <label className="block">Title</label>
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">OG Title</label>
                 <input
                   type="text"
                   name="title"
                   value={seoTitle}
                   onChange={(e) => handleNestedChange(e, "open_graph", "title")}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2.5 text-sm text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
               <div className="mb-5 md:col-span-4">
-                <label className="block">Image</label>
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">OG Image URL</label>
                 <input
                   type="text"
                   name="image"
                   value={ogImage}
                   onChange={(e) => handleNestedChange(e, "open_graph", "image")}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2.5 text-sm text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
               <div className="mb-5 md:col-span-4">
-                <label className="block">Description</label>
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">OG Description</label>
                 <input
                   type="text"
                   name="description"
@@ -918,24 +934,27 @@ const CommunityForm = () => {
                   onChange={(e) =>
                     handleNestedChange(e, "open_graph", "description")
                   }
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2.5 text-sm text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
-              {/* Button */}
-              <div className="flex justify-end gap-4 md:col-span-12">
-                <button
-                  type="submit"
-                  className="inline-flex items-center justify-center rounded-md bg-black px-5 py-3 font-medium text-white transition hover:bg-opacity-90"
-                >
-                  Save
-                </button>
+              {/* Action Buttons */}
+              <div className="md:col-span-12">
+                <div className="my-1 border-t border-stroke dark:border-strokedark"></div>
+              </div>
+              <div className="flex justify-end gap-3 md:col-span-12">
                 <button
                   type="button"
                   onClick={handleCancel}
-                  className="border-gray-300 hover:bg-gray-100 inline-flex items-center justify-center rounded-md border bg-white px-5 py-3 font-medium text-black transition"
+                  className="rounded border border-stroke px-6 py-2.5 text-sm font-medium text-black hover:bg-gray-100 dark:border-strokedark dark:text-white dark:hover:bg-meta-4"
                 >
                   Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="rounded bg-primary px-6 py-2.5 text-sm font-medium text-white hover:bg-opacity-90"
+                >
+                  {id ? "Save Changes" : "Create Community"}
                 </button>
               </div>
             </form>

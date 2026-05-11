@@ -1,37 +1,19 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { UserContext } from "../context/UserContext";
-
 import Loader from "../common/Loader";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 export default function ProtectedRoute({ children }) {
-  const { currentUser } = useContext(UserContext);
-  const [isLoading, setIsLoading] = useState(true);
+  const { currentUser, authChecked } = useContext(UserContext);
 
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (currentUser) {
-      setIsLoading(false);
-    } else {
-      setIsLoading(true);
-    }
-  }, [currentUser]);
-
-  useEffect(() => {
-    let timer = setTimeout(() => {
-      if (!currentUser) {
-        navigate("/auth/signin");
-      }
-    }, [5000]);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [currentUser]);
-
-  if (isLoading && currentUser === null) {
+  // Still checking auth — show loader
+  if (!authChecked) {
     return <Loader />;
+  }
+
+  // Auth check done, no user — redirect immediately
+  if (!currentUser) {
+    return <Navigate to="/auth/signin" replace />;
   }
 
   return <>{children}</>;

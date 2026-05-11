@@ -111,6 +111,7 @@ const AddProperty = () => {
   const [amenitiesOptions, setAmenitiesOptions] = useState([]);
   const [selectedAmenities, setSelectedAmenities] = useState([]);
 
+  const [activeTab, setActiveTab] = useState("basic");
   const [seoTitle, setSeoTitle] = useState();
   const [seoDescription, setSeoDescription] = useState();
   const [seoKeywords, setSeoKeywords] = useState([]);
@@ -172,41 +173,42 @@ const AddProperty = () => {
     };
   };
 
+  const cleanPrice = (raw) => {
+    if (!raw) return "0";
+    return raw.replace(/AED/gi, "").replace(/,/g, "").trim() || "0";
+  };
+
   const generateSchema = () => {
-    return {
-      // type: schemaType,
+    const propertyUrl = `https://www.xrealty.ae/property/${propertyData?.property_name_slug}/`;
+    const schema = {
       "@context": "https://schema.org",
-      "@type": schemaType,
-      name: seoTitle,
-      description: seoDescription,
-      brand: {
-        "@type": "Brand",
-        name: propertyData.developer,
-      },
+      "@type": "RealEstateListing",
+      name: seoTitle || propertyData.property_name,
+      description: seoDescription || propertyData.description,
+      url: propertyUrl,
+      image: ogImage || propertyData.images?.[0]?.url || "",
       offers: {
         "@type": "Offer",
         priceCurrency: "AED",
-        url: `https://www.xrealty.ae/property/${propertyData?.property_name_slug}/`,
-        price: propertyData.price.replace("AED", ""),
-        itemCondition: "https://schema.org/NewCondition",
+        price: cleanPrice(propertyData.price),
+        url: propertyUrl,
+        priceValidUntil: new Date(
+          new Date().setFullYear(new Date().getFullYear() + 1)
+        )
+          .toISOString()
+          .split("T")[0],
         availability: "https://schema.org/LimitedAvailability",
       },
-      image: ogImage,
-      // amenityFeature: (function () {
-      //   let amenitiesName = [];
-      //   getAmenitiesValue().map((amenity) => {
-      //     let temp = {
-      //       "@type": "LocationFeatureSpecification",
-      //       name: amenity.label,
-      //       value: "Yes",
-      //     };
-      //     amenitiesName.push(temp);
-      //   });
-
-      //   return amenitiesName;
-      // })(),
-      url: `https://www.xrealty.ae/property/${propertyData?.property_name_slug}/`,
     };
+
+    if (propertyData.developer) {
+      schema.brand = {
+        "@type": "Brand",
+        name: propertyData.developer,
+      };
+    }
+
+    return schema;
   };
 
   useEffect(() => {
@@ -243,7 +245,9 @@ const AddProperty = () => {
 
         setOgImage(
           response.data.property.open_graph.image === ""
-            ? response.data.property.gallery1[0]
+            ? (typeof response.data.property.gallery1[0] === "string"
+                ? response.data.property.gallery1[0]
+                : response.data.property.gallery1[0]?.url || "")
             : response.data.property.open_graph.image
         );
         setOgType(
@@ -413,10 +417,11 @@ const AddProperty = () => {
   };
 
   const handleImagesChange = (updatedImages) => {
-    // Create a new array with only the url and description properties
+    // Create a new array with only the url, alt, description and heading properties
     const imagesToSend = updatedImages.map((image) => ({
       url: image.url,
-      description: image.description || "", // Add this line to handle missing description
+      alt: image.alt || "",
+      description: image.description || "",
       heading: image.heading || "",
     }));
 
@@ -575,27 +580,20 @@ const AddProperty = () => {
   };
 
   const handleImageChange = (images) => {
+    const lastImage = images[images.length - 1];
     const imagesToSend = {
-      image: images[images.length - 1].url,
-      description: images[images.length - 1].description || "", // Add this line to handle missing description
-      heading: images[images.length - 1].heading || "",
+      image: lastImage.url,
+      alt: lastImage.alt || "",
+      description: lastImage.description || "",
+      heading: lastImage.heading || "",
     };
-
-    // setPropertyData((prev) => ({
-    //   ...prev,
-    //   section_1: {
-    //     ...prev.section_1,
-    //     image: imagesToSend.url,
-    //     description: imagesToSend.description,
-    //     heading: imagesToSend.heading,
-    //   },
-    // }));
 
     setPropertyData((prev) => ({
       ...prev,
       section_1: {
         ...prev.section_1,
         image: imagesToSend.image,
+        alt: imagesToSend.alt,
         description: imagesToSend.description,
         heading: imagesToSend.heading,
       },
@@ -776,7 +774,44 @@ const AddProperty = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(propertyData);
+    // Validation
+    const errors = [];
+    if (!propertyData.property_name?.trim()) errors.push("Property Name is required");
+    if (!propertyData.property_name_slug?.trim()) errors.push("Property Name Slug is required");
+    if (!propertyData.price?.trim()) errors.push("Price is required");
+    if (!propertyData.developer?.trim()) errors.push("Developer is required");
+    if (!propertyData.community_name?.trim()) errors.push("Community Name is required");
+
+    if (errors.length > 0) {
+      errors.forEach((err) => toast.error(err));
+      // Switch to the tab containing the first error
+      if (!propertyData.property_name?.trim() || !propertyData.property_name_slug?.trim() || !propertyData.price?.trim() || !propertyData.developer?.trim()) {
+        setActiveTab("basic");
+      } else if (!propertyData.community_name?.trim()) {
+        setActiveTab("community");
+      }
+      return;
+    }
+
+    // Auto-generate schema_org and faqs_schema before submit
+    const payload = {
+      ...propertyData,
+      schema_org: {
+        type: "RealEstateListing",
+        properties: generateSchema(),
+      },
+      faqs_schema: {
+        properties:
+          propertyData.faqs?.length > 0 && propertyData.faqs[0]?.question
+            ? generateFaqsSchema()
+            : propertyData.faqs_schema?.properties || {},
+      },
+      open_graph: {
+        ...propertyData.open_graph,
+        image: ogImage || propertyData.open_graph?.image || "",
+        type: ogType || propertyData.open_graph?.type || "",
+      },
+    };
 
     try {
       let response;
@@ -784,23 +819,22 @@ const AddProperty = () => {
         // Update existing property
         response = await axios.put(
           `${FETCH_ALL_PROPERTIES}/${id}`,
-          propertyData,
+          payload,
           {
             withCredentials: true,
           }
         );
       } else {
         // Create new property
-        response = await axios.post(FETCH_ALL_PROPERTIES, propertyData, {
+        response = await axios.post(FETCH_ALL_PROPERTIES, payload, {
           withCredentials: true,
         });
       }
 
       if (response?.data?.success === false) {
-        toast.error(response?.data?.message);
+        toast.error(response?.data?.message || "Failed to save property");
       } else {
-        toast.success(response?.data?.message);
-        navigate(`/manage-properties?page=${currentPage}`);
+        toast.success(id ? "Property updated successfully!" : "Property created successfully!");
       }
     } catch (error) {
       console.error("Error adding/updating property:", error);
@@ -825,19 +859,69 @@ const AddProperty = () => {
     }
   };
 
+  const tabs = [
+    { id: "basic", label: "Basic Info" },
+    { id: "location", label: "Location & Features" },
+    { id: "media", label: "Media & Galleries" },
+    { id: "community", label: "Community & Amenities" },
+    { id: "settings", label: "Settings" },
+    { id: "seo", label: "SEO & Schema" },
+  ];
+
   return (
     <DefaultLayout>
-      <div className="grid w-[95vw] lg:w-[60vw]">
-        <div className="col-span-full">
-          <div className="rounded-lg border bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="mx-auto w-full max-w-[1200px]">
+        <div>
+          {/* Header */}
+          <div className="mb-4 flex items-center justify-between">
+            <button
+              onClick={() => navigate(`/manage-properties?page=${currentPage}`)}
+              className="inline-flex items-center gap-2 text-sm font-medium text-[#637381] hover:text-primary dark:text-bodydark"
+            >
+              <svg className="h-4 w-4 fill-current" viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 8.175H2.987L9.362 1.688a.727.727 0 000-1.2.727.727 0 00-1.2 0L.4 8.363a.727.727 0 000 1.2l7.763 7.875a.695.695 0 00.6.262.695.695 0 00.6-.225.727.727 0 000-1.2L3.025 9.863H19a.77.77 0 00.825-.825A.77.77 0 0019 8.175z" />
+              </svg>
+              Back to Properties
+            </button>
+            <h2 className="text-xl font-bold text-black dark:text-white">
+              {id ? "Edit Property" : "Add Property"}
+            </h2>
+          </div>
+
+          <div className="overflow-hidden rounded-xl border border-stroke bg-white shadow-sm dark:border-strokedark dark:bg-boxdark">
+            {/* Tab Navigation */}
+            <div className="sticky top-0 z-10 flex flex-wrap gap-1 border-b border-stroke bg-white px-2 pt-2 dark:border-strokedark dark:bg-boxdark">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`rounded-t-lg px-5 py-2.5 text-sm font-medium transition-colors ${
+                    activeTab === tab.id
+                      ? "border-b-2 border-primary bg-primary/5 text-primary"
+                      : "text-[#637381] hover:bg-gray-50 hover:text-black dark:text-bodydark dark:hover:bg-meta-4 dark:hover:text-white"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
             <form
               onSubmit={handleFormSubmit}
-              className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 md:grid-cols-12"
+              className="grid grid-cols-1 gap-5 p-6 sm:grid-cols-2 md:grid-cols-12 lg:p-8"
             >
+              {/* ===== BASIC INFO TAB ===== */}
+              {activeTab === "basic" && (
+                <>
+              <div className="md:col-span-12">
+                <h3 className="text-base font-semibold text-black dark:text-white">Property Details</h3>
+                <p className="mt-1 text-xs text-[#637381] dark:text-bodydark">Core information about the property listing</p>
+              </div>
               {/* Property Name */}
               <div className="mb-5 md:col-span-3">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Property Name
+                  Property Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -845,14 +929,15 @@ const AddProperty = () => {
                   value={propertyData?.property_name}
                   onChange={handleChange}
                   placeholder="Enter property name"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
               {/* Property Name Slug*/}
               <div className="mb-5 md:col-span-3">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Property Name Slug
+                  Property Name Slug <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -860,14 +945,15 @@ const AddProperty = () => {
                   value={propertyData?.property_name_slug}
                   onChange={handleChange}
                   placeholder="Enter property name slug"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
               {/* Price */}
               <div className="mb-5 md:col-span-4 lg:col-span-3">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Price
+                  Price <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -875,7 +961,8 @@ const AddProperty = () => {
                   value={propertyData?.price}
                   onChange={handleChange}
                   placeholder="Enter property price"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -890,65 +977,21 @@ const AddProperty = () => {
                   value={propertyData?.status}
                   onChange={handleChange}
                   placeholder='"for sale", "latest", "off-plan"'
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
-
-              {/* Description */}
-              {/* <div className="mb-5 md:col-span-12">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  value={propertyData?.description}
-                  onChange={handleChange}
-                  placeholder="Enter property description"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  
-                ></textarea>
-              </div> */}
-
-              {/* Developer */}
-              {/* <div className="mb-5 md:col-span-6">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Developer
-                </label>
-                <input
-                  type="text"
-                  name="developer"
-                  value={propertyData.developer}
-                  onChange={handleChange}
-                  placeholder="Enter developer name"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                />
-              </div> */}
-
-              {/* Developer Name Slug */}
-              {/* <div className="mb-5 md:col-span-6">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Developer Name Slug
-                </label>
-                <input
-                  type="text"
-                  name="developer_name_slug"
-                  value={propertyData.developer_name_slug}
-                  onChange={handleChange}
-                  placeholder="Enter developer name slug"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                />
-              </div> */}
 
               {/* Developer Name */}
               <div className="mb-5 md:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Developer Name
+                  Developer Name <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="developer"
                   value={propertyData?.developer}
                   onChange={handleChange}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 >
                   <option value="" disabled>
                     Select Developer
@@ -978,26 +1021,9 @@ const AddProperty = () => {
                   name="developer_name_slug"
                   value={propertyData?.developer_name_slug}
                   placeholder="Enter Developer name slug"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
-
-              {/* Section 1 Heading */}
-              {/* <div className="mb-5 md:col-span-6">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Section 1 Heading
-                </label>
-                <input
-                  type="text"
-                  name="heading"
-                  value={propertyData?.section_1?.heading}
-                  onChange={(e) =>
-                    handleNestedChange(e, "section_1", "heading")
-                  }
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  
-                />
-              </div> */}
 
               {/* Order */}
               <div className="mb-5 md:col-span-4">
@@ -1010,7 +1036,7 @@ const AddProperty = () => {
                   value={propertyData?.order}
                   onChange={handleChange}
                   min={1}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1024,54 +1050,14 @@ const AddProperty = () => {
                   name="title"
                   value={propertyData?.section_1?.title}
                   onChange={(e) => handleNestedChange(e, "section_1", "title")}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
-
-              {/* Section 1 Description */}
-              {/* <div className="mb-5 md:col-span-4">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Section 1 Description
-                </label>
-                <input
-                  type="text"
-                  name="description"
-                  value={propertyData?.section_1?.description}
-                  onChange={(e) =>
-                    handleNestedChange(e, "section_1", "description")
-                  }
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  
-                />
-              </div> */}
-
-              {/* Section 1 Image */}
-              {/* <div className="mb-5 md:col-span-12">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Section 1 Image
-                </label>
-                <input
-                  type="text"
-                  name="description"
-                  value={propertyData?.section_1?.image}
-                  onChange={(e) => handleNestedChange(e, "section_1", "image")}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  
-                />
-              </div> */}
 
               <div className="mb-5 md:col-span-6">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Section 1 Image
                 </label>
-                {/* <UploadWidget
-                  onImagesChange={handleImageChange}
-                  initialImages={
-                    propertyData?.section_1?.image
-                      ? [{ url: propertyData.section_1.image }]
-                      : []
-                  }
-                /> */}
 
                 <UploadImages
                   onImagesChange={handleImageChange}
@@ -1080,6 +1066,7 @@ const AddProperty = () => {
                       ? [
                           {
                             url: propertyData.section_1.image,
+                            alt: propertyData.section_1.alt || "",
                             description: propertyData.section_1.description,
                             heading: propertyData.section_1.heading,
                           },
@@ -1100,7 +1087,7 @@ const AddProperty = () => {
                     propertyType.map((type) => (
                       <div
                         key={type.name_slug}
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                        className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       >
                         <label className="flex items-center space-x-3">
                           <input
@@ -1138,7 +1125,7 @@ const AddProperty = () => {
                                 handleBedroomsChange(e, type.name_slug)
                               }
                               placeholder="0"
-                              className="border-gray-300 bg-gray-50 text-gray-800 ark:border-form-strokedark w-20 rounded-md border p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-form-strokedark dark:bg-form-input dark:text-white  dark:focus:border-black"
+                              className="border-gray-300 bg-gray-50 text-gray-800 ark:border-form-strokedark w-20 rounded-md border p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-form-strokedark dark:bg-form-input dark:text-white  dark:focus:border-primary"
                             />
                           </div>
                         )}
@@ -1147,6 +1134,16 @@ const AddProperty = () => {
                 </div>
               </div>
 
+                </>
+              )}
+
+              {/* ===== LOCATION & FEATURES TAB ===== */}
+              {activeTab === "location" && (
+                <>
+              <div className="md:col-span-12">
+                <h3 className="text-base font-semibold text-black dark:text-white">Location & Features</h3>
+                <p className="mt-1 text-xs text-[#637381] dark:text-bodydark">Property address, coordinates, and key features</p>
+              </div>
               {/* Address */}
               <div className="mb-5 md:col-span-4 lg:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -1158,7 +1155,7 @@ const AddProperty = () => {
                   value={propertyData?.location?.address}
                   onChange={(e) => handleNestedChange(e, "location", "address")}
                   placeholder="Enter address"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1173,7 +1170,7 @@ const AddProperty = () => {
                   value={propertyData?.location?.city}
                   onChange={(e) => handleNestedChange(e, "location", "city")}
                   placeholder="Enter city"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1188,7 +1185,7 @@ const AddProperty = () => {
                   value={propertyData?.location?.state}
                   onChange={(e) => handleNestedChange(e, "location", "state")}
                   placeholder="Enter state"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1203,7 +1200,7 @@ const AddProperty = () => {
                   value={propertyData?.location?.country}
                   onChange={(e) => handleNestedChange(e, "location", "country")}
                   placeholder="Enter country"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1225,7 +1222,7 @@ const AddProperty = () => {
                     );
                   }}
                   placeholder="Enter latitude"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1247,7 +1244,7 @@ const AddProperty = () => {
                     )
                   }
                   placeholder="Enter longitude"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1264,7 +1261,7 @@ const AddProperty = () => {
                     handleNestedChange(e, "features", "bathrooms")
                   }
                   placeholder="Enter number of bathrooms"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1281,7 +1278,7 @@ const AddProperty = () => {
                     handleNestedChange(e, "features", "year_built")
                   }
                   placeholder="Enter year built"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
               {/* Payment Plan */}
@@ -1295,7 +1292,7 @@ const AddProperty = () => {
                   value={propertyData?.payment_plan}
                   onChange={handleChange}
                   placeholder="Enter Payment Plan"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1310,31 +1307,20 @@ const AddProperty = () => {
                   value={propertyData?.features?.area}
                   onChange={(e) => handleNestedChange(e, "features", "area")}
                   placeholder="Enter property area"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
-              {/* Project Overview */}
-              {/* <div className="mb-5 md:col-span-12">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Project Overview
-                </label>
-                <textarea
-                  name="project_overview"
-                  value={propertyData?.community_features?.project_overview}
-                  onChange={(e) =>
-                    handleNestedChange(
-                      e,
-                      "community_features",
-                      "project_overview"
-                    )
-                  }
-                  placeholder="Enter project overview"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
-                  
-                ></textarea>
-              </div> */}
+                </>
+              )}
 
+              {/* ===== MEDIA & GALLERIES TAB ===== */}
+              {activeTab === "media" && (
+                <>
+              <div className="md:col-span-12">
+                <h3 className="text-base font-semibold text-black dark:text-white">Media & Galleries</h3>
+                <p className="mt-1 text-xs text-[#637381] dark:text-bodydark">Upload property images and manage gallery content</p>
+              </div>
               {/* Images */}
               <div className="mb-5 md:col-span-12">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -1381,7 +1367,7 @@ const AddProperty = () => {
                   name="gallery_title_1"
                   value={propertyData?.gallery_title_1}
                   onChange={handleChange}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1395,7 +1381,7 @@ const AddProperty = () => {
                   name="gallery_description_1"
                   value={propertyData?.gallery_description_1}
                   onChange={handleChange}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1409,7 +1395,7 @@ const AddProperty = () => {
                   name="gallery_title_2"
                   value={propertyData?.gallery_title_2}
                   onChange={handleChange}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1423,10 +1409,20 @@ const AddProperty = () => {
                   name="gallery_description_2"
                   value={propertyData?.gallery_description_2}
                   onChange={handleChange}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
+                </>
+              )}
+
+              {/* ===== COMMUNITY & AMENITIES TAB ===== */}
+              {activeTab === "community" && (
+                <>
+              <div className="md:col-span-12">
+                <h3 className="text-base font-semibold text-black dark:text-white">Community & Amenities</h3>
+                <p className="mt-1 text-xs text-[#637381] dark:text-bodydark">Community details, amenities, and FAQs</p>
+              </div>
               {/* Amenity Description */}
               <div className="mb-5 md:col-span-6">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -1439,7 +1435,7 @@ const AddProperty = () => {
                   onChange={(e) =>
                     handleNestedChange(e, "amenities", "description")
                   }
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1463,13 +1459,14 @@ const AddProperty = () => {
               {/* Community Name */}
               <div className="mb-5 md:col-span-3">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Community Name
+                  Community Name <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="community_name"
                   value={propertyData?.community_name}
                   onChange={handleChange}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  required
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 >
                   <option value="" disabled>
                     Select community
@@ -1495,7 +1492,7 @@ const AddProperty = () => {
                   value={propertyData?.community_name_slug}
                   // onChange={handleChange}
                   placeholder="Enter community name slug"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1516,7 +1513,7 @@ const AddProperty = () => {
                     )
                   }
                   placeholder="Enter nearby facilities"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1537,58 +1534,88 @@ const AddProperty = () => {
                     )
                   }
                   placeholder="Enter Transportation Services"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
-              {/* Show Property */}
-              <div className="mb-5 md:col-span-6">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Show property
-                </label>
-                <select
-                  name="show_property"
-                  value={propertyData?.show_property}
-                  onChange={handleChange}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                >
-                  <option value="true">true</option>
-                  <option value="false">false</option>
-                </select>
+                </>
+              )}
+
+              {/* ===== SETTINGS TAB ===== */}
+              {activeTab === "settings" && (
+                <>
+              <div className="md:col-span-12">
+                <h3 className="text-base font-semibold text-black dark:text-white">Visibility Settings</h3>
+                <p className="mt-1 text-xs text-[#637381] dark:text-bodydark">Control how and where this property appears on the website</p>
+              </div>
+              {/* Toggle switches */}
+              <div className="mb-5 md:col-span-12">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                  {/* Show Property */}
+                  <label className="flex cursor-pointer items-center justify-between rounded-lg border border-stroke px-4 py-3 transition hover:border-primary dark:border-form-strokedark dark:hover:border-primary">
+                    <div>
+                      <span className="text-sm font-medium text-black dark:text-white">Show Property</span>
+                      <p className="mt-0.5 text-xs text-[#637381] dark:text-bodydark">Visible on the website</p>
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        name="show_property"
+                        checked={propertyData?.show_property === true || propertyData?.show_property === "true"}
+                        onChange={(e) => setPropertyData(prev => ({ ...prev, show_property: e.target.checked }))}
+                        className="sr-only"
+                      />
+                      <div className={`block h-6 w-11 rounded-full transition ${propertyData?.show_property === true || propertyData?.show_property === "true" ? "bg-primary" : "bg-stroke dark:bg-meta-4"}`}></div>
+                      <div className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition ${propertyData?.show_property === true || propertyData?.show_property === "true" ? "translate-x-5" : ""}`}></div>
+                    </div>
+                  </label>
+
+                  {/* Featured */}
+                  <label className="flex cursor-pointer items-center justify-between rounded-lg border border-stroke px-4 py-3 transition hover:border-primary dark:border-form-strokedark dark:hover:border-primary">
+                    <div>
+                      <span className="text-sm font-medium text-black dark:text-white">Featured</span>
+                      <p className="mt-0.5 text-xs text-[#637381] dark:text-bodydark">Highlight on homepage</p>
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        name="featured"
+                        checked={propertyData?.featured === true || propertyData?.featured === "true"}
+                        onChange={(e) => setPropertyData(prev => ({ ...prev, featured: e.target.checked }))}
+                        className="sr-only"
+                      />
+                      <div className={`block h-6 w-11 rounded-full transition ${propertyData?.featured === true || propertyData?.featured === "true" ? "bg-primary" : "bg-stroke dark:bg-meta-4"}`}></div>
+                      <div className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition ${propertyData?.featured === true || propertyData?.featured === "true" ? "translate-x-5" : ""}`}></div>
+                    </div>
+                  </label>
+
+                  {/* SlideShow */}
+                  <label className="flex cursor-pointer items-center justify-between rounded-lg border border-stroke px-4 py-3 transition hover:border-primary dark:border-form-strokedark dark:hover:border-primary">
+                    <div>
+                      <span className="text-sm font-medium text-black dark:text-white">Slideshow</span>
+                      <p className="mt-0.5 text-xs text-[#637381] dark:text-bodydark">Newly Launched carousel</p>
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        name="show_slideShow"
+                        checked={propertyData?.show_slideShow === true || propertyData?.show_slideShow === "true"}
+                        onChange={(e) => setPropertyData(prev => ({ ...prev, show_slideShow: e.target.checked }))}
+                        className="sr-only"
+                      />
+                      <div className={`block h-6 w-11 rounded-full transition ${propertyData?.show_slideShow === true || propertyData?.show_slideShow === "true" ? "bg-primary" : "bg-stroke dark:bg-meta-4"}`}></div>
+                      <div className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition ${propertyData?.show_slideShow === true || propertyData?.show_slideShow === "true" ? "translate-x-5" : ""}`}></div>
+                    </div>
+                  </label>
+                </div>
               </div>
 
-              {/* Featured */}
-              <div className="mb-5 md:col-span-6">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Featured
-                </label>
-                <select
-                  name="featured"
-                  value={propertyData?.featured}
-                  onChange={handleChange}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                >
-                  <option value="true">true</option>
-                  <option value="false">false</option>
-                </select>
+              {/* About Project section divider */}
+              <div className="md:col-span-12">
+                <div className="my-2 border-t border-stroke dark:border-strokedark"></div>
+                <h3 className="text-base font-semibold text-black dark:text-white">About Project</h3>
+                <p className="mt-1 text-xs text-[#637381] dark:text-bodydark">Project overview content displayed on the property page</p>
               </div>
-
-              {/* Show on Slideshow for newly Launched*/}
-              <div className="mb-5 md:col-span-6">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  SlideShow (Newly Launched)
-                </label>
-                <select
-                  name="show_slideShow"
-                  value={propertyData?.show_slideShow}
-                  onChange={handleChange}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                >
-                  <option value="true">true</option>
-                  <option value="false">false</option>
-                </select>
-              </div>
-
               {/* About Project Heading */}
               <div className="mb-5 md:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -1601,7 +1628,7 @@ const AddProperty = () => {
                   onChange={(e) =>
                     handleNestedChange(e, "about_project", "heading")
                   }
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1617,26 +1644,37 @@ const AddProperty = () => {
                   onChange={(e) =>
                     handleNestedChange(e, "about_project", "title")
                   }
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
               {/* About Project Description */}
-              <div className="mb-5 md:col-span-4">
+              <div className="mb-5 md:col-span-12">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   About Project Description
                 </label>
-                <input
-                  type="text"
+                <textarea
+                  rows={4}
                   name="description"
                   value={propertyData?.about_project?.description}
                   onChange={(e) =>
                     handleNestedChange(e, "about_project", "description")
                   }
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  placeholder="Enter a description of the project..."
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
+                </>
+              )}
+
+              {/* ===== SEO & SCHEMA TAB ===== */}
+              {activeTab === "seo" && (
+                <>
+              <div className="md:col-span-12">
+                <h3 className="text-base font-semibold text-black dark:text-white">SEO & Structured Data</h3>
+                <p className="mt-1 text-xs text-[#637381] dark:text-bodydark">Search engine optimization, meta tags, and schema markup</p>
+              </div>
               {/* SEO */}
               <div className="mb-5 md:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -1647,7 +1685,7 @@ const AddProperty = () => {
                   name="meta_title"
                   value={seoTitle}
                   onChange={(e) => handleNestedChange(e, "seo", "meta_title")}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
               <div className="mb-5 md:col-span-4">
@@ -1661,7 +1699,7 @@ const AddProperty = () => {
                   onChange={(e) =>
                     handleNestedChange(e, "seo", "meta_description")
                   }
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
               <div className="mb-5 md:col-span-4">
@@ -1675,7 +1713,7 @@ const AddProperty = () => {
                   onChange={(e) =>
                     handleNestedChange(e, "seo", "meta_canonical_url")
                   }
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
               <div className="mb-5 md:col-span-4">
@@ -1687,7 +1725,7 @@ const AddProperty = () => {
                   name="keywords"
                   value={seoKeywords}
                   onChange={(e) => handleNestedChange(e, "seo", "keywords")}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1698,7 +1736,7 @@ const AddProperty = () => {
                   name="schema_org.type"
                   value={schemaType}
                   onChange={(e) => handleNestedChange(e, "schema_org", "type")}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1708,7 +1746,7 @@ const AddProperty = () => {
                   name="schema_org.properties"
                   value={schemaProperties}
                   onChange={handleSchemaOrgPropertiesChange}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
                 <button
                   onClick={(e) => {
@@ -1727,7 +1765,7 @@ const AddProperty = () => {
                       console.error("Invalid JSON format");
                     }
                   }}
-                  className="inline-flex items-center justify-center rounded-md bg-black px-5 py-3 font-medium text-white transition hover:bg-opacity-90"
+                  className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-3 font-medium text-white transition hover:bg-opacity-90"
                 >
                   Generate Schema
                 </button>
@@ -1743,7 +1781,7 @@ const AddProperty = () => {
                   name="title"
                   value={seoTitle}
                   onChange={(e) => handleNestedChange(e, "open_graph", "title")}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1756,7 +1794,7 @@ const AddProperty = () => {
                   name="image"
                   value={ogImage}
                   onChange={(e) => handleNestedChange(e, "open_graph", "image")}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1771,7 +1809,7 @@ const AddProperty = () => {
                   onChange={(e) =>
                     handleNestedChange(e, "open_graph", "description")
                   }
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
@@ -1784,51 +1822,73 @@ const AddProperty = () => {
                   name="type"
                   value={ogType}
                   onChange={(e) => handleNestedChange(e, "open_graph", "type")}
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-black active:border-black disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-black"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
               {/* FAQs */}
               <div className="mb-5 md:col-span-12">
-                <h3 className="mb-2">FAQs</h3>
-                {propertyData.faqs.map((faq, index) => (
-                  <div key={index} className="mb-2">
-                    <div className=" flex flex-row justify-between">
-                      <label className="block">Question {index + 1}</label>
-                      <IoCloseCircle
-                        className=" hover:cursor-pointer"
-                        color="black"
-                        onClick={() => handleFAQDelete(faq, index)}
-                      />
-                    </div>
-
-                    <input
-                      type="text"
-                      name={`faqs[${index}].question`}
-                      value={faq.question}
-                      onChange={(e) =>
-                        handleArrayChange(e, index, "faqs", "question")
-                      }
-                      className="mb-2 w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    />
-                    <label className="block">Answer {index + 1}</label>
-                    <textarea
-                      name={`faqs[${index}].answer`}
-                      value={faq.answer}
-                      onChange={(e) =>
-                        handleArrayChange(e, index, "faqs", "answer")
-                      }
-                      className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
-                    />
+                <div className="mb-4 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-base font-semibold text-black dark:text-white">FAQs</h3>
+                    <p className="mt-0.5 text-xs text-[#637381] dark:text-bodydark">Add frequently asked questions about this property</p>
                   </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={addFaq}
-                  className="bg-gray-200 hover:bg-gray-300 mt-2 rounded border border-stroke px-4 py-2 text-black transition dark:border-form-strokedark dark:bg-form-input dark:text-white dark:hover:bg-form-input"
-                >
-                  Add FAQ
-                </button>
+                  <button
+                    type="button"
+                    onClick={addFaq}
+                    className="rounded bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-opacity-90"
+                  >
+                    + Add FAQ
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {propertyData.faqs.map((faq, index) => (
+                    <div key={index} className="rounded-lg border border-stroke p-4 dark:border-form-strokedark">
+                      <div className="mb-3 flex items-center justify-between">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-[#637381] dark:text-bodydark">FAQ {index + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleFAQDelete(faq, index)}
+                          className="rounded p-1 text-[#637381] transition hover:bg-red/10 hover:text-red dark:text-bodydark"
+                          title="Remove FAQ"
+                        >
+                          <IoCloseCircle size={20} />
+                        </button>
+                      </div>
+                      <div className="mb-3">
+                        <label className="mb-1 block text-sm font-medium text-black dark:text-white">Question</label>
+                        <input
+                          type="text"
+                          name={`faqs[${index}].question`}
+                          value={faq.question}
+                          onChange={(e) =>
+                            handleArrayChange(e, index, "faqs", "question")
+                          }
+                          placeholder="Enter the question..."
+                          className="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2.5 text-sm text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-black dark:text-white">Answer</label>
+                        <textarea
+                          rows={3}
+                          name={`faqs[${index}].answer`}
+                          value={faq.answer}
+                          onChange={(e) =>
+                            handleArrayChange(e, index, "faqs", "answer")
+                          }
+                          placeholder="Enter the answer..."
+                          className="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2.5 text-sm text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {propertyData.faqs.length === 0 && (
+                  <div className="rounded-lg border border-dashed border-stroke py-8 text-center dark:border-form-strokedark">
+                    <p className="text-sm text-[#637381] dark:text-bodydark">No FAQs added yet. Click "+ Add FAQ" to get started.</p>
+                  </div>
+                )}
               </div>
 
               {/* Faqs Schema */}
@@ -1840,7 +1900,7 @@ const AddProperty = () => {
                   name="faqs_schema.properties"
                   value={faqsSchemaProperties}
                   onChange={handleFaqsSchemaPropertiesChange}
-                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
+                  className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
                 <button
                   onClick={(e) => {
@@ -1861,17 +1921,20 @@ const AddProperty = () => {
                       console.error("Invalid JSON format");
                     }
                   }}
-                  className="inline-flex items-center justify-center rounded-md bg-black px-5 py-3 font-medium text-white transition hover:bg-opacity-90"
+                  className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-3 font-medium text-white transition hover:bg-opacity-90"
                 >
                   Generate Faqs Schema
                 </button>
               </div>
 
-              {/* Buttons */}
+                </>
+              )}
+
+              {/* Buttons — always visible */}
               <div className="flex justify-end gap-4 md:col-span-12">
                 <button
                   type="submit"
-                  className="inline-flex items-center justify-center rounded-md bg-black px-5 py-3 font-medium text-white transition hover:bg-opacity-90"
+                  className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-3 font-medium text-white transition hover:bg-opacity-90"
                 >
                   Save
                 </button>

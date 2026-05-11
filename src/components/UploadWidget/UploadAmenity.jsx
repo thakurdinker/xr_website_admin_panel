@@ -5,9 +5,9 @@ const UploadAmenity = ({ onImagesChange, initialImages = [] }) => {
     event.preventDefault();
     window.cloudinary.openUploadWidget(
       {
-        cloudName: "dkhns25jh", // Replace with your Cloudinary cloud name
-        uploadPreset: "ml_default", // Replace with your Cloudinary upload preset
-        folder: "xr_media", // Optional: Change to your desired folder
+        cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "dkhns25jh",
+        uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "ml_default",
+        folder: import.meta.env.VITE_CLOUDINARY_FOLDER || "xr_media",
       },
       function (error, result) {
         if (!error && result && result.event === "success") {

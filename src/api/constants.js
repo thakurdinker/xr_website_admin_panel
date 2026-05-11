@@ -1,7 +1,8 @@
-export const BASE_URL = "https://api.xrealty.ae/admin/";
-export const NEWS_AND_INSIGHTS = `https://api.xrealty.ae/real-estate-news`;
-// export const BASE_URL = "http://localhost:3333/admin/";
-// export const NEWS_AND_INSIGHTS = `http://localhost:3333/real-estate-news`;
+// In development, use relative URLs so Vite's proxy handles them (same-origin = cookies work).
+// In production, use the full API URL.
+const isDev = import.meta.env.DEV;
+export const BASE_URL = isDev ? "/admin/" : (import.meta.env.VITE_API_BASE_URL || "https://api.xrealty.ae/admin/");
+export const NEWS_AND_INSIGHTS = isDev ? "/real-estate-news" : (import.meta.env.VITE_NEWS_AND_INSIGHTS_URL || "https://api.xrealty.ae/real-estate-news");
 export const LOGIN = BASE_URL + "login";
 export const LOGOUT = BASE_URL + "logout";
 export const GET_ALL_USERS = BASE_URL + "getUsers";
@@ -29,3 +30,4 @@ export const REVIEWS = BASE_URL + "reviews";
 export const PROJECT_OF_THE_MONTH = BASE_URL + "project-of-the-month";
 export const REDIRECT_MANAGER = BASE_URL + "redirect-rules";
 export const FETCH_SITEMAP = BASE_URL + "sitemap";
+export const DASHBOARD_STATS = BASE_URL + "dashboard-stats";

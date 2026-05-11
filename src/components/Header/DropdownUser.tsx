@@ -1,14 +1,51 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LOGOUT } from "../../api/constants.js";
 import { UserContext, INITIAL_STATE } from "../../context/UserContext.jsx";
 
-import UserOne from "../../images/user/user-01.png";
-import axios from "axios";
+const AVATAR_COLORS = [
+  "#3C50E0", // primary blue
+  "#0FADCF", // teal
+  "#8B5CF6", // purple
+  "#10B981", // green
+  "#F59E0B", // amber
+  "#EF4444", // red
+  "#EC4899", // pink
+  "#6366F1", // indigo
+];
+
+function getInitials(firstName?: string, lastName?: string): string {
+  const f = (firstName || "").trim();
+  const l = (lastName || "").trim();
+  if (f && l) return (f[0] + l[0]).toUpperCase();
+  if (f) return f.slice(0, 2).toUpperCase();
+  return "U";
+}
+
+function getAvatarColor(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { currentUser, setCurrentUser } = useContext(UserContext);
+
+  const initials = useMemo(
+    () => getInitials(currentUser?.first_name, currentUser?.last_name),
+    [currentUser?.first_name, currentUser?.last_name]
+  );
+
+  const avatarBg = useMemo(
+    () =>
+      getAvatarColor(
+        (currentUser?.first_name || "") + (currentUser?.last_name || "")
+      ),
+    [currentUser?.first_name, currentUser?.last_name]
+  );
 
   const navigate = useNavigate();
 
@@ -41,14 +78,19 @@ const DropdownUser = () => {
     return () => document.removeEventListener("keydown", keyHandler);
   });
 
-  const handleLogout = () => {
-    axios.get(LOGOUT, { withCredentials: true }).then((res) => {
-      if (res.data.success === true && res.data.isLoggedOut === true) {
+  const handleLogout = async () => {
+    try {
+      const res = await fetch(LOGOUT, { credentials: "include" });
+      const data = await res.json();
+      if (data.success && data.isLoggedOut) {
         setCurrentUser(null);
         navigate("/auth/signin");
-        return;
       }
-    });
+    } catch {
+      // Force logout on client side even if request fails
+      setCurrentUser(null);
+      navigate("/auth/signin");
+    }
   };
 
   return (
@@ -61,13 +103,18 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            {currentUser?.first_name + " " + currentUser?.last_name}
+            {currentUser?.first_name
+              ? `${currentUser.first_name} ${currentUser.last_name || ""}`.trim()
+              : ""}
           </span>
-          <span className="block text-xs">{currentUser?.role?.role_name}</span>
+          <span className="block text-xs">{currentUser?.role?.role_name || ""}</span>
         </span>
 
-        <span className="h-12 w-12 rounded-full">
-          <img src={UserOne} alt="User" />
+        <span
+          className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold text-white"
+          style={{ backgroundColor: avatarBg }}
+        >
+          {initials}
         </span>
 
         <svg

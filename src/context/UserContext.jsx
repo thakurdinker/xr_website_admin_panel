@@ -12,25 +12,27 @@ export const INITIAL_STATE = {
 
 export function UserContextProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
     axios
       .get(CURRENT_USER, { withCredentials: true })
       .then(function (response) {
-        // handle success
         if (response.data.success === true) {
           setCurrentUser(response.data.user);
         }
       })
       .catch(function (error) {
-        // handle error
         console.log(error);
-        setCurrentUser(INITIAL_STATE);
+        setCurrentUser(null);
+      })
+      .finally(() => {
+        setAuthChecked(true);
       });
   }, []);
 
   return (
-    <UserContext.Provider value={{ currentUser, setCurrentUser }}>
+    <UserContext.Provider value={{ currentUser, setCurrentUser, authChecked }}>
       {children}
     </UserContext.Provider>
   );

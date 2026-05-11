@@ -1,29 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import Logo from "../../images/logo/logo.svg";
-import {
-  MdOutlineReviews,
-  MdOutlineSpaceDashboard,
-  MdOutlineSupportAgent,
-} from "react-icons/md";
-import {
-  BsBuildingSlash,
-  BsFillFileEarmarkPostFill,
-  BsFillHouseHeartFill,
-} from "react-icons/bs";
-import { LuNewspaper } from "react-icons/lu";
-import { TbIcons, TbVideo } from "react-icons/tb";
+import { MdOutlineSpaceDashboard } from "react-icons/md";
+import { BsBuildingSlash, BsFillHouseHeartFill } from "react-icons/bs";
+import { TbIcons } from "react-icons/tb";
 import { RiCommunityLine } from "react-icons/ri";
 import { FaRegUser } from "react-icons/fa";
-import { IoHome } from "react-icons/io5";
 import { LiaSitemapSolid } from "react-icons/lia";
 
 interface SidebarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (arg: boolean) => void;
+  sidebarCollapsed?: boolean;
 }
 
-const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
+const Sidebar = ({ sidebarOpen, setSidebarOpen, sidebarCollapsed = false }: SidebarProps) => {
   const location = useLocation();
   const { pathname } = location;
 
@@ -73,9 +64,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   return (
     <aside
       ref={sidebar}
-      className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 ${
+      className={`absolute left-0 top-0 z-9999 flex h-screen flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 ${
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
-      }`}
+      } ${sidebarCollapsed ? "lg:w-0 lg:overflow-hidden" : "w-72.5"}`}
     >
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
@@ -177,31 +168,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               </li>
               <li>
                 <NavLink
-                  to="/manage-agents"
-                  className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes("manage-agents") &&
-                    "bg-graydark dark:bg-meta-4"
-                  }`}
-                >
-                  <MdOutlineSupportAgent className="h-6 w-6" />
-                  Agents
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/homepageVideo"
-                  className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes("homepageVideo") &&
-                    "bg-graydark dark:bg-meta-4"
-                  }`}
-                >
-                  <TbVideo className="h-6 w-6" />
-                  HomepageVideo
-                </NavLink>
-              </li>
-
-              <li>
-                <NavLink
                   to="/manage-communities"
                   className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes("manage-communities") &&
@@ -210,19 +176,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 >
                   <RiCommunityLine className="h-5 w-5" />
                   Communities
-                </NavLink>
-              </li>
-
-              <li>
-                <NavLink
-                  to="/manage-news-and-insights"
-                  className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes("manage-news-and-insights") &&
-                    "bg-graydark dark:bg-meta-4"
-                  }`}
-                >
-                  <LuNewspaper className="h-5 w-5" />
-                  Manage News & Insights
                 </NavLink>
               </li>
 
@@ -241,19 +194,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
               <li>
                 <NavLink
-                  to="/manage-developers"
-                  className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes("manage-developers") &&
-                    "bg-graydark dark:bg-meta-4"
-                  }`}
-                >
-                  <IoHome className="h-5 w-5" />
-                  Manage Developers
-                </NavLink>
-              </li>
-
-              <li>
-                <NavLink
                   to="/generate-sitemap"
                   className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes("generate-sitemap") &&
@@ -262,32 +202,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 >
                   <LiaSitemapSolid className="h-5 w-5" />
                   Generate Sitemap
-                </NavLink>
-              </li>
-
-              <li>
-                <NavLink
-                  to="/manage-reviews"
-                  className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes("manage-reviews") &&
-                    "bg-graydark dark:bg-meta-4"
-                  }`}
-                >
-                  <MdOutlineReviews className="h-5 w-5" />
-                  Manage Reviews
-                </NavLink>
-              </li>
-
-              <li>
-                <NavLink
-                  to="/project-of-the-month"
-                  className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes("project-of-the-month") &&
-                    "bg-graydark dark:bg-meta-4"
-                  }`}
-                >
-                  <BsFillHouseHeartFill className="h-5 w-5" />
-                  Project Of The Month
                 </NavLink>
               </li>
 

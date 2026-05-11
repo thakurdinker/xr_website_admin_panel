@@ -9,8 +9,8 @@ const UploadReviewImages = ({ onImagesChange, initialImages = [], folder = "xr_m
     // Trigger Cloudinary upload widget
     window.cloudinary.openUploadWidget(
       {
-        cloudName: "dkhns25jh", // Replace with your Cloudinary cloud name
-        uploadPreset: "ml_default", // Replace with your Cloudinary upload preset
+        cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "dkhns25jh",
+        uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "ml_default",
         folder: folder, // Optional: Change to your desired folder
         sources: ["local", "url", "camera"], // Sources for image selection
         multiple: false, // Allow multiple uploads

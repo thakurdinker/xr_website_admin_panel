@@ -1,171 +1,273 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import DefaultLayout from "../../layout/DefaultLayout";
-import { FETCH_ICONS, NEWS } from "../../api/constants";
-import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
-import { MdDeleteForever } from "react-icons/md";
-import { MdEditDocument } from "react-icons/md";
-import { IoAddCircle } from "react-icons/io5";
+import { FETCH_ICONS } from "../../api/constants";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Pagination from "../../components/Pagination/Pagination";
 
 function ManageIcons() {
   const [icons, setIcons] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const limit = 10;
+  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const isUserSearching = useRef(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const fetchContent = async (page = 1) => {
-    try {
-      const response = await axios.get(FETCH_ICONS, {
-        params: { page, limit },
-        withCredentials: true,
-      });
-      if (response.data.success) {
-        setIcons(response.data.icons);
-        setTotalPages(response.data.totalPages);
-        setCurrentPage(Number(response.data.currentPage));
-      }
-    } catch (error) {
-      console.error("Error fetching content:", error);
-    }
-  };
+  const query = new URLSearchParams(location.search);
+  const initialPage = parseInt(query.get("page")) || 1;
+  const [currentPage, setCurrentPage] = useState(initialPage);
 
   useEffect(() => {
-    fetchContent(currentPage);
-  }, [currentPage]);
+    setCurrentPage(initialPage);
+  }, [initialPage]);
 
-  const handleDeleteClick = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this icon?"
-    );
-    if (confirmDelete) {
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      if (isUserSearching.current) {
+        setCurrentPage(1);
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Fetch icons
+  useEffect(() => {
+    const fetchIcons = async () => {
+      setLoading(true);
       try {
-        const response = await axios.delete(`${FETCH_ICONS}/${id}`, {
-          withCredentials: true,
+        const params = `?page=${currentPage}&limit=10${debouncedSearch ? `&search=${encodeURIComponent(debouncedSearch)}` : ""}`;
+        const res = await fetch(FETCH_ICONS + params, {
+          credentials: "include",
         });
-        if (response.data.success) {
-          // Refetch the icons after deletion
-          fetchContent(currentPage);
-        } else {
-          console.error("Error deleting icon:", response.data.message);
+        if (!res.ok) throw new Error("Failed to fetch");
+        const data = await res.json();
+        if (data.success) {
+          setIcons(data.icons);
+          setTotalPages(data.totalPages);
         }
       } catch (error) {
-        console.error("Error deleting icon:", error);
+        console.error("Error fetching icons:", error);
+        toast.error("Failed to load icons");
       }
+      setLoading(false);
+    };
+    fetchIcons();
+  }, [currentPage, debouncedSearch]);
+
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      navigate(`?page=${newPage}`);
     }
   };
 
-  const handleEditClick = (iconId) => {
-    // Redirect to the AddIcon component in edit mode with the propertyId
-    navigate(`/forms/add-icon/${iconId}`);
-  };
+  const handleDeleteClick = async (id, name) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${name || "this icon"}"? This cannot be undone.`
+    );
+    if (!confirmed) return;
 
-  const handlePageChange = (pageNumber) => {
-    if (pageNumber > 0 && pageNumber <= totalPages) {
-      setCurrentPage(pageNumber);
+    try {
+      const res = await fetch(`${FETCH_ICONS}/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (data.success) {
+        setIcons(icons.filter((i) => i._id !== id));
+        toast.success("Icon deleted");
+      } else {
+        toast.error(data.message || "Failed to delete icon");
+      }
+    } catch (error) {
+      console.error("Error deleting icon:", error);
+      toast.error("Failed to delete icon");
     }
-  };
-
-  const formatDate = (isoDate) => {
-    const dateObject = new Date(isoDate);
-    return dateObject.toLocaleString();
   };
 
   return (
     <DefaultLayout>
       <div className="overflow-hidden rounded-[10px]">
         <div className="max-w-full overflow-x-auto">
-          <div>
-            {/* table header start */}
-            <div className="grid grid-cols-10 bg-[#F9FAFB] px-5 py-4 dark:bg-meta-4 lg:px-7.5 2xl:px-11">
-              <div className="col-span-2 flex items-center">
-                <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
-                  Icons
-                </h5>
-              </div>
+          {/* Header */}
+          <div className="flex items-center justify-between bg-white px-5 py-4 dark:bg-boxdark lg:px-7.5 2xl:px-11">
+            <h2 className="text-xl font-bold text-black dark:text-white">
+              Manage Icons
+            </h2>
+            <Link
+              to="/forms/add-icon"
+              className="rounded bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-opacity-90"
+            >
+              Add Icon
+            </Link>
+          </div>
 
-              <div className="col-span-2 flex items-center">
-                <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
-                  Description
-                </h5>
-              </div>
+          {/* Search bar */}
+          <div className="flex items-center justify-between bg-white px-5 py-4 dark:bg-boxdark lg:px-7.5 2xl:px-11">
+            <input
+              type="text"
+              placeholder="Search icons by name..."
+              value={searchTerm}
+              onChange={(e) => {
+                isUserSearching.current = true;
+                setSearchTerm(e.target.value);
+              }}
+              className="w-full max-w-md rounded-lg border border-stroke bg-transparent px-4 py-2 text-sm text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+            />
+          </div>
 
-              <div className="col-span-2 flex items-center">
-                <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
-                  CREATED AT
-                </h5>
-              </div>
-
-              <div className="col-span-2 flex items-center">
-                <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
-                  UPDATED AT
-                </h5>
-              </div>
-
-              <div className="col-span-2 flex items-center justify-end">
-                <Link to="/forms/add-icon" className="text-xl md:text-2xl">
-                  <IoAddCircle />
-                </Link>
-              </div>
+          {/* Table header */}
+          <div className="grid grid-cols-12 bg-[#F9FAFB] px-5 py-4 dark:bg-meta-4 lg:px-7.5 2xl:px-11">
+            <div className="col-span-1">
+              <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
+                #
+              </h5>
             </div>
-            {/* table header end */}
+            <div className="col-span-2">
+              <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
+                ICON
+              </h5>
+            </div>
+            <div className="col-span-3">
+              <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
+                NAME
+              </h5>
+            </div>
+            <div className="col-span-2">
+              <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
+                CREATED
+              </h5>
+            </div>
+            <div className="col-span-2">
+              <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
+                UPDATED
+              </h5>
+            </div>
+            <div className="col-span-2 flex justify-end">
+              <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
+                ACTIONS
+              </h5>
+            </div>
+          </div>
 
-            {/* table body start */}
-            <div className="bg-white dark:bg-boxdark">
-              {icons.map((icon, index) => (
+          {/* Table body */}
+          <div className="bg-white dark:bg-boxdark">
+            {loading ? (
+              <div className="px-5 py-8 text-center text-sm text-[#637381] dark:text-bodydark lg:px-7.5 2xl:px-11">
+                Loading...
+              </div>
+            ) : icons.length === 0 ? (
+              <div className="px-5 py-8 text-center text-sm text-[#637381] dark:text-bodydark lg:px-7.5 2xl:px-11">
+                No icons found.
+              </div>
+            ) : (
+              icons.map((icon, index) => (
                 <div
-                  key={index}
-                  className="grid grid-cols-10 border-t border-[#EEEEEE] px-5 py-4 dark:border-strokedark lg:px-7.5 2xl:px-11"
+                  key={icon._id || index}
+                  className="grid grid-cols-12 border-t border-[#EEEEEE] px-5 py-3 dark:border-strokedark lg:px-7.5 2xl:px-11"
                 >
-                  <div className="col-span-2 flex items-center">
-                    <img src={icon.icon_url} className="h-20 w-30" alt="" />
-                  </div>
-
-                  <div className="col-span-2 flex items-center">
+                  {/* # */}
+                  <div className="col-span-1 flex items-center">
                     <p className="text-xs text-[#637381] dark:text-bodydark md:text-base">
-                      {icon.icon_text}
+                      {(currentPage - 1) * 10 + (index + 1)}
                     </p>
                   </div>
 
+                  {/* Icon preview */}
                   <div className="col-span-2 flex items-center">
-                    <p className="text-xs text-[#637381] dark:text-bodydark md:text-base">
-                      {formatDate(icon.createdAt)}
+                    {icon.icon_url ? (
+                      <img
+                        src={icon.icon_url}
+                        alt={icon.icon_text || ""}
+                        className="h-10 w-10 rounded object-contain"
+                      />
+                    ) : (
+                      <div className="flex h-10 w-10 items-center justify-center rounded bg-gray-100 dark:bg-meta-4">
+                        <svg
+                          className="h-5 w-5 text-[#637381]"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={1.5}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"
+                          />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Name */}
+                  <div className="col-span-3 flex items-center">
+                    <Link
+                      to={`/forms/add-icon/${icon._id}?page=${currentPage}`}
+                      className="truncate text-sm font-medium text-primary hover:underline"
+                      title={icon.icon_text}
+                    >
+                      {icon.icon_text || "Untitled"}
+                    </Link>
+                  </div>
+
+                  {/* Created */}
+                  <div className="col-span-2 flex items-center">
+                    <p className="text-xs text-[#637381] dark:text-bodydark">
+                      {icon.createdAt
+                        ? new Date(icon.createdAt).toLocaleDateString()
+                        : ""}
                     </p>
                   </div>
 
+                  {/* Updated */}
                   <div className="col-span-2 flex items-center">
-                    <p className="text-xs text-[#637381] dark:text-bodydark md:text-base">
-                      {formatDate(icon.updatedAt)}
+                    <p className="text-xs text-[#637381] dark:text-bodydark">
+                      {icon.updatedAt
+                        ? new Date(icon.updatedAt).toLocaleDateString()
+                        : ""}
                     </p>
                   </div>
 
+                  {/* Actions */}
                   <div className="col-span-2 flex items-center justify-end space-x-2">
                     <button
-                      className="text-black dark:text-white"
-                      onClick={() => handleEditClick(icon._id)}
+                      onClick={() =>
+                        navigate(`/forms/add-icon/${icon._id}?page=${currentPage}`)
+                      }
+                      className="rounded bg-primary px-3 py-1 text-xs font-medium text-white hover:bg-opacity-90"
                     >
-                      <MdEditDocument className="h-4 w-4 md:h-6 md:w-6" />
+                      Edit
                     </button>
                     <button
-                      className="text-red"
-                      onClick={() => handleDeleteClick(icon._id)}
+                      onClick={() =>
+                        handleDeleteClick(icon._id, icon.icon_text)
+                      }
+                      className="rounded bg-red px-3 py-1 text-xs font-medium text-white hover:bg-opacity-90"
                     >
-                      <MdDeleteForever className="h-6 w-6 md:h-8 md:w-8" />
+                      Delete
                     </button>
                   </div>
                 </div>
-              ))}
-            </div>
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
+              ))
+            )}
           </div>
+
+          {/* Pagination */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
+      <ToastContainer position="top-right" autoClose={3000} />
     </DefaultLayout>
   );
 }
