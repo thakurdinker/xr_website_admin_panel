@@ -318,7 +318,8 @@ const SitemapDashboard = () => {
             </h3>
             <p className="text-gray-500 mb-4 text-sm">
               Checks all sitemap URLs for broken links, redirects, and server
-              errors. Automatically removes bad URLs. Runs daily at 3:30 AM.
+              errors. Automatically removes bad URLs. Runs automatically after
+              every startup and scheduled regeneration (every 2 hours).
             </p>
             <button
               onClick={handleHealthCheck}
@@ -425,8 +426,11 @@ const SitemapDashboard = () => {
               Strapi (blogs, news, agents, search pages).
             </p>
             <p>
-              A daily health check at 3:30 AM validates all URLs and removes
-              any that return errors (404, 500) or permanent redirects (301).
+              A health check runs automatically after every startup and
+              scheduled regeneration (every 2 hours), validating all URLs and
+              removing any that return errors (404, 500) or redirects (301).
+              CRUD-triggered regenerations skip the health check for speed.
+              You can also run it manually anytime from this dashboard.
             </p>
             <p className="mt-2">
               <a
