@@ -31,3 +31,4 @@ export const PROJECT_OF_THE_MONTH = BASE_URL + "project-of-the-month";
 export const REDIRECT_MANAGER = BASE_URL + "redirect-rules";
 export const FETCH_SITEMAP = BASE_URL + "sitemap";
 export const DASHBOARD_STATS = BASE_URL + "dashboard-stats";
+export const PRERENDER_CACHE = BASE_URL + "prerender-cache";

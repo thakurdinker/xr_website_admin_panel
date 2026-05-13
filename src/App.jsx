@@ -21,6 +21,7 @@ import ManageIcons from "./pages/ManageIcons/ManageIcons.jsx";
 import AddIcons from "./pages/Form/AddIcons.jsx";
 import RedirectManager from "./components/Redirects/Redirects.jsx";
 import SitemapDashboard from "./components/GenerateSitemap/SitemapDashboard.jsx";
+import PrerenderCacheDashboard from "./components/PrerenderCache/PrerenderCacheDashboard.jsx";
 
 function WithUserContext() {
   return (
@@ -170,6 +171,17 @@ function App() {
               <>
                 <PageTitle title="Redirect Manager" />
                 <RedirectManager />
+              </>
+            }
+          />
+
+          <Route
+            exact
+            path="/prerender-cache"
+            element={
+              <>
+                <PageTitle title="Prerender Cache" />
+                <PrerenderCacheDashboard />
               </>
             }
           />
