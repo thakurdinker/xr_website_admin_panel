@@ -12,6 +12,13 @@ const PrerenderCacheDashboard = () => {
   const [singlePath, setSinglePath] = useState("");
   const [clearResult, setClearResult] = useState(null);
 
+  // Prerender.io API states
+  const [prerenderUrl, setPrerenderUrl] = useState("");
+  const [purgeLoading, setPurgeLoading] = useState(false);
+  const [recacheLoading, setRecacheLoading] = useState(false);
+  const [purgeRecacheLoading, setPurgeRecacheLoading] = useState(false);
+  const [prerenderResult, setPrerenderResult] = useState(null);
+
   useEffect(() => {
     fetchStats();
   }, []);
@@ -93,6 +100,55 @@ const PrerenderCacheDashboard = () => {
       toast.error("Failed to clear path from cache");
     }
     setClearSingleLoading(false);
+  };
+
+  // ── Prerender.io API handlers ──
+  const handlePrerenderAction = async (action) => {
+    const urlValue = prerenderUrl.trim();
+    if (!urlValue) {
+      toast.warn("Please enter a URL or path");
+      return;
+    }
+
+    const setLoading =
+      action === "purge"
+        ? setPurgeLoading
+        : action === "recache"
+        ? setRecacheLoading
+        : setPurgeRecacheLoading;
+
+    setLoading(true);
+    setPrerenderResult(null);
+
+    try {
+      const endpoint =
+        action === "purge"
+          ? "purge"
+          : action === "recache"
+          ? "recache"
+          : "purge-and-recache";
+
+      const res = await fetch(`${PRERENDER_CACHE}/${endpoint}`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: urlValue }),
+      });
+
+      const data = await res.json();
+      setPrerenderResult({ action, data });
+
+      if (data.success) {
+        toast.success(data.message);
+        if (action !== "recache") setPrerenderUrl("");
+      } else {
+        toast.error(data.message || `${action} failed`);
+      }
+    } catch (err) {
+      console.error(`Error during ${action}:`, err);
+      toast.error(`Failed to ${action}`);
+    }
+    setLoading(false);
   };
 
   const formatDate = (ts) => {
@@ -358,6 +414,91 @@ const PrerenderCacheDashboard = () => {
           </div>
         </div>
 
+        {/* Prerender.io API Card */}
+        <div className="mb-6 rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+          <h3 className="mb-2 text-lg font-semibold text-black dark:text-white">
+            Prerender.io Cache (CDN)
+          </h3>
+          <p className="text-gray-500 mb-4 text-sm">
+            Purge and recache URLs on prerender.io directly. Use{" "}
+            <strong>Purge & Recache</strong> when you've updated meta tags or
+            content and need prerender.io to pick up the changes.
+          </p>
+
+          <div className="mb-4">
+            <input
+              type="text"
+              value={prerenderUrl}
+              onChange={(e) => setPrerenderUrl(e.target.value)}
+              placeholder="https://www.xrealty.ae/property/some-slug/ or /property/some-slug/"
+              className="w-full rounded border border-stroke bg-transparent px-4 py-2.5 text-sm text-black outline-none transition focus:border-primary dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => handlePrerenderAction("purge-and-recache")}
+              disabled={purgeRecacheLoading || !prerenderUrl.trim()}
+              className="inline-flex items-center rounded bg-primary px-5 py-2.5 text-sm font-medium text-white hover:bg-opacity-90 disabled:opacity-50"
+            >
+              {purgeRecacheLoading ? (
+                <>
+                  <svg
+                    className="-ml-1 mr-2 h-4 w-4 animate-spin"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    />
+                  </svg>
+                  Purging & Recaching...
+                </>
+              ) : (
+                "Purge & Recache"
+              )}
+            </button>
+
+            <button
+              onClick={() => handlePrerenderAction("purge")}
+              disabled={purgeLoading || !prerenderUrl.trim()}
+              className="inline-flex items-center rounded border border-primary bg-transparent px-5 py-2.5 text-sm font-medium text-primary hover:bg-primary hover:text-white disabled:opacity-50"
+            >
+              {purgeLoading ? "Purging..." : "Purge Only"}
+            </button>
+
+            <button
+              onClick={() => handlePrerenderAction("recache")}
+              disabled={recacheLoading || !prerenderUrl.trim()}
+              className="inline-flex items-center rounded border border-primary bg-transparent px-5 py-2.5 text-sm font-medium text-primary hover:bg-primary hover:text-white disabled:opacity-50"
+            >
+              {recacheLoading ? "Recaching..." : "Recache Only"}
+            </button>
+          </div>
+
+          {prerenderResult && (
+            <div
+              className={`mt-4 rounded p-3 text-sm ${
+                prerenderResult.data.success
+                  ? "bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                  : "bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+              }`}
+            >
+              {prerenderResult.data.message}
+            </div>
+          )}
+        </div>
+
         {/* Info Card */}
         <div className="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
           <h3 className="mb-3 text-lg font-semibold text-black dark:text-white">
@@ -379,6 +520,13 @@ const PrerenderCacheDashboard = () => {
               Clearing a single path removes it from both server memory and
               Strapi. Clearing all only empties server memory — Strapi entries
               expire naturally on the next TTL cycle.
+            </p>
+            <p className="mt-2 border-t border-stroke pt-2 dark:border-strokedark">
+              <strong>Prerender.io CDN Cache:</strong> When you update meta
+              tags or page content, prerender.io still serves the old cached
+              version. Use <em>Purge & Recache</em> to delete the old version
+              from prerender.io's CDN and trigger a fresh render. This ensures
+              updated meta tags, OG images, and content are picked up.
             </p>
           </div>
         </div>
