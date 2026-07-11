@@ -7,7 +7,6 @@ import { TbIcons } from "react-icons/tb";
 import { RiCommunityLine } from "react-icons/ri";
 import { FaRegUser } from "react-icons/fa";
 import { LiaSitemapSolid } from "react-icons/lia";
-import { HiOutlineServerStack } from "react-icons/hi2";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -219,18 +218,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, sidebarCollapsed = false }: Side
                 </NavLink>
               </li>
 
-              <li>
-                <NavLink
-                  to="/prerender-cache"
-                  className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes("prerender-cache") &&
-                    "bg-graydark dark:bg-meta-4"
-                  }`}
-                >
-                  <HiOutlineServerStack className="h-5 w-5" />
-                  Prerender Cache
-                </NavLink>
-              </li>
             </ul>
           </div>
         </nav>
