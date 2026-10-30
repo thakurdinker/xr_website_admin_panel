@@ -78,6 +78,8 @@ const CommunityForm = () => {
     order: 1,
     developer: "",
     developer_name_slug: "",
+    emirate: "",
+    noindex: false,
   });
 
   const generateSchema = () => {
@@ -104,7 +106,10 @@ const CommunityForm = () => {
 
         return amenitiesName;
       })(),
-      url: `https://www.xrealty.ae/area/${formData?.slug}/`,
+      url:
+        formData?.emirate === "Abu Dhabi"
+          ? `https://www.xrealty.ae/abu-dhabi/areas/${formData?.slug}/`
+          : `https://www.xrealty.ae/area/${formData?.slug}/`,
     };
   };
 
@@ -381,6 +386,11 @@ const CommunityForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.emirate) {
+      toast.error("Select the emirate this area belongs to.");
+      return;
+    }
+
     formData.specialties = convertStringToArray(formData.specialties);
     formData.languages = convertStringToArray(formData.languages);
     formData.video_links = convertStringToArray(formData.video_links);
@@ -496,6 +506,47 @@ const CommunityForm = () => {
                   onChange={handleChange}
                   className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
+              </div>
+
+              {/* Emirate */}
+              <div className="mb-5 md:col-span-4">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Emirate <span className="text-meta-1">*</span>
+                </label>
+                <select
+                  name="emirate"
+                  value={formData?.emirate}
+                  onChange={handleChange}
+                  required
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                >
+                  <option value="" disabled>
+                    Select Emirate
+                  </option>
+                  <option value="Dubai">Dubai</option>
+                  <option value="Abu Dhabi">Abu Dhabi</option>
+                </select>
+                <p className="mt-1 text-xs text-[#637381] dark:text-bodydark">
+                  Decides the page URL (/area/ or /abu-dhabi/areas/). Properties in
+                  this area follow it automatically.
+                </p>
+              </div>
+
+              {/* Noindex (SEO) */}
+              <div className="mb-5 md:col-span-4">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Search indexing (SEO only)
+                </label>
+                <label className="flex cursor-pointer items-center gap-3 text-sm text-black dark:text-white">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(formData?.noindex)}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, noindex: e.target.checked }))
+                    }
+                  />
+                  Hide this area page from search engines (noindex)
+                </label>
               </div>
 
               {/* Order */}

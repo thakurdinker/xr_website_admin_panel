@@ -178,8 +178,22 @@ const AddProperty = () => {
     return raw.replace(/AED/gi, "").replace(/,/g, "").trim() || "0";
   };
 
+  // Emirate is inherited from the chosen community (the backend sets it on
+  // save); shown read-only and used for the page URL.
+  const propertyEmirate =
+    (Array.isArray(community) &&
+      community.find(
+        (c) =>
+          (c.slug || "").trim().toLowerCase() ===
+          (propertyData?.community_name_slug || "").trim().toLowerCase()
+      )?.emirate) ||
+    "Dubai";
+
   const generateSchema = () => {
-    const propertyUrl = `https://www.xrealty.ae/property/${propertyData?.property_name_slug}/`;
+    const propertyUrl =
+      propertyEmirate === "Abu Dhabi"
+        ? `https://www.xrealty.ae/abu-dhabi/property/${propertyData?.property_name_slug}/`
+        : `https://www.xrealty.ae/property/${propertyData?.property_name_slug}/`;
     const rawName = seoTitle || propertyData.property_name || "";
     const name = rawName.includes("| Xperience Realty")
       ? rawName
@@ -1489,6 +1503,20 @@ const AddProperty = () => {
                   value={propertyData?.community_name_slug}
                   // onChange={handleChange}
                   placeholder="Enter community name slug"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                />
+              </div>
+
+              {/* Emirate (inherited from the community) */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Emirate
+                </label>
+                <input
+                  disabled
+                  type="text"
+                  value={propertyData?.community_name_slug ? propertyEmirate : ""}
+                  placeholder="Set by the community"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
