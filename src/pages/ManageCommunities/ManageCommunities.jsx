@@ -145,9 +145,14 @@ function ManageCommunities() {
                 IMAGE
               </h5>
             </div>
-            <div className="col-span-3">
+            <div className="col-span-2">
               <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
                 NAME
+              </h5>
+            </div>
+            <div className="col-span-1">
+              <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
+                EMIRATE
               </h5>
             </div>
             <div className="col-span-2">
@@ -232,7 +237,7 @@ function ManageCommunities() {
                     </div>
 
                     {/* Name + Slug */}
-                    <div className="col-span-3 flex flex-col justify-center">
+                    <div className="col-span-2 flex flex-col justify-center">
                       <Link
                         to={`/forms/add-community/${community._id || community.id}?page=${currentPage}`}
                         className="truncate text-sm font-medium text-primary hover:underline"
@@ -245,6 +250,13 @@ function ManageCommunities() {
                           /{community.slug}
                         </p>
                       )}
+                    </div>
+
+                    {/* Emirate (missing = Dubai) */}
+                    <div className="col-span-1 flex items-center">
+                      <p className="truncate text-xs text-[#637381] dark:text-bodydark md:text-sm" title={community.emirate || "Dubai"}>
+                        {community.emirate || "Dubai"}
+                      </p>
                     </div>
 
                     {/* Developer */}
