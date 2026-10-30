@@ -159,9 +159,14 @@ const ManageProperties = () => {
                 IMAGE
               </h5>
             </div>
-            <div className="col-span-3">
+            <div className="col-span-2">
               <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
                 NAME
+              </h5>
+            </div>
+            <div className="col-span-1">
+              <h5 className="text-xs font-medium text-[#637381] dark:text-bodydark md:text-base">
+                EMIRATE
               </h5>
             </div>
             <div className="col-span-2">
@@ -234,7 +239,7 @@ const ManageProperties = () => {
                     </div>
 
                     {/* Name + Developer */}
-                    <div className="col-span-3 flex flex-col justify-center">
+                    <div className="col-span-2 flex flex-col justify-center">
                       <Link
                         to={`/forms/add-property/${property._id || property.id}?page=${currentPage}`}
                         className="truncate text-sm font-medium text-primary hover:underline"
@@ -247,6 +252,13 @@ const ManageProperties = () => {
                           {property.developer}
                         </p>
                       )}
+                    </div>
+
+                    {/* Emirate (missing = Dubai) */}
+                    <div className="col-span-1 flex items-center">
+                      <p className="truncate text-xs text-[#637381] dark:text-bodydark md:text-sm" title={property.emirate || "Dubai"}>
+                        {property.emirate || "Dubai"}
+                      </p>
                     </div>
 
                     {/* Community */}
