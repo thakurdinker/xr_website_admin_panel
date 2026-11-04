@@ -5,7 +5,8 @@ Branch **`feat/abu-dhabi-phase-0`**. Full handover: **`xr_client/docs/abu-dhabi-
 ## Changes
 - **Areas** (`src/pages/Form/AddCommunity.jsx`): required **Emirate** dropdown (Dubai / Abu Dhabi) — decides `/area/` vs `/abu-dhabi/areas/`, and the area's properties follow it. **Noindex** checkbox. Schema URL uses the emirate's path.
 - **Properties** (`src/pages/Form/AddProperty.jsx`): read-only **Emirate** field showing what the property inherits from its community (the backend sets it on save; it can't be edited here). Schema URL uses the emirate's path.
-- **Developers** (`src/pages/Form/AddDeveloper.jsx`): **Noindex** checkbox, with a note that the page is shared by both emirates.
+- **Developers** (`src/pages/Form/AddDeveloper.jsx`): **Noindex** checkbox, with a note that the page is shared by both emirates. **This form has no route** (the developer pages were removed in `e754c04`, May 2026), so the checkbox can't be reached; see open decision 17 in the frontend doc.
+- **Developer dropdowns** (property and area forms) list every developer from `GET /admin/developers`: the backend's own records plus every developer added in Strapi. A new developer is added in Strapi and can then be picked here. No admin panel change was needed for that.
 - **Area and property lists** (`src/pages/ManageCommunities/ManageCommunities.jsx`, `src/pages/ManageProperties/ManageProperties.jsx`): new **Emirate** column. A row with no `emirate` shows Dubai. The NAME column gave up one grid column to make room.
 - Duplicate-slug errors come from the backend as `success:false` messages and show in the existing error toasts.
 
