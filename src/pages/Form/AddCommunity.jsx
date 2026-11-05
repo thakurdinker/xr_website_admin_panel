@@ -5,10 +5,11 @@ import axios from "axios";
 import UploadImages from "../../components/UploadWidget/UploadImages";
 import "react-phone-number-input/style.css";
 import {
-  DEVELOPERS_URL,
   FETCH_ALL_AGENTS,
   FETCH_ALL_COMMUNITIES,
   FETCH_ALL_ICONS,
+  STRAPI_DEVELOPERS_URL,
+  STRAPI_EMIRATES_URL,
 } from "../../api/constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -35,6 +36,14 @@ const CommunityForm = () => {
   const [schemaProperties, setSchemaProperties] = useState("");
 
   const [developers, setDevelopers] = useState([]);
+
+  // Emirate options come straight from Strapi's `emirate` collection, which is
+  // publicly readable. Seeded with the two known emirates so the field works on
+  // the first paint and if the request fails.
+  const [emirates, setEmirates] = useState([
+    { name: "Dubai", slug: "dubai" },
+    { name: "Abu Dhabi", slug: "abu-dhabi" },
+  ]);
 
   // Extract the current page number from query parameters
   const query = new URLSearchParams(location.search);
@@ -114,13 +123,49 @@ const CommunityForm = () => {
   };
 
   useEffect(() => {
+    // Developers come straight from Strapi (publicly readable, no token).
+    // Strapi has every developer the backend knew plus the Strapi-only ones.
     const fetchAllDevelopers = async () => {
-      const response = await axios.get(DEVELOPERS_URL, {
-        withCredentials: true,
-      });
-      setDevelopers(response?.data?.data);
+      try {
+        const response = await axios.get(STRAPI_DEVELOPERS_URL, {
+          params: {
+            "fields[0]": "developer_name",
+            "fields[1]": "developer_slug",
+            "sort[0]": "developer_name:asc",
+            "pagination[pageSize]": 100,
+          },
+        });
+        const list = (response?.data?.data ?? [])
+          .map((d) => ({
+            id: d?.documentId || d?.id,
+            developer_name: String(d?.developer_name || "").trim(),
+            developer_slug: d?.developer_slug,
+          }))
+          .filter((d) => d.developer_name && d.developer_slug);
+        if (list.length) setDevelopers(list);
+      } catch (error) {
+        console.warn("Developer list fetch failed:", error?.message);
+      }
     };
     fetchAllDevelopers();
+
+    const fetchEmirates = async () => {
+      try {
+        // Cross-origin to Strapi: no credentials (it answers Allow-Origin: *,
+        // which a credentialed request would reject) and no token needed.
+        const response = await axios.get(STRAPI_EMIRATES_URL, {
+          params: { "fields[0]": "name", "fields[1]": "slug", "pagination[pageSize]": 100 },
+        });
+        const list = (response?.data?.data ?? [])
+          .map((e) => ({ name: e?.name, slug: e?.slug }))
+          .filter((e) => e.name);
+        if (list.length) setEmirates(list);
+      } catch (error) {
+        // Keep the seeded list — an outage must not block creating an area.
+        console.warn("Emirate list fetch failed:", error?.message);
+      }
+    };
+    fetchEmirates();
   }, []);
 
   useEffect(() => {
@@ -212,6 +257,19 @@ const CommunityForm = () => {
 
     fetchAmenities();
   }, []);
+
+
+  // Keep a saved developer name selectable even when Strapi spells it
+  // differently (see AddProperty for the same guard).
+  const developerOptions = (() => {
+    const list = Array.isArray(developers) ? developers : [];
+    const current = String(formData?.developer || "").trim();
+    if (!current || list.some((d) => d.developer_name === current)) return list;
+    return [
+      ...list,
+      { id: `saved:${current}`, developer_name: current, developer_slug: formData?.developer_name_slug },
+    ];
+  })();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -523,8 +581,11 @@ const CommunityForm = () => {
                   <option value="" disabled>
                     Select Emirate
                   </option>
-                  <option value="Dubai">Dubai</option>
-                  <option value="Abu Dhabi">Abu Dhabi</option>
+                  {emirates.map((emirate) => (
+                    <option key={emirate.slug || emirate.name} value={emirate.name}>
+                      {emirate.name}
+                    </option>
+                  ))}
                 </select>
                 <p className="mt-1 text-xs text-[#637381] dark:text-bodydark">
                   Decides the page URL (/area/ or /abu-dhabi/areas/). Properties in
@@ -578,8 +639,8 @@ const CommunityForm = () => {
                   <option value="" disabled>
                     Select Developer
                   </option>
-                  {developers.length > 0 &&
-                    developers.map((developer) => {
+                  {developerOptions.length > 0 &&
+                    developerOptions.map((developer) => {
                       return (
                         <option
                           key={developer.id}
