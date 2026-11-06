@@ -204,9 +204,24 @@ const AddProperty = () => {
   // Strapi-only areas carry their emirate relation through the backend list.
   // A missing option is also unknown: it can mean the backend/Strapi request
   // failed, and saving would otherwise make the backend guess Dubai.
+  //
+  // This only blocks a NEW property. The backend's pre-save hook already
+  // falls back to Dubai for an untagged or unreachable area (models/
+  // properties.js), so applying this guard to an edit as well would block
+  // ordinary edits to a long-standing area that has simply never needed a
+  // Strapi tag — Dubai Hills Estate, for one.
+  //
+  // It also only applies to a Strapi-only area (`source === "strapi"`). A
+  // Mongo community with no stored emirate is a pre-backfill record, not an
+  // untagged one: the backend treats it as Dubai (utils/emirate.js), and the
+  // backend's own community list now defaults it the same way, so this guard
+  // must agree rather than block every Mongo area until the backfill runs.
+  const isEditing = Boolean(id);
   const emirateUnknown =
+    !isEditing &&
     Boolean(propertyData?.community_name_slug) &&
-    (!selectedCommunity || !selectedCommunity.emirate);
+    (!selectedCommunity ||
+      (selectedCommunity.source === "strapi" && !selectedCommunity.emirate));
 
   const propertyEmirate = selectedCommunity?.emirate || "Dubai";
 
