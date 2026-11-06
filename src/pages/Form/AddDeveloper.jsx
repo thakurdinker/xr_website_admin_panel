@@ -24,6 +24,7 @@ export default function AddDeveloper() {
     meta_keywords: "",
     order: 1,
     predefinedCommunitiesOrder: [],
+    noindex: false,
   });
 
   const handleChange = (e) => {
@@ -189,6 +190,28 @@ export default function AddDeveloper() {
                     onChange={handleChange}
                     className="w-full rounded border border-stroke bg-transparent px-4 py-2 text-black outline-none transition focus:border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-white"
                   />
+                </div>
+
+                {/* Noindex (SEO) */}
+                <div className="mb-5 md:col-span-12">
+                  <label className="block">Search indexing (SEO only)</label>
+                  <label className="mt-2 flex cursor-pointer items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(formData?.noindex)}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          noindex: e.target.checked,
+                        }))
+                      }
+                    />
+                    Hide this developer page from search engines (noindex)
+                  </label>
+                  <p className="text-gray-500 mt-2 text-sm">
+                    One developer page serves both Dubai and Abu Dhabi. Noindex
+                    hides it for both emirates.
+                  </p>
                 </div>
 
                 {/* Predefined Communities Order */}

@@ -25,6 +25,16 @@ export const FETCH_ICONS = BASE_URL + "icons";
 export const RESET_PASSWORD_REQUEST = BASE_URL + "resetPasswordRequest";
 export const FETCH_ALL_ICONS = BASE_URL + "getAllIcons";
 export const DEVELOPERS_URL = BASE_URL + "developers";
+export const EMIRATES_URL = BASE_URL + "emirates";
+
+// Strapi CMS, called directly from the browser. /api/emirates is public
+// (no token), so nothing secret is shipped in the bundle. Keep it that
+// way: never put a Strapi API token in a VITE_ variable — those are
+// compiled into the public bundle.
+export const STRAPI_BASE_URL =
+  import.meta.env.VITE_STRAPI_BASE_URL || "https://admin-v1.xrealty.ae";
+export const STRAPI_EMIRATES_URL = STRAPI_BASE_URL + "/api/emirates";
+export const STRAPI_DEVELOPERS_URL = STRAPI_BASE_URL + "/api/developers";
 export const SITEMAP_GENERATE_URL = BASE_URL + "generateSitemap";
 export const REVIEWS = BASE_URL + "reviews";
 export const PROJECT_OF_THE_MONTH = BASE_URL + "project-of-the-month";

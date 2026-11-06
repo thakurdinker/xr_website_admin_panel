@@ -5,10 +5,11 @@ import axios from "axios";
 import UploadImages from "../../components/UploadWidget/UploadImages";
 import "react-phone-number-input/style.css";
 import {
-  DEVELOPERS_URL,
   FETCH_ALL_AGENTS,
   FETCH_ALL_COMMUNITIES,
   FETCH_ALL_ICONS,
+  DEVELOPERS_URL,
+  EMIRATES_URL,
 } from "../../api/constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -35,6 +36,14 @@ const CommunityForm = () => {
   const [schemaProperties, setSchemaProperties] = useState("");
 
   const [developers, setDevelopers] = useState([]);
+
+  // Emirate options come straight from Strapi's `emirate` collection, which is
+  // publicly readable. Seeded with the two known emirates so the field works on
+  // the first paint and if the request fails.
+  const [emirates, setEmirates] = useState([
+    { name: "Dubai", slug: "dubai" },
+    { name: "Abu Dhabi", slug: "abu-dhabi" },
+  ]);
 
   // Extract the current page number from query parameters
   const query = new URLSearchParams(location.search);
@@ -78,6 +87,8 @@ const CommunityForm = () => {
     order: 1,
     developer: "",
     developer_name_slug: "",
+    emirate: "",
+    noindex: false,
   });
 
   const generateSchema = () => {
@@ -104,18 +115,50 @@ const CommunityForm = () => {
 
         return amenitiesName;
       })(),
-      url: `https://www.xrealty.ae/area/${formData?.slug}/`,
+      url:
+        formData?.emirate === "Abu Dhabi"
+          ? `https://www.xrealty.ae/abu-dhabi/areas/${formData?.slug}/`
+          : `https://www.xrealty.ae/area/${formData?.slug}/`,
     };
   };
 
   useEffect(() => {
+    // Use the backend developer list so shared slugs keep Mongo's established
+    // display name while Strapi-only developers remain available.
     const fetchAllDevelopers = async () => {
-      const response = await axios.get(DEVELOPERS_URL, {
-        withCredentials: true,
-      });
-      setDevelopers(response?.data?.data);
+      try {
+        const response = await axios.get(DEVELOPERS_URL, {
+          withCredentials: true,
+        });
+        const list = (response?.data?.data ?? [])
+          .map((d) => ({
+            id: d?.documentId || d?.id,
+            developer_name: String(d?.developer_name || "").trim(),
+            developer_slug: d?.developer_slug,
+          }))
+          .filter((d) => d.developer_name && d.developer_slug);
+        if (list.length) setDevelopers(list);
+      } catch (error) {
+        console.warn("Developer list fetch failed:", error?.message);
+      }
     };
     fetchAllDevelopers();
+
+    const fetchEmirates = async () => {
+      try {
+        const response = await axios.get(EMIRATES_URL, {
+          withCredentials: true,
+        });
+        const list = (response?.data?.data ?? [])
+          .map((e) => ({ name: e?.name, slug: e?.slug }))
+          .filter((e) => e.name);
+        if (list.length) setEmirates(list);
+      } catch (error) {
+        // Keep the seeded list — an outage must not block creating an area.
+        console.warn("Emirate list fetch failed:", error?.message);
+      }
+    };
+    fetchEmirates();
   }, []);
 
   useEffect(() => {
@@ -207,6 +250,19 @@ const CommunityForm = () => {
 
     fetchAmenities();
   }, []);
+
+
+  // Keep a saved developer name selectable even when Strapi spells it
+  // differently (see AddProperty for the same guard).
+  const developerOptions = (() => {
+    const list = Array.isArray(developers) ? developers : [];
+    const current = String(formData?.developer || "").trim();
+    if (!current || list.some((d) => d.developer_name === current)) return list;
+    return [
+      ...list,
+      { id: `saved:${current}`, developer_name: current, developer_slug: formData?.developer_name_slug },
+    ];
+  })();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -381,6 +437,11 @@ const CommunityForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.emirate) {
+      toast.error("Select the emirate this area belongs to.");
+      return;
+    }
+
     formData.specialties = convertStringToArray(formData.specialties);
     formData.languages = convertStringToArray(formData.languages);
     formData.video_links = convertStringToArray(formData.video_links);
@@ -498,6 +559,50 @@ const CommunityForm = () => {
                 />
               </div>
 
+              {/* Emirate */}
+              <div className="mb-5 md:col-span-4">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Emirate <span className="text-meta-1">*</span>
+                </label>
+                <select
+                  name="emirate"
+                  value={formData?.emirate}
+                  onChange={handleChange}
+                  required
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                >
+                  <option value="" disabled>
+                    Select Emirate
+                  </option>
+                  {emirates.map((emirate) => (
+                    <option key={emirate.slug || emirate.name} value={emirate.name}>
+                      {emirate.name}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-xs text-[#637381] dark:text-bodydark">
+                  Decides the page URL (/area/ or /abu-dhabi/areas/). Properties in
+                  this area follow it automatically.
+                </p>
+              </div>
+
+              {/* Noindex (SEO) */}
+              <div className="mb-5 md:col-span-4">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Search indexing (SEO only)
+                </label>
+                <label className="flex cursor-pointer items-center gap-3 text-sm text-black dark:text-white">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(formData?.noindex)}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, noindex: e.target.checked }))
+                    }
+                  />
+                  Hide this area page from search engines (noindex)
+                </label>
+              </div>
+
               {/* Order */}
               <div className="mb-5 md:col-span-4">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -527,8 +632,8 @@ const CommunityForm = () => {
                   <option value="" disabled>
                     Select Developer
                   </option>
-                  {developers.length > 0 &&
-                    developers.map((developer) => {
+                  {developerOptions.length > 0 &&
+                    developerOptions.map((developer) => {
                       return (
                         <option
                           key={developer.id}

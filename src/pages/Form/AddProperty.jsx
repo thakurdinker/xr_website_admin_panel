@@ -178,8 +178,58 @@ const AddProperty = () => {
     return raw.replace(/AED/gi, "").replace(/,/g, "").trim() || "0";
   };
 
+  // Emirate is inherited from the chosen community (the backend sets it on
+  // save); shown read-only and used for the page URL.
+  // Keep the saved value in the list so editing an existing record does not
+  // silently blank its developer.
+  const developerOptions = (() => {
+    const list = Array.isArray(developers) ? developers : [];
+    const current = String(propertyData?.developer || "").trim();
+    if (!current || list.some((d) => d.developer_name === current)) return list;
+    return [
+      ...list,
+      { id: `saved:${current}`, developer_name: current, developer_slug: propertyData?.developer_name_slug },
+    ];
+  })();
+
+  const selectedCommunity =
+    (Array.isArray(community) &&
+      community.find(
+        (c) =>
+          (c.slug || "").trim().toLowerCase() ===
+          (propertyData?.community_name_slug || "").trim().toLowerCase()
+      )) ||
+    null;
+
+  // Strapi-only areas carry their emirate relation through the backend list.
+  // A missing option is also unknown: it can mean the backend/Strapi request
+  // failed, and saving would otherwise make the backend guess Dubai.
+  //
+  // This only blocks a NEW property. The backend's pre-save hook already
+  // falls back to Dubai for an untagged or unreachable area (models/
+  // properties.js), so applying this guard to an edit as well would block
+  // ordinary edits to a long-standing area that has simply never needed a
+  // Strapi tag — Dubai Hills Estate, for one.
+  //
+  // It also only applies to a Strapi-only area (`source === "strapi"`). A
+  // Mongo community with no stored emirate is a pre-backfill record, not an
+  // untagged one: the backend treats it as Dubai (utils/emirate.js), and the
+  // backend's own community list now defaults it the same way, so this guard
+  // must agree rather than block every Mongo area until the backfill runs.
+  const isEditing = Boolean(id);
+  const emirateUnknown =
+    !isEditing &&
+    Boolean(propertyData?.community_name_slug) &&
+    (!selectedCommunity ||
+      (selectedCommunity.source === "strapi" && !selectedCommunity.emirate));
+
+  const propertyEmirate = selectedCommunity?.emirate || "Dubai";
+
   const generateSchema = () => {
-    const propertyUrl = `https://www.xrealty.ae/property/${propertyData?.property_name_slug}/`;
+    const propertyUrl =
+      propertyEmirate === "Abu Dhabi"
+        ? `https://www.xrealty.ae/abu-dhabi/property/${propertyData?.property_name_slug}/`
+        : `https://www.xrealty.ae/property/${propertyData?.property_name_slug}/`;
     const rawName = seoTitle || propertyData.property_name || "";
     const name = rawName.includes("| Xperience Realty")
       ? rawName
@@ -301,11 +351,24 @@ const AddProperty = () => {
   }, []);
 
   useEffect(() => {
+    // Developers come straight from Strapi (publicly readable, no token).
+    // Strapi has every developer the backend knew plus the Strapi-only ones.
     const fetchAllDevelopers = async () => {
-      const response = await axios.get(DEVELOPERS_URL, {
-        withCredentials: true,
-      });
-      setDevelopers(response?.data?.data);
+      try {
+        const response = await axios.get(DEVELOPERS_URL, {
+          withCredentials: true,
+        });
+        const list = (response?.data?.data ?? [])
+          .map((d) => ({
+            id: d?.documentId || d?.id,
+            developer_name: String(d?.developer_name || "").trim(),
+            developer_slug: d?.developer_slug,
+          }))
+          .filter((d) => d.developer_name && d.developer_slug);
+        if (list.length) setDevelopers(list);
+      } catch (error) {
+        console.warn("Developer list fetch failed:", error?.message);
+      }
     };
     fetchAllDevelopers();
   }, []);
@@ -778,6 +841,12 @@ const AddProperty = () => {
     if (!propertyData.price?.trim()) errors.push("Price is required");
     if (!propertyData.developer?.trim()) errors.push("Developer is required");
     if (!propertyData.community_name?.trim()) errors.push("Community Name is required");
+    if (emirateUnknown)
+      errors.push(
+        selectedCommunity
+          ? `"${propertyData.community_name}" has no emirate set. Tag it before adding properties.`
+          : `Community "${propertyData.community_name || propertyData.community_name_slug}" could not be resolved. Refresh the community list before saving.`
+      );
 
     if (errors.length > 0) {
       errors.forEach((err) => toast.error(err));
@@ -993,8 +1062,8 @@ const AddProperty = () => {
                   <option value="" disabled>
                     Select Developer
                   </option>
-                  {developers.length > 0 &&
-                    developers.map((developer) => {
+                  {developerOptions.length > 0 &&
+                    developerOptions.map((developer) => {
                       return (
                         <option
                           key={developer.id}
@@ -1489,6 +1558,30 @@ const AddProperty = () => {
                   value={propertyData?.community_name_slug}
                   // onChange={handleChange}
                   placeholder="Enter community name slug"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                />
+              </div>
+
+              {/* Emirate (inherited from the community) */}
+              <div className="mb-5 md:col-span-3">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Emirate
+                </label>
+                <input
+                  disabled
+                  type="text"
+                  value={
+                    !propertyData?.community_name_slug
+                      ? ""
+                      : emirateUnknown
+                        ? ""
+                        : propertyEmirate
+                  }
+                  placeholder={
+                    emirateUnknown
+                      ? "Not set in Strapi — tag this area first"
+                      : "Set by the community"
+                  }
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
