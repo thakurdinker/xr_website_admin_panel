@@ -14,7 +14,7 @@ import {
   FETCH_ICONS,
   FETCH_ALL_ICONS,
   GET_ALL_COMMUNITIES_DROP_DOWN,
-  STRAPI_DEVELOPERS_URL,
+  DEVELOPERS_URL,
 } from "../../api/constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -180,10 +180,8 @@ const AddProperty = () => {
 
   // Emirate is inherited from the chosen community (the backend sets it on
   // save); shown read-only and used for the page URL.
-  // Strapi and the old Mongo records disagree on one name ("Beyond" vs "Beyond
-  // Developments"), and 15 saved records store the Mongo spelling. Keep the
-  // saved value in the list so editing an existing record doesn't silently
-  // blank its developer and rewrite it on save.
+  // Keep the saved value in the list so editing an existing record does not
+  // silently blank its developer.
   const developerOptions = (() => {
     const list = Array.isArray(developers) ? developers : [];
     const current = String(propertyData?.developer || "").trim();
@@ -203,13 +201,12 @@ const AddProperty = () => {
       )) ||
     null;
 
-  // Areas added only in Strapi have no emirate — Strapi has no such field — so
-  // their emirate is UNKNOWN, not Dubai. Keep the two apart: saving against an
-  // unknown one would have the backend file the property under Dubai silently.
+  // Strapi-only areas carry their emirate relation through the backend list.
+  // A missing option is also unknown: it can mean the backend/Strapi request
+  // failed, and saving would otherwise make the backend guess Dubai.
   const emirateUnknown =
     Boolean(propertyData?.community_name_slug) &&
-    Boolean(selectedCommunity) &&
-    !selectedCommunity.emirate;
+    (!selectedCommunity || !selectedCommunity.emirate);
 
   const propertyEmirate = selectedCommunity?.emirate || "Dubai";
 
@@ -343,13 +340,8 @@ const AddProperty = () => {
     // Strapi has every developer the backend knew plus the Strapi-only ones.
     const fetchAllDevelopers = async () => {
       try {
-        const response = await axios.get(STRAPI_DEVELOPERS_URL, {
-          params: {
-            "fields[0]": "developer_name",
-            "fields[1]": "developer_slug",
-            "sort[0]": "developer_name:asc",
-            "pagination[pageSize]": 100,
-          },
+        const response = await axios.get(DEVELOPERS_URL, {
+          withCredentials: true,
         });
         const list = (response?.data?.data ?? [])
           .map((d) => ({
@@ -836,7 +828,9 @@ const AddProperty = () => {
     if (!propertyData.community_name?.trim()) errors.push("Community Name is required");
     if (emirateUnknown)
       errors.push(
-        `"${propertyData.community_name}" has no emirate set in Strapi. Tag it before adding properties — saving now would file this property under Dubai.`
+        selectedCommunity
+          ? `"${propertyData.community_name}" has no emirate set. Tag it before adding properties.`
+          : `Community "${propertyData.community_name || propertyData.community_name_slug}" could not be resolved. Refresh the community list before saving.`
       );
 
     if (errors.length > 0) {

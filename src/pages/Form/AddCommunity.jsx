@@ -8,8 +8,8 @@ import {
   FETCH_ALL_AGENTS,
   FETCH_ALL_COMMUNITIES,
   FETCH_ALL_ICONS,
-  STRAPI_DEVELOPERS_URL,
-  STRAPI_EMIRATES_URL,
+  DEVELOPERS_URL,
+  EMIRATES_URL,
 } from "../../api/constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -123,17 +123,12 @@ const CommunityForm = () => {
   };
 
   useEffect(() => {
-    // Developers come straight from Strapi (publicly readable, no token).
-    // Strapi has every developer the backend knew plus the Strapi-only ones.
+    // Use the backend developer list so shared slugs keep Mongo's established
+    // display name while Strapi-only developers remain available.
     const fetchAllDevelopers = async () => {
       try {
-        const response = await axios.get(STRAPI_DEVELOPERS_URL, {
-          params: {
-            "fields[0]": "developer_name",
-            "fields[1]": "developer_slug",
-            "sort[0]": "developer_name:asc",
-            "pagination[pageSize]": 100,
-          },
+        const response = await axios.get(DEVELOPERS_URL, {
+          withCredentials: true,
         });
         const list = (response?.data?.data ?? [])
           .map((d) => ({
@@ -151,10 +146,8 @@ const CommunityForm = () => {
 
     const fetchEmirates = async () => {
       try {
-        // Cross-origin to Strapi: no credentials (it answers Allow-Origin: *,
-        // which a credentialed request would reject) and no token needed.
-        const response = await axios.get(STRAPI_EMIRATES_URL, {
-          params: { "fields[0]": "name", "fields[1]": "slug", "pagination[pageSize]": 100 },
+        const response = await axios.get(EMIRATES_URL, {
+          withCredentials: true,
         });
         const list = (response?.data?.data ?? [])
           .map((e) => ({ name: e?.name, slug: e?.slug }))
